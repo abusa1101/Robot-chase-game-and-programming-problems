@@ -12,39 +12,27 @@ int main(void) {
         return 1;
     }
 
-    //printf("%d\n",number);
-    //int number = 18;
-
-    //calculate prime factors
-    if (number == 1) {
-        printf("%d\n", number);
-    }
     //remove divisibility by 2
     while (number % 2 == 0) {
-        printf("%d\n", number);
+        printf("%d\n", 2);
         number = number / 2;
-        //printf("%d\n",number);
-        //if (number %2 != 0){
-            //break;
-        //}
     } 
-    //printf("%d\n", number);
 
-    
-    /*
-    int i = 1;
-    //break down odd numbers
-    for (i < sqrt(number)){
+    //break down the now odd numbers
+    for (int i = 2;i < sqrt(number); i++){
+       // printf("in the for loop\n");
+
         while (number % i == 0){
+            //printf("in the while loop\n");
             printf("%d", i);
             number = number/i;
         }
 
         //identify prime numbers
         if (number > 2){
-            printf("d",number);
+            //printf("in the if statement\n");
+            printf("%d\n",number);
         }
         
-        //i = i + 2;}*/
+    }
 }
-
