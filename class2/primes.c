@@ -13,15 +13,13 @@ int main(void) {
     while (number % 2 == 0) { //remove divisibility by 2
         printf("%d\n", 2);
         number = number / 2;
-    } 
-    for (int i = 3; i <= sqrt(number); i = i+2){ //break down the now odd numbers
-        while (number % i == 0){
-            //printf("in the while loop\n");
+    } for (int i = 3; i <= sqrt(number); i = i + 2) { //break down the now odd numbers
+        while (number % i == 0) {
             printf("%d\n", i);
             number = number / i;
         }
-    }
-        if (number > 2) { //identify prime numbers
+    } if (number > 2) { //identify prime numbers
             printf("%d\n", number);
         }
 }
+
