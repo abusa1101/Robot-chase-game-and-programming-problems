@@ -14,14 +14,14 @@ int main(void) {
         printf("%d\n", 2);
         number = number / 2;
     } 
-    for (int i = 3; i <= sqrt(number); i=i+2){ //break down the now odd numbers
+    for (int i = 3; i <= sqrt(number); i = i+2){ //break down the now odd numbers
         while (number % i == 0){
             //printf("in the while loop\n");
             printf("%d\n", i);
-            number = number/i;
+            number = number / i;
         }
     }
-        if (number > 2){ //identify prime numbers
+        if (number > 2) { //identify prime numbers
             printf("%d\n", number);
         }
 }
