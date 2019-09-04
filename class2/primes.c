@@ -2,7 +2,6 @@
 #include <math.h>
 
 int main(void) {
-
     //read user input
     printf("Enter a number to factorize:\n");
     int number = 0;
@@ -17,13 +16,13 @@ int main(void) {
     //int number = 18;
 
     //calculate prime factors
-    if (number == 1){
+    if (number == 1) {
         printf("%d\n", number);
     }
     //remove divisibility by 2
-    while (number % 2 == 0){
-        printf("%d\n",number);
-        number = number/2;
+    while (number % 2 == 0) {
+        printf("%d\n", number);
+        number = number / 2;
         //printf("%d\n",number);
         //if (number %2 != 0){
             //break;
