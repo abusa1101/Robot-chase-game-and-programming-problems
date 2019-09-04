@@ -14,7 +14,7 @@ int main(void) {
 
     //remove divisibility by 2
     while (number % 2 == 0) {
-        printf("%d", 2);
+        printf("%d\n", 2);
         number = number / 2;
     } 
 
@@ -24,7 +24,7 @@ int main(void) {
 
         while (number % i == 0){
             //printf("in the while loop\n");
-            printf("%d", i);
+            printf("%d\n", i);
             number = number/i;
         }
     }
@@ -32,7 +32,7 @@ int main(void) {
         //identify prime numbers
         if (number > 2){
             //printf("in the if statement\n");
-            printf("%d",number);
+            printf("%d\n",number);
         }
         
     
