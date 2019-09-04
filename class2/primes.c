@@ -11,7 +11,8 @@ int main(void) {
         fprintf(stderr, "Invalid input. Please enter a number.\n");
         return 1;
     }
-
+    printf("Prime factors:\n");
+    
     //remove divisibility by 2
     while (number % 2 == 0) {
         printf("%d\n", 2);
