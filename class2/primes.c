@@ -19,14 +19,15 @@ int main(void) {
     } 
 
     //break down the now odd numbers
-    for (int i = 2;i < sqrt(number); i++){
+    for (int i = 3; i <= sqrt(number); i=i+2){
        // printf("in the for loop\n");
 
         while (number % i == 0){
             //printf("in the while loop\n");
-            printf("%d", i);
+            printf("%d\n", i);
             number = number/i;
         }
+    }
 
         //identify prime numbers
         if (number > 2){
@@ -34,5 +35,5 @@ int main(void) {
             printf("%d\n",number);
         }
         
-    }
+    
 }
