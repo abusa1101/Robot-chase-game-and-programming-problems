@@ -7,7 +7,6 @@ int main(int argc, char **argv) {
         return 1;
     }
     char letter;
-    letter = argv[1][0];
     int k = 0;
     //int len2 = strlen(argv[2]);
     for (int j = 1; j < argc; j++) { //j is which word are you on
