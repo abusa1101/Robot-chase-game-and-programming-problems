@@ -30,6 +30,5 @@ int main(int argc, char **argv) {
             }
         }
         k = 0;
-    }
-    printf("\n"); 
-}
+    } 
+    printf("\n"); }
