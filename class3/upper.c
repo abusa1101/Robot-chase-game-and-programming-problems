@@ -3,9 +3,10 @@
 
 int main(void) {
     //printf("Enter text to capitalize:\n"); //read user input
-    char word;
-    int vals_read = scanf("%s", word); //or whatever input
-    len = strlen(word);
+    //char word;
+    //int vals_read = scanf("%s", word); //or whatever input
+    char word = "hello";
+    int len = strlen(word);
 
     for (int i = o; i <= len; i++){
         if (word(i) >= 97 && word(i) <= 122){
