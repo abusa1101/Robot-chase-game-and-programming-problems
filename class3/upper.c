@@ -3,7 +3,7 @@
 
 int main(int argc, char **argv) {
     if (argc==1){
-        printf("Please enter text")
+        printf("Please enter text");
         return 1;
     }
     char letter;
