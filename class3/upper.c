@@ -16,14 +16,6 @@ int main(int argc, char **argv) {
             if (letter >= 96 & letter <= 122) {
                 letter = (letter - 32);
                 printf("%c", letter);
-            }
-
-            else if (letter == 34) {
-                k = 1;
-                letter = argv[j][i + 1];
-                if (k == 1) {
-                    printf("\n");
-                }
             } else {
                 printf("%c", letter);
             }
