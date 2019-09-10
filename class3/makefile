@@ -1,2 +1,2 @@
 upper: upper.c
-	gcc -o upper upper.c -std=c11
+	gcc -o $@ $^ -std=c11
