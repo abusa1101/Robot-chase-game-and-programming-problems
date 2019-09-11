@@ -1,34 +1,39 @@
 #include <stdio.h>
+#include <string.h>
 
 int main(int argc, char **argv) {
 
+//unsigned char text;
+int counter;
 unsigned char text = argv[1][0];
-
 printf("%d\n", argc);
 printf("%c\n", text);
 
-if (argc==1){ // Print 0 if no input is given
+if (argc == 1) { // Print 0 if no input is given
     printf("0");
 }
 
-if (argc > 2){
+if (argc > 2) {
     printf("Too many arguments");
     return 1;
 }
 
-int counter;
-for(counter=0; text!=0; text>>=1){
-    if(text & 01){
-        counter++;
+int len = strlen(argv[1]);
+for (int i = 0; i < len; i++) { //i is which letter of the word you are on
+    text = argv[1][i];
+    
+    for(counter = 0; text!= 0; text >>= 1) { //for each letter
+        if(text & 01) {
+            counter++; //counts the number of ones in the word's binary form
+        }
     }
 }
 
-if (counter % 2 == 0){
+if (counter % 2 == 0) {
     printf("0\n");
 } else {
     printf("1\n");
 }
-
     return 0;
 }
 
