@@ -13,6 +13,7 @@ if (argc==1){ // Print 0 if no input is given
 
 if (argc > 2){
     printf("Too many arguments");
+    return 1;
 }
 
 int counter;
