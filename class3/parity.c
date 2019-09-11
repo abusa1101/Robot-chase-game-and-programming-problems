@@ -2,7 +2,7 @@
 #include <string.h>
 
 int main(int argc, char **argv) {
-unsigned char text = argv[1][0];
+unsigned char text;
 if (argc == 1) { // Print 0 if no input is given
     printf("0");
 }
