@@ -20,7 +20,7 @@ for (int i = 0; i < len; i++) { //i is which letter of the word you are on
     for (counter = 0; text != 0; text >>= 1) { //for each letter
         if (text & 01) {
             counter++; //counts the number of ones in the word's binary form
-            totalcount = totalcount + 1;          
+            totalcount = totalcount + 1;
         }
     }
 }
@@ -30,5 +30,6 @@ if (totalcount % 2 == 0) {
 } else {
     printf("1\n");
 }
+
     return 0;
 }
