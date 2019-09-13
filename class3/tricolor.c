@@ -54,7 +54,7 @@ int main(void) {
 
     FILE *f; // PART 2: IMAGE MANIPULATION
     f = fopen("img.bin", "rb"); //Open image
-    for (int row = 0; row < 40; row++) { 
+    for (int row = 0; row < 40; row++) {
         for (int byte = 0; byte < 18; byte++)  {
             char c = fgetc(f);
             printf("%s", trit_encodings[(__uint8_t)c]);
