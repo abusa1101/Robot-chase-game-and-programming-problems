@@ -60,9 +60,7 @@ int main(void) {
             char c = fgetc(f);
             printf("%s", trit_encodings[(__uint8_t)c]);
         }
+        printf("\n");
     }
 }
-
-
-
 
