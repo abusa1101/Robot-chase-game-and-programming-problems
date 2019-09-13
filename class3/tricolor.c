@@ -49,7 +49,7 @@ int main(void) {
             trit_encodings[i][j] = tri[i];
             j = j + 1;
         }
-        printf("\n");
+        //printf("\n");
     }   
 
     // image manipulation'
