@@ -6,18 +6,18 @@ int trinum[243];
 char tri[243];
 
 int main(void) {
-    trit_encodings[0] = calloc(sizeof(char), 6); //LOOKUP TABLE
+    trit_encodings[0] = calloc(sizeof(char), 6); //PART 1: LOOKUP TABLE
     int i = 0;                                  //initialize i
     int val = i;                                //initialize val
-    trinum[0] = val % 3;                        //set arrays for number 0 (b/c while loop starts at number 1). Not sure how to optimize.
-    val = val / 3; 
-    if(trinum[0] == 0){
+    trinum[0] = val % 3;
+    val = val / 3;
+    if (trinum[0] == 0) {
         tri[0] = ' ';
-        trit_encodings[0][0]= ' ';
-        trit_encodings[0][1]= ' ';
-        trit_encodings[0][2]= ' ';
-        trit_encodings[0][3]= ' ';
-        trit_encodings[0][4]= ' ';
+        trit_encodings[0][0] = ' ';
+        trit_encodings[0][1] = ' ';
+        trit_encodings[0][2] = ' ';
+        trit_encodings[0][3] = ' ';
+        trit_encodings[0][4] = ' ';
     }
     //printf("%c\n",trit_encodings[0][0]);
     //printf("%d",trinum[0]);
@@ -32,17 +32,17 @@ int main(void) {
         trit_encodings[i][3] = ' ';
         trit_encodings[i][4] = ' ';
         while (val > 0) {
-            trinum[i] = val % 3; 
-            val = val / 3; 
+            trinum[i] = val % 3;
+            val = val / 3;
             //printf("%d",trinum[i]);
             //trit_encodings[i][0] = '!';
-            if(trinum[i] == 0) {
+            if (trinum[i] == 0) {
                 tri[i] = ' ';
             }
-            if(trinum[i] == 1) {
+            if (trinum[i] == 1) {
                 tri[i] = ':';
             }
-            if(trinum[i] == 2) {
+            if (trinum[i] == 2) {
                 tri[i] = '@';
             }
             //printf("%c",tri[i]);
@@ -50,10 +50,9 @@ int main(void) {
             j = j + 1;
         }
         //printf("\n");
-    }   
+    }
 
-    // image manipulation'
-    FILE *f;
+    FILE *f; // PART 2: IMAGE MANIPULATION
     f = fopen("img.bin", "rb"); //Open image
     for (int row = 0; row < 40; row++) { 
         for (int byte = 0; byte < 18; byte++)  {
