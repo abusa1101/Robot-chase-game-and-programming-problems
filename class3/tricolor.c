@@ -10,7 +10,7 @@ int main(void) {
     int i = 0;                                  //initialize i
     int val = i;                                //initialize val
     trinum[0] = val % 3;
-    val = val / 3;
+  
     if (trinum[0] == 0) {
         tri[0] = ' ';
         trit_encodings[0][0] = ' ';
