@@ -9,6 +9,12 @@ int main(void) {
 
     //PART 1(a): Read the csv file 
     FILE *f = fopen("polygons.csv", "r");
+    
+    if (!f){
+        fprintf(stderr, "Error: Missing file.\n");
+        return 1;
+    }
+
     int args_read;
     int m = 1; //m for mask
     char skipif;
