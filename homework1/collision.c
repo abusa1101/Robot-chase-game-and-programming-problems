@@ -9,7 +9,7 @@ int main(void) {
 
     //PART 1(a): Read the csv file 
     FILE *f = fopen("polygons.csv", "r");
-    
+
     if (!f){
         fprintf(stderr, "Error: Missing file.\n");
         return 1;
@@ -45,6 +45,13 @@ int main(void) {
 
     //PART 1(b): Store read data into discernable variables/arrays. d[i] = first data point, d[values-1] = last data point
     int n = d[m+3];
+
+    //Part 2: Read n points and display error msg if n> 16
+    if (n > 16){
+        fprintf(stderr, "Error: Too many points (n < 16)\n");
+        return 1;
+    }
+    
     double xpivot = 0; //constant
     double ypivot = 0; //constant
     //POLYGON 1 DATA
