@@ -301,7 +301,7 @@ int main(void) {
             p1_previous_sign = p1_sign[u];
         }
         if (p1_previous_sign != p1_sign[u]){
-            collision = 0;
+            collision = 1;
         }
         p1_previous_sign = p1_sign[u];
     }
@@ -332,7 +332,7 @@ int main(void) {
             p2_previous_sign = p2_sign[v];
         }
         if (p2_previous_sign != p2_sign[v]){
-            collision = 0;
+            collision = 1;
         }
         p2_previous_sign = p2_sign[v];
     }
