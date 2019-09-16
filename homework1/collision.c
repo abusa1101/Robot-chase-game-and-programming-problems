@@ -46,7 +46,7 @@ int main(void) {
     //PART 1(b): Store read data into discernable variables/arrays. d[i] = first data point, d[values-1] = last data point
     int n = d[m+3];
 
-    if( typeof(n) != 'double'){
+    if( typeof(n) != "double"){
         fprintf(stderr, "Error: Invalid file.\n");
         return 1;
     }
