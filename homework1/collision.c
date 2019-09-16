@@ -46,6 +46,11 @@ int main(void) {
     //PART 1(b): Store read data into discernable variables/arrays. d[i] = first data point, d[values-1] = last data point
     int n = d[m+3];
 
+    if( typeof(n) != 'double'){
+        fprintf(stderr, "Error: Invalid file.\n");
+        return 1;
+    }
+
     double xpivot = 0; //constant
     double ypivot = 0; //constant
     //POLYGON 1 DATA
@@ -267,8 +272,8 @@ int main(void) {
         }
     }
 
-/*
-    //Part 6: Check Failure Mode! i.e. check if either polygon contains the other
+
+    /*//Part 6: Check Failure Mode! i.e. check if either polygon contains the other
         for each polygon pg in [polygon 1, polygon 2] {
             // compute if pg contains a point p of the other polygon
             for each line l in pg {
@@ -280,8 +285,8 @@ int main(void) {
             if all the cross products have the same sign{
                 //then the polygon contains point p
             }
-        }
-    */
+        }*/
+    
     //Part 7: Declare collision or not!! 
     if (collision == 1){
         printf("collision!\n");
