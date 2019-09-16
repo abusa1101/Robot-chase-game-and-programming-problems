@@ -46,10 +46,13 @@ int main(void) {
     //PART 1(b): Store read data into discernable variables/arrays. d[i] = first data point, d[values-1] = last data point
     int n = d[m+3];
 
-    if( typeof(n) != "double"){
+    /*if( typeof(n) = double){
+        //fprintf(stderr, "Error: Invalid file.\n");
+        return 0;
+    } else {
         fprintf(stderr, "Error: Invalid file.\n");
         return 1;
-    }
+    }*/
 
     double xpivot = 0; //constant
     double ypivot = 0; //constant
@@ -273,26 +276,74 @@ int main(void) {
     }
 
 
-    /*//Part 6: Check Failure Mode! i.e. check if either polygon contains the other
-        for each polygon pg in [polygon 1, polygon 2] {
-            // compute if pg contains a point p of the other polygon
-            for each line l in pg {
-                //compute the cross product between l and p
-            }
-            // the sign of each cross product indicates the side the point lies on.
-            // the lines in the polygon must have a consistent winding order (clockwise or counter)
-            // for the signs to consistently indicate inside or outside of the polygon.
-            if all the cross products have the same sign{
-                //then the polygon contains point p
-            }
-        }*/
-    
+    //Part 6: Check Failure Mode! i.e. check if either polygon contains the other
+    //POLYGON 1: CONTAINMENT
+    int p1_sign[n]; //0 = zero, 1 = positive, 2 = negative
+    int p1_previous_sign;
+    for (int u = 1; u <= n; u++ ) {
+        if (u == n){
+            double line1_x = p1_transformed_x[1] - p1_transformed_x[u]; 
+            double line1_y = p1_transformed_y[1] - p1_transformed_y[u];
+        }
+        double line1_x = p1_transformed_x[u+1] - p1_transformed_x[u];
+        double line1_y = p1_transformed_y[u+1] - p1_transformed_y[u];
+        //for one p in the other line, compute the cross product between l and p
+        double cp1_1 = (line1_x * p2_transformed_y[u]) - (line1_y * p2_transformed_x[u]);
+        //check for likeness or signs of crossproduct
+        if (cp1_1 > 0){
+            p1_sign[u] = 1;
+        } else if (cp1_1 < 0) {
+            p1_sign[u] = 2;
+        } else {
+            p1_sign[u] = 0;
+        }
+        if (u == 1){
+            p1_previous_sign = p1_sign[u];
+        }
+        if (p1_previous_sign != p1_sign[u]){
+            collision = 0;
+        }
+        p1_previous_sign = p1_sign[u];
+    }
+
+    //POLYGON 2: CONTAINMENT
+    int p2_sign[n]; //0 = zero, 1 = positive, 2 = negative
+    int p2_previous_sign;
+    for (int v = 1; v <= n; v++ ) {
+        if (v == n){
+            double line2_x = p2_transformed_x[1] - p2_transformed_x[v]; 
+            double line2_y = p2_transformed_y[1] - p2_transformed_y[v];
+        }
+        double line2_x = p2_transformed_x[v+1] - p2_transformed_x[v];
+        double line2_y = p2_transformed_y[v+1] - p2_transformed_y[v];
+
+        //for one p in the other line, compute the cross product between l and p
+        double cp2_1 = (line2_x * p1_transformed_y[v]) - (line2_y * p1_transformed_x[v]);
+        //check for likeness or signs of crossproduct
+        //check for likeness or signs of crossproduct
+        if (cp2_1 > 0) {
+            p2_sign[v] = 1;
+        } else if (cp2_1 < 0) {
+            p2_sign[v] = 2;
+        } else {
+            p2_sign[v] = 0;
+        }
+        if (v == 1){
+            p2_previous_sign = p2_sign[v];
+        }
+        if (p2_previous_sign != p2_sign[v]){
+            collision = 0;
+        }
+        p2_previous_sign = p2_sign[v];
+    }
+
     //Part 7: Declare collision or not!! 
-    if (collision == 1){
+    if (collision == 1) {
         printf("collision!\n");
-    } else{
+    } else {
         printf("no collision\n");
     }
+
     return 0;
 }
 
