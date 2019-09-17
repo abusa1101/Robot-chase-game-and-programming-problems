@@ -301,7 +301,7 @@ int main(void) {
         if (u == 1){
             p1_previous_sign = p1_sign[u];
         }
-        if (p1_previous_sign != p1_sign[u]){
+        if (p1_previous_sign == p1_sign[u]){
             //contained_collision = 0;
             collision = 0;
         }
@@ -333,7 +333,7 @@ int main(void) {
         if (v == 1){
             p2_previous_sign = p2_sign[v];
         }
-        if (p2_previous_sign != p2_sign[v]){
+        if (p2_previous_sign == p2_sign[v]){
             //contained_collision = 0;
             collision = 0;
         }
