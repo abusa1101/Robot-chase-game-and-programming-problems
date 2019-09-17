@@ -3,45 +3,9 @@
 
 void encrypt()
 {
-    int key = 2;
-    int text = 3;
-    unsigned char let_key;
-    unsigned char let_word;
 
-    int len_word = strlen(argv[text]);
-    int len_key = strlen(argv[key]);
 
-    int i = 0;
-    int j = 0;
-    let_word = argv[text][0];
-    while (let_word != '\0'){
-        //printf("hi\n");
-        if (j == len_key){
-            j = 0;
-        }
-        let_word = argv[text][i];
-        let_key = argv[key][j];
-        int num_key = chartonum(let_key); //gives how many positions to rotate by
-        //printf("hi again\n");
-        while (num_key == 100){
-            j = j+1; 
-            let_key = argv[key][j];
-            num_key = chartonum(let_key);
-        }
-        //printf("hi 3\n");
-        if (let_word >= 'A' && let_word <= 'Z'){
-            let_word = let_word + num_key;
-        } else if (let_word >= 'a' && let_word <= 'z'){
-            let_word = let_word + num_key;
-        } else {
-            j= j-1;
-        }
-        printf("%c", let_word);
-        i++;
-        j++;
-        //printf("hi last\n");
-    }
-    printf("\n");
+    
 }
 
 void decrypt()
@@ -69,9 +33,13 @@ int chartonum(char h) //int num_key should be 0,1,2 for a,b,c respectively
 
 
 int main(int argc, char **argv) { //arg[1] = encrypt/decrypt, arg[2] = key, arg[3] = text; arg[] is pointer, arg[][] is character
-    
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
+    int key = 2;
+    int text = 3;
+    unsigned char let_key;
+    unsigned char let_word;
+    int len_word = strlen(argv[text]);
+    int len_key = strlen(argv[key]);
     int enc_state = 1;
     int dec_state = 1;
     char enc[] = "encrypt";
@@ -100,7 +68,37 @@ int main(int argc, char **argv) { //arg[1] = encrypt/decrypt, arg[2] = key, arg[
     }
 
     if(enc_state == 1) {
-        encrypt();
+        //encrypt();
+        int i = 0;
+        int j = 0;
+        let_word = argv[text][0];
+        while (let_word != '\0'){
+            if (j == len_key){
+                j = 0;
+            }
+            let_word = argv[text][i];
+            let_key = argv[key][j];
+            int num_key = chartonum(let_key); //gives how many positions to rotate by
+            while (num_key == 100){
+                j = j+1; 
+                let_key = argv[key][j];
+                num_key = chartonum(let_key);
+            }
+            if (let_word >= 'A' && let_word <= 'Z'){
+                let_word = let_word + num_key;
+            } else if (let_word >= 'a' && let_word <= 'z'){
+                let_word = let_word + num_key;
+            } else {
+                j= j-1;
+            }
+            printf("%c", let_word);
+            i++;
+            j++;
+    }
+    printf("\n");
+
+
+
     } else if  (dec_state == 1){
         decrypt();
     }
