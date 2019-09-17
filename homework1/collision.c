@@ -295,13 +295,13 @@ int main(void) {
         } else if (cp1_1 < 0) {
             p1_sign[u] = 2;
         } else {
-            p1_sign[u] = 0;
+            //p1_sign[u] = 0;
         }
         if (u == 1){
             p1_previous_sign = p1_sign[u];
         }
         if (p1_previous_sign != p1_sign[u]){
-            collision = 1;
+            collision = 0;
         }
         p1_previous_sign = p1_sign[u];
     }
@@ -326,13 +326,13 @@ int main(void) {
         } else if (cp2_1 < 0) {
             p2_sign[v] = 2;
         } else {
-            p2_sign[v] = 0;
+            //p2_sign[v] = 0;
         }
         if (v == 1){
             p2_previous_sign = p2_sign[v];
         }
         if (p2_previous_sign != p2_sign[v]){
-            collision = 1;
+            collision = 0;
         }
         p2_previous_sign = p2_sign[v];
     }
