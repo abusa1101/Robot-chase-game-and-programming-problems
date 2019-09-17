@@ -280,6 +280,7 @@ int main(void) {
     //POLYGON 1: CONTAINMENT
     int p1_sign[n]; //0 = zero, 1 = positive, 2 = negative
     int p1_previous_sign;
+    int contained_collision;
     for (int u = 1; u <= n; u++ ) {
         if (u == n){
             double line1_x = p1_transformed_x[1] - p1_transformed_x[u]; 
@@ -301,7 +302,7 @@ int main(void) {
             p1_previous_sign = p1_sign[u];
         }
         if (p1_previous_sign != p1_sign[u]){
-            collision = 0;
+            contained_collision = 0;
         }
         p1_previous_sign = p1_sign[u];
     }
@@ -332,13 +333,13 @@ int main(void) {
             p2_previous_sign = p2_sign[v];
         }
         if (p2_previous_sign != p2_sign[v]){
-            collision = 0;
+            contained_collision = 0;
         }
         p2_previous_sign = p2_sign[v];
     }
 
     //Part 7: Declare collision or not!! 
-    if (collision == 1) {
+    if (collision == 1 && contained_collision == 0) {
         printf("collision!\n");
     } else {
         printf("no collision\n");
