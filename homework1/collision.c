@@ -302,7 +302,8 @@ int main(void) {
             p1_previous_sign = p1_sign[u];
         }
         if (p1_previous_sign != p1_sign[u]){
-            contained_collision = 0;
+            //contained_collision = 0;
+            collision = 0;
         }
         p1_previous_sign = p1_sign[u];
     }
@@ -333,13 +334,14 @@ int main(void) {
             p2_previous_sign = p2_sign[v];
         }
         if (p2_previous_sign != p2_sign[v]){
-            contained_collision = 0;
+            //contained_collision = 0;
+            collision = 0;
         }
         p2_previous_sign = p2_sign[v];
     }
 
     //Part 7: Declare collision or not!! 
-    if (collision == 1 && contained_collision != 0) {
+    if (collision == 1) {
         printf("collision!\n");
     } else {
         printf("no collision\n");
