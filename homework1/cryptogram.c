@@ -3,19 +3,12 @@
 
 void encrypt()
 {
-
-
-    
+ 
 }
 
 void decrypt()
 {
     printf("NOOOOOO\n");
-    /*unsigned int i;
-    for(i=0;i<strlen(password);++i)
-    {
-        password[i] = password[i] + key;
-    }*/
 }
 
 int chartonum(char h) //int num_key should be 0,1,2 for a,b,c respectively
@@ -35,12 +28,13 @@ int chartonum(char h) //int num_key should be 0,1,2 for a,b,c respectively
 int main(int argc, char **argv) { //arg[1] = encrypt/decrypt, arg[2] = key, arg[3] = text; arg[] is pointer, arg[][] is character
     int key = 2;
     int text = 3;
-    if (argc < 3) {
+    //char *key = argv[3];
+    if (argc < 4) {
         fprintf(stderr, "Error: Too little arguments.\n");
         return 1;
     }
 
-    if (argv[key][0] == '\n') {
+    if (argv[key][0] == '\0') {
         printf("%s\n", argv[text]);
     }
 
@@ -67,11 +61,11 @@ int main(int argc, char **argv) { //arg[1] = encrypt/decrypt, arg[2] = key, arg[
             } 
         }
         if (enc_state == 0 &&  dec_state == 0) {
-            printf("expected command encrypt or decrypt. got '%s'\n", argv[1]);
+            fprintf(stderr, "expected command encrypt or decrypt. got '%s'\n");
             return 1;
         }
     } else {
-        printf("expected command encrypt or decrypt. got '%s'\n", argv[1]);
+        fprintf(stderr, "expected command encrypt or decrypt. got '%s'\n");
         return 1;
     }
 
