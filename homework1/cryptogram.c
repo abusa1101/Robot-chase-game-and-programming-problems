@@ -26,6 +26,7 @@ int chartonum(char h) //int num_key should be 0,1,2 for a,b,c respectively
 
 
 int main(int argc, char **argv) { //arg[1] = encrypt/decrypt, arg[2] = key, arg[3] = text; arg[] is pointer, arg[][] is character
+
     int key = 2;
     int text = 3;
     //char *key = argv[3];
@@ -42,35 +43,10 @@ int main(int argc, char **argv) { //arg[1] = encrypt/decrypt, arg[2] = key, arg[
     unsigned char let_word;
     int len_word = strlen(argv[text]);
     int len_key = strlen(argv[key]);
-    int enc_state = 1;
-    int dec_state = 1;
-    char enc[] = "encrypt";
-    char dec[] = "decrypt";
-    int len_encdec = strlen(enc);
-    int len_method = strlen(argv[1]);
 
-    if (len_method == len_encdec) {
-        for (int k = 0; k < len_method; k++) {
-            if( argv[1][k] != enc[k]){ 
-                enc_state = 0;
-            }
-        }
-        for (int k = 0; k < len_method; k++) {
-            if (argv[1][k] != dec[k]){
-                dec_state = 0;
-            } 
-        }
-        if (enc_state == 0 &&  dec_state == 0) {
-            fprintf(stderr, "expected command encrypt or decrypt. got '%s'\n");
-            return 1;
-        }
-    } else {
-        fprintf(stderr, "expected command encrypt or decrypt. got '%s'\n");
-        return 1;
-    }
-
-    if(enc_state == 1) {
-        //encrypt();
+    if(strcmp(argv[1], "encrypt") == 0){
+        //encrypt
+        //printf("YESSS\n");
         int i = 0;
         int j = 0;
         let_word = argv[text][0];
@@ -99,8 +75,12 @@ int main(int argc, char **argv) { //arg[1] = encrypt/decrypt, arg[2] = key, arg[
     }
     printf("\n");
 
-    } else if  (dec_state == 1){
-        decrypt();
+    } else if(strcmp(argv[1], "decrypt") == 0){
+        //decrypt
+        printf("NOOOOOO\n");
+    } else {
+        fprintf(stderr, "expected command encrypt or decrypt.\n");
+        return 1;
     }
 
     return 0;
