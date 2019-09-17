@@ -32,9 +32,9 @@ int main(void) {
     printf("%ld\n", (long)&floats[0] - (long)&floats[1]);
     printf("%ld\n", (long)&floats[1] - (long)&floats[2]);
 
-    void *mem = malloc(1);  // ask for memory
-    printf("%p\n", mem);    // memory is already "given" to us as an address!
-    free(mem);              // give memory back
+    void *mem = malloc(1); // ask for memory
+    printf("%p\n", mem);   // memory is already "given" to us as an address!
+    free(mem);             // give memory back
 
     return 0;
 }
