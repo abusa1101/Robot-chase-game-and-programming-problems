@@ -33,14 +33,17 @@ int chartonum(char h) //int num_key should be 0,1,2 for a,b,c respectively
 
 
 int main(int argc, char **argv) { //arg[1] = encrypt/decrypt, arg[2] = key, arg[3] = text; arg[] is pointer, arg[][] is character
-
-    if (argc < 3) { // Print error message if too many arguments
+    int key = 2;
+    int text = 3;
+    if (argc < 3) {
         fprintf(stderr, "Error: Too little arguments.\n");
         return 1;
     }
 
-    int key = 2;
-    int text = 3;
+    if (argv[key][0] == '\n') {
+        printf("%s\n", argv[text]);
+    }
+
     unsigned char let_key;
     unsigned char let_word;
     int len_word = strlen(argv[text]);
