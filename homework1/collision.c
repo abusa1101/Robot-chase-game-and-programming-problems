@@ -339,7 +339,7 @@ int main(void) {
     }
 
     //Part 7: Declare collision or not!! 
-    if (collision == 1 || contained_collision == 0) {
+    if (collision == 1 || contained_collision != 0) {
         printf("collision!\n");
     } else {
         printf("no collision\n");
