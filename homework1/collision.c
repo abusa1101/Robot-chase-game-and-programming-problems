@@ -46,10 +46,10 @@ int main(void) {
     //PART 1(b): Store read data into discernable variables/arrays. d[i] = first data point, d[values-1] = last data point
     int n = d[m+3];
 
-    if( n > 0 && n < 128) {
+    if( n < 0 & n > 127) {
         //fprintf(stderr, "Error: Invalid file.\n");
-        return 0;
-    } else {
+        //return 0;
+    //} else {
         fprintf(stderr, "Error: Invalid file.\n");
         return 1;
     }
