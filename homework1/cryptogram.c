@@ -46,7 +46,6 @@ int main(int argc, char **argv) { //arg[1] = encrypt/decrypt, arg[2] = key, arg[
 
     if(strcmp(argv[1], "encrypt") == 0){
         //encrypt
-        //printf("YESSS\n");
         int i = 0;
         int j = 0;
         let_word = argv[text][0];
@@ -76,8 +75,34 @@ int main(int argc, char **argv) { //arg[1] = encrypt/decrypt, arg[2] = key, arg[
     printf("\n");
 
     } else if(strcmp(argv[1], "decrypt") == 0){
-        //decrypt
-        printf("NOOOOOO\n");
+        int i = 0;
+        int j = 0;
+        let_word = argv[text][0];
+        while (let_word != '\0'){
+            if (j == len_key){
+                j = 0;
+            }
+            let_word = argv[text][i];
+            let_key = argv[key][j];
+            int num_key = chartonum(let_key); //gives how many positions to rotate by
+            while (num_key == 100){
+                j = j+1; 
+                let_key = argv[key][j];
+                num_key = chartonum(let_key);
+            }
+            if (let_word >= 'A' && let_word <= 'Z'){
+                let_word = let_word + num_key;
+            } else if (let_word >= 'a' && let_word <= 'z'){
+                let_word = let_word - num_key;
+            } else {
+                j= j-1;
+            }
+            printf("%c", let_word);
+            i++;
+            j++;
+        }
+        printf("\n");
+
     } else {
         fprintf(stderr, "expected command encrypt or decrypt.\n");
         return 1;
