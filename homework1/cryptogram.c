@@ -51,14 +51,14 @@ int main(int argc, char **argv) {
                     let_key = argv[key][j];
                     num_key = chartonum(let_key);
                 }
-                    if (let_word >= 'A' && let_word <= 'Z') {
-                        let_word = let_word + num_key;
-                    } else if (let_word >= 'a' && let_word <= 'z') {
-                        let_word = let_word + num_key;
-                        if (let_word > 122) {
-                            let_word = let_word - num_key;
-                            let_word = (let_word + num_key) % 26 + 'a' - 19;
-                        }
+                if (let_word >= 'A' && let_word <= 'Z') {
+                    let_word = let_word + num_key;
+                } else if (let_word >= 'a' && let_word <= 'z') {
+                    let_word = let_word + num_key;
+                    if (let_word > 122) {
+                        let_word = let_word - num_key;
+                        let_word = (let_word + num_key) % 26 + 'a' - 19;
+                    }
                     } else {
                         j = j - 1;
                     }
