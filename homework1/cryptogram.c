@@ -40,6 +40,7 @@ int main(int argc, char **argv) {
     if (strcmp(argv[1], "encrypt") == 0) { //encrypt
         int i = 0;                  //text pointer
         int j = 0;                  //key pointer
+        int k = 0;
         while (i <= len_word - 1) { //loop lasts over the length of the text word
             if (j == len_key) {
                 j = 0; //in order to repeat the key over the length of the word
@@ -57,6 +58,17 @@ int main(int argc, char **argv) {
                         let_word = let_word + num_key;                  //move position
                     } else if (let_word >= 'a' && let_word <= 'z') {    //if alphabet, move position
                         let_word = let_word + num_key;                  //move position
+                        if(let_word > 122){
+                            //while (let_word > 122) {
+                                let_word = let_word - num_key;
+                                let_word = (let_word + num_key) % 26 + 'a';
+                                //k++;
+                                //printf("%d", k);
+                            //}
+                            //let_word = 'a';
+                            //let_word = let_word + num_key;
+                            printf("%c", let_word);
+                        }
                     } else {          //if the text letter is a character,
                         j = j - 1;    //retain pos of key pointer til it reaches alphabet
                     }
@@ -83,17 +95,19 @@ int main(int argc, char **argv) {
                     j = j + 1;
                     let_key = argv[key][j];
                     num_key = chartonum(let_key);
-            }
-            if (let_word >= 'A' && let_word <= 'Z') {
-                let_word = let_word - num_key;
-            } else if (let_word >= 'a' && let_word <= 'z') {
-                let_word = let_word - num_key;
+                }
+                if (let_word >= 'A' && let_word <= 'Z') {
+                    let_word = let_word - num_key;
+                } else if (let_word >= 'a' && let_word <= 'z') {
+                    let_word = let_word - num_key;
+                } else {
+                    j = j - 1;
+                }
+                printf("%c", let_word);
+                i++;
+                j++;
             } else {
-                j = j - 1;
-            }
-            printf("%c", let_word);
-            i++;
-            j++;
+                break;
             }
         }
         printf("\n");
