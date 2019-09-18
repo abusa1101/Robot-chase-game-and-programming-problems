@@ -1,8 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 
-int chartonum(char h)
-{
+int chartonum(char h) {
     if (h == '\0') {
         return 300;
     }
