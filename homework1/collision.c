@@ -14,19 +14,22 @@ int main(void) {
         fprintf(stderr, "Error: Missing file.\n");
         return 1;
     }
-
+    
+    int invalid = 0;
     int args_read;
     int m = 1; //m for mask
-    //char skipif = '0';
-    //while (skipif != '\n') {
-        //args_read = fscanf(f, "%c", &c[m]);
-        //skipif = c[m];
-        //m++;
-    //}
+    char skipif = '0';
+    while (skipif != '\n') {
+        args_read = fscanf(f, "%c", &c[m]);
+        skipif = c[m];
+        m++;
+        if (args_read != 1) {
+            invalid = 1;
+        }
+    }
 
     int values = m;
 
-    int invalid = 0;
     while (values < 200) {
         int args_read = fscanf(f, "%lf", &d[values]);
         if (values < 14) {
