@@ -26,17 +26,17 @@ int main(void) {
     }
     //printf("%d\n", i);
     int values = m;
-    int arg_counter = 0;
+    //int arg_counter = 0;
     while ( values < 200) {
         int args_read = fscanf(f, "%lf", &d[values]);
         if (args_read != 1) {
             break;
         }
-        arg_counter++;
-        printf("%d\n", arg_counter);
+        //arg_counter++;
+        //printf("%d\n", arg_counter);
         values++;
     }
-    printf("%d\n", arg_counter);
+    //printf("%d\n", arg_counter);
    
 
     //PART 2: Store read data. d[i] = first data point, d[values-1] = last data point
