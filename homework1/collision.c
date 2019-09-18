@@ -14,7 +14,7 @@ int main(void) {
         fprintf(stderr, "Error: Missing file.\n");
         return 1;
     }
-    
+
     int invalid = 0;
     int args_read;
     int m = 1; //m for mask
@@ -103,6 +103,7 @@ int main(void) {
 
     for (int i = 1; i <= n; i++) {
         //Polygon 1: Global transformation
+        printf("%lf",p1_x[i]);
         double p1_xshifted = p1_x[i] - xpivot;
         double p1_yshifted = p1_y[i] - ypivot;
         double p1_xrotated = xpivot + (p1_xshifted * cos(p1_radrot) - p1_yshifted * sin(p1_radrot));
