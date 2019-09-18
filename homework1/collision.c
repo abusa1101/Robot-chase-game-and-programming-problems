@@ -116,8 +116,10 @@ int main(void) {
         //Polygon 2: Global transformation
         double p2_xshifted = p2_x[i] - xpivot;
         double p2_yshifted = p2_y[i] - ypivot;
-        double p2_xrotated = xpivot + (p2_xshifted * cos(p2_radrot) - p2_yshifted * sin(p2_radrot));
-        double p2_yrotated = ypivot + (p2_xshifted * sin(p2_radrot) + p2_yshifted * cos(p2_radrot));
+        double p2_xrotated = xpivot + (p2_xshifted * cos(p2_radrot)
+                             - p2_yshifted * sin(p2_radrot));
+        double p2_yrotated = ypivot + (p2_xshifted * sin(p2_radrot)
+                             + p2_yshifted * cos(p2_radrot));
         double p2_xtrans = p2_xrotated + p2_xglobal;
         double p2_ytrans = p2_yrotated + p2_yglobal;
         p2_transformed_x[i] = p2_xtrans;
