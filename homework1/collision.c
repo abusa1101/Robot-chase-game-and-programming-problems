@@ -19,7 +19,7 @@ int main(void) {
     int m = 1; //m for mask
     char skipif = '0';
     while (skipif != '\n') {
-        int args_read = fscanf(f, "%c", &c[m]);
+        args_read = fscanf(f, "%c", &c[m]);
         skipif = c[m];
         m++;
     }
@@ -39,7 +39,6 @@ int main(void) {
         }
         values++;
     }
-    //printf("%d\n", args_read);
 
     if (invalid == 1) {
         printf("Error: Invalid file.\n");
