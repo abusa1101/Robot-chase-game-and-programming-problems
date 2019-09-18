@@ -28,7 +28,7 @@ int main(int argc, char **argv) { //arg[1] = encrypt/decrypt, arg[2] = key, arg[
     }
 
     if (argv[key][0] == '\0') { 
-        printf("%s\n", argv[text]);
+        printf("%s", argv[text]);
     }
 
     unsigned char let_key;
@@ -63,6 +63,8 @@ int main(int argc, char **argv) { //arg[1] = encrypt/decrypt, arg[2] = key, arg[
                 }
                 i++;
                 j++;
+            } else{
+                break;
             }
             printf("%c", let_word);
         }
