@@ -19,7 +19,7 @@ int chartonum(char h) //int num_key should be 0,1,2 for a,b,c and so on
 
 //arg[1] = encrypt/decrypt, arg[2] = key, arg[3] = text;
 
-int main(int argc, char **argv) { 
+int main(int argc, char **argv) {
     int key = 2;     //char *key = argv[3];
     int text = 3;
 
