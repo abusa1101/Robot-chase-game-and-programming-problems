@@ -20,23 +20,31 @@ int main(void) {
     char skipif;
     while (skipif != '\n') {
         int args_read = fscanf(f, "%c", &c[m]);
-        //printf("%c\n", c[i]);
         skipif = c[m];
         m++;
     }
-    //printf("%d\n", i);
+
     int values = m;
-    //int arg_counter = 0;
+
+    int invalid = 0;
     while ( values < 200) {
         int args_read = fscanf(f, "%lf", &d[values]);
+        if (values < 14){
+            if (args_read != 1) {
+                invalid = 1;
+            }
+        }
         if (args_read != 1) {
             break;
         }
-        //arg_counter++;
-        //printf("%d\n", arg_counter);
         values++;
     }
-    //printf("%d\n", arg_counter);
+    //printf("%d\n", args_read);
+
+    if (invalid == 1) {
+        printf("Error: Invalid file.\n");
+        //return 1;
+    }
    
 
     //PART 2: Store read data. d[i] = first data point, d[values-1] = last data point
