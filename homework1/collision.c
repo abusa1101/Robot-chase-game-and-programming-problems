@@ -17,7 +17,7 @@ int main(void) {
 
     int args_read;
     int m = 1; //m for mask
-    char skipif;
+    char skipif = '0';
     while (skipif != '\n') {
         int args_read = fscanf(f, "%c", &c[m]);
         skipif = c[m];
@@ -127,15 +127,19 @@ int main(void) {
     int l2_opp = 0;
 
     for (int u = 1; u <= n; u++) {
-            double line1_x = p1_transformed_x[u + 1] - p1_transformed_x[u];
-            double line1_y = p1_transformed_y[u + 1] - p1_transformed_y[u];
+        double line1_x = p1_transformed_x[u + 1] - p1_transformed_x[u];
+        double line1_y = p1_transformed_y[u + 1] - p1_transformed_y[u];
         for (int v = 1; v <= n; v++) {
             double line2_x = p2_transformed_x[v + 1] - p2_transformed_x[v];
             double line2_y = p2_transformed_y[v + 1] - p2_transformed_y[v];
             //for each point p in the other line-2 points, compute the cross product between l and p
             //cp for line1 and points from line 2
-            double cp1_1 = (line1_x * p2_transformed_y[u]) - (line1_y * p2_transformed_x[u]);
-            double cp1_2 = (line1_x * p2_transformed_y[u + 1]) - (line1_y * p2_transformed_x[u + 1]);
+            double a = (line1_x * p2_transformed_y[u]);
+            double b = (line1_y * p2_transformed_x[u]);
+            double cp1_1 = a - b;
+            double c = (line1_x * p2_transformed_y[u + 1]);
+            double d = (line1_y * p2_transformed_x[u + 1]);
+            double cp1_2 = c - d;
             //cp for line 2 and points from line 1
             double cp2_1 = (line2_x * p1_transformed_y[u]) - (line2_y * p1_transformed_x[u]);
             double cp2_2 = (line2_x * p1_transformed_y[u + 1]) - (line2_y * p1_transformed_x[u + 1]);
