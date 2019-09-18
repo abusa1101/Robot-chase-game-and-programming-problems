@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 
-int chartonum (char h) //int num_key should be 0,1,2 for a,b,c and so on 
+int chartonum(char h) //int num_key should be 0,1,2 for a,b,c and so on
 {
     if (h == '\0') { //to detect null character = blank pwd
         return 300;
@@ -16,10 +16,10 @@ int chartonum (char h) //int num_key should be 0,1,2 for a,b,c and so on
     }
     return num;
 }
-//arg[1] = encrypt/decrypt, arg[2] = key, arg[3] = text; 
-//arg[] is pointer, arg[][] is character
-int main(int argc, char **argv) { 
 
+//arg[1] = encrypt/decrypt, arg[2] = key, arg[3] = text;
+
+int main(int argc, char **argv) { 
     int key = 2;     //char *key = argv[3];
     int text = 3;
 
@@ -58,7 +58,7 @@ int main(int argc, char **argv) {
                 } else if (let_word >= 'a' && let_word <= 'z') { //if alphabet, move position
                     let_word = let_word + num_key; //move position
                 } else { //if the text letter is a character,
-                    j = j-1; //retain the position of the key pointer until it reaches an alphabet
+                    j = j - 1; //retain the position of the key pointer until it reaches an alphabet
                 }
                 i++;
                 j++;
