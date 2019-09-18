@@ -101,25 +101,22 @@ int main(void) {
     double p2_transformed_x[n];
     double p2_transformed_y[n];
 
-    for (int i = 1; i <= n; i++) {
+    for (int i = 0; i < n; i++) {
         //Polygon 1: Global transformation
-        double p1_yshifted = p1_y[i] - ypivot;
         double aa = (p1_x[i] - xpivot) * cos(p1_radrot);
-        double p1_xrotated = xpivot + (aa - p1_yshifted * sin(p1_radrot));
+        double p1_xrotated = xpivot + (aa - p1_y[i] - ypivot * sin(p1_radrot));
         double bb = (p1_x[i] - xpivot) * sin(p1_radrot);
-        double p1_yrotated = ypivot + (bb + p1_yshifted * cos(p1_radrot));
+        double p1_yrotated = ypivot + (bb + p1_y[i] - ypivot * cos(p1_radrot));
         double p1_xtrans = p1_xrotated + p1_xglobal;
         double p1_ytrans = p1_yrotated + p1_yglobal;
         p1_transformed_x[i] = p1_xtrans;
         p1_transformed_y[i] = p1_ytrans;
 
         //Polygon 2: Global transformation
-        double p2_xshifted = p2_x[i] - xpivot;
-        double p2_yshifted = p2_y[i] - ypivot;
-        double p2_xrotated = xpivot + (p2_xshifted * cos(p2_radrot)
-                             - p2_yshifted * sin(p2_radrot));
-        double p2_yrotated = ypivot + (p2_xshifted * sin(p2_radrot)
-                             + p2_yshifted * cos(p2_radrot));
+        double p2_xrotated = xpivot + ((p2_x[i] - xpivot) * cos(p2_radrot)
+                             - (p2_y[i] - ypivot) * sin(p2_radrot));
+        double p2_yrotated = ypivot + ((p2_x[i] - xpivot) * sin(p2_radrot)
+                             + (p2_y[i] - ypivot) * cos(p2_radrot));
         double p2_xtrans = p2_xrotated + p2_xglobal;
         double p2_ytrans = p2_yrotated + p2_yglobal;
         p2_transformed_x[i] = p2_xtrans;
