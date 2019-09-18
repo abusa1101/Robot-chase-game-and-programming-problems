@@ -37,7 +37,7 @@ int main(void) {
         values++;
     }
     printf("%d\n", arg_counter);
-    if (arg_counter )
+   
 
     //PART 2: Store read data. d[i] = first data point, d[values-1] = last data point
     int n = d[m + 3];
