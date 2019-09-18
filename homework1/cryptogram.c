@@ -40,10 +40,7 @@ int main(int argc, char **argv) { //arg[1] = encrypt/decrypt, arg[2] = key, arg[
         //encrypt 
         int i = 0; //text pointer
         int j = 0; //key pointer
-        //int k = 0;
         let_word = argv[text][0]; // initialize let_word
-        //printf("%c\n", let_word);
-        //printf("%d\n", len_word);
         while (i <= len_word-1) { //loop lasts over the length of the text word
             if (j == len_key) {
                 j = 0; //in order to repeat the key over the length of the word
@@ -64,22 +61,17 @@ int main(int argc, char **argv) { //arg[1] = encrypt/decrypt, arg[2] = key, arg[
                 } else { //if the text letter is a character, 
                     j= j-1; //retain the position of the key pointer until it reaches an alphabet
                 }
-                //printf("%c\n", let_word); //print the transformed text word
                 i++;
                 j++;
-                //k++;
             }
-            //let_word = argv[text][i];
-            //i++;
             printf("%c", let_word);
         }
-        //printf("%c\n", let_word);
         printf("\n");
     } else if(strcmp(argv[1], "decrypt") == 0){
         int i = 0;
         int j = 0;
         let_word = argv[text][0];
-        while (let_word != '\0'){
+        while (i <= len_word-1) {
             if (j == len_key){
                 j = 0;
             }
