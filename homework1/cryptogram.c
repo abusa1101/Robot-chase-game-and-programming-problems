@@ -58,7 +58,7 @@ int main(int argc, char **argv) {
                     } else if (let_word >= 'a' && let_word <= 'z') {    //if alphabet, move position
                         let_word = let_word + num_key;                  //move position
                     } else {          //if the text letter is a character,
-                        j = j - 1;    //retain the position of the key pointer until it reaches an alphabet
+                        j = j - 1;    //retain pos of key pointer til it reaches alphabet
                     }
                     i++;
                     j++;
