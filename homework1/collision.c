@@ -17,12 +17,12 @@ int main(void) {
 
     int args_read;
     int m = 1; //m for mask
-    char skipif = '0';
-    while (skipif != '\n') {
-        args_read = fscanf(f, "%c", &c[m]);
-        skipif = c[m];
-        m++;
-    }
+    //char skipif = '0';
+    //while (skipif != '\n') {
+        //args_read = fscanf(f, "%c", &c[m]);
+        //skipif = c[m];
+        //m++;
+    //}
 
     int values = m;
 
@@ -140,8 +140,12 @@ int main(void) {
             double d = (line1_y * p2_transformed_x[u + 1]);
             double cp1_2 = c - d;
             //cp for line 2 and points from line 1
-            double cp2_1 = (line2_x * p1_transformed_y[u]) - (line2_y * p1_transformed_x[u]);
-            double cp2_2 = (line2_x * p1_transformed_y[u + 1]) - (line2_y * p1_transformed_x[u + 1]);
+            double e = (line2_x * p1_transformed_y[u]);
+            double f = (line2_y * p1_transformed_x[u]);
+            double cp2_1 = e - f;
+            double g = (line2_x * p1_transformed_y[u + 1]);
+            double h = (line2_y * p1_transformed_x[u + 1]);
+            double cp2_2 = g - h;
             //check for likeness or signs of crossproduct
             //line 1 and line 2 points
             if (cp1_1 > 0 & cp1_2 < 0) {
