@@ -7,10 +7,10 @@ int main(void) {
     char c[100];
     double d[200]; //all data array
 
-    //PART 1: Read the csv file 
+    //PART 1: Read the csv file
     FILE *f = fopen("polygons.csv", "r");
 
-    if (!f){
+    if (!f) {
         fprintf(stderr, "Error: Missing file.\n");
         return 1;
     }
@@ -18,7 +18,7 @@ int main(void) {
     int args_read;
     int m = 1; //m for mask
     char skipif;
-    while (skipif != '\n'){
+    while (skipif != '\n') {
         int args_read = fscanf(f, "%c", &c[m]);
         //printf("%c\n", c[i]);
         skipif = c[m];
@@ -26,41 +26,45 @@ int main(void) {
     }
     //printf("%d\n", i);
     int values = m;
-    while ( values < 200){
+    int arg_counter = 0;
+    while ( values < 200) {
         int args_read = fscanf(f, "%lf", &d[values]);
-        if(args_read != 1){
+        if (args_read != 1) {
             break;
         }
-        //printf("%lf\n", d[values]);
+        arg_counter++;
+        printf("%d\n", arg_counter);
         values++;
     }
+    printf("%d\n", arg_counter);
+    if (arg_counter )
 
     //PART 2: Store read data. d[i] = first data point, d[values-1] = last data point
-    int n = d[m+3];
+    int n = d[m + 3];
     double xpivot = 0; //constant
     double ypivot = 0; //constant
 
     //Read n points and display error msg if n > 16
-    if (n > 16){
+    if (n > 16) {
         fprintf(stderr, "Error: Too many points (n < 16)\n");
         return 1;
     }
 
     //POLYGON 1 DATA
-    double p1_xglobal = d[m]; 
-    double p1_yglobal = d[m + 1]; 
+    double p1_xglobal = d[m];
+    double p1_yglobal = d[m + 1];
     double p1_degrot = d[m + 2]; 
-    double p1_radrot = p1_degrot*22/(7*180);
+    double p1_radrot = p1_degrot * 22/(7 * 180);
     double p1_x[n];
     double p1_y[n];
     int j = 1;
-    for (int k = 4; k < (2*n)-1; k++){
+    for (int k = 4; k < (2 * n) - 1; k++) {
         p1_x[j] = d[m + k];
         j++;
     }
     j = 1;
     int k;
-    for (k = (4 + n); k < (2*n)+(n-1); k++){
+    for (k = (4 + n); k < (2 * n) + (n-1); k++){
         p1_y[j] = d[m + k];
         j++;
     }
