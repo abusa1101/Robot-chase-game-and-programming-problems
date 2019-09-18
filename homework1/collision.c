@@ -209,7 +209,7 @@ int main(void) {
         }
         if (p1_previous_sign == p1_sign[u]) {
             contained_collision = 0;
-            collision = 1;
+            //collision = 1;
         } else {
             contained_collision = 1;
         }
@@ -237,7 +237,7 @@ int main(void) {
         }
         if (p2_previous_sign == p2_sign[v]) {
             contained_collision = 0;
-            collision = 1;
+            //collision = 1;
         } else {
             contained_collision = 1;
         }
