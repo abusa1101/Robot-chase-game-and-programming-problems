@@ -65,12 +65,12 @@ int main(void) {
     double p1_radrot = p1_degrot * 22 / (7 * 180);
     double p1_x[n];
     double p1_y[n];
-    int j = 1;
+    int j = 0;
     for (int k = 4; k < (2 * n) - 1; k++) {
         p1_x[j] = d[m + k];
         j++;
     }
-    j = 1;
+    j = 0;
     int k;
     for (k = (4 + n); k < (2 * n) + (n - 1); k++) {
         p1_y[j] = d[m + k];
@@ -84,12 +84,12 @@ int main(void) {
     double p2_radrot = p2_degrot * 22 / (7 * 180);
     double p2_x[n];
     double p2_y[n];
-    j = 1;
+    j = 0;
     for (int k2 = k + 4; k2 < (2 * n) - 1 + k; k2++) {
         p2_x[j] = d[m + k2];
         j++;
     }
-    j = 1;
+    j = 0;
     int k2;
     for (k2 = (k + 4 + n); k2 < (2 * n) + (n - 1) + k; k2++) {
         p2_y[j] = d[m + k2];
