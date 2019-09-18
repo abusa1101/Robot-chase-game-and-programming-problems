@@ -49,7 +49,7 @@ int main(int argc, char **argv) {
             int num_key = chartonum(let_key);   //gives how many positions to rotate by
             if (num_key != 300) {               //if key letter is NOT blank
                 while (num_key == 100) {        //if the key letter is a character
-                    j = j + 1;                  //change position of keypointer til it skips to next alphabet
+                    j = j + 1;                  //change keypointer pos til it skips2nextalphabet
                     let_key = argv[key][j];
                     num_key = chartonum(let_key); //recalculate position to move to
                 }
@@ -57,8 +57,8 @@ int main(int argc, char **argv) {
                         let_word = let_word + num_key;                  //move position
                     } else if (let_word >= 'a' && let_word <= 'z') {    //if alphabet, move position
                         let_word = let_word + num_key;                  //move position
-                    } else {                                            //if the text letter is a character,
-                        j = j - 1;                                      //retain the position of the key pointer until it reaches an alphabet
+                    } else {          //if the text letter is a character,
+                        j = j - 1;    //retain the position of the key pointer until it reaches an alphabet
                     }
                     i++;
                     j++;
