@@ -71,7 +71,7 @@ int main(int argc, char **argv) { //arg[1] = encrypt/decrypt, arg[2] = key, arg[
             }
             //let_word = argv[text][i];
             //i++;
-            printf("%c\n", let_word);
+            printf("%c", let_word);
         }
         //printf("%c\n", let_word);
         //printf("\n");
