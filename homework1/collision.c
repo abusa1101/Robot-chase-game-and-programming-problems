@@ -176,7 +176,7 @@ int main(void) {
             } else if (l1_opp == 1 || l2_opp == 1) { //EXCEPT when both checks (for lines l1 and l2) have at least one zero cross product
                     collision = 1;
             } else if (l1_opp == 2 || l2_opp == 2) { //EXCEPT when both checks (for lines l1 and l2) have at least one zero cross product
-                    collision = 1;
+                    collision = 0;
             } else if (l1_opp == 2 && l2_opp == 2){
                     collision = 0;
             } else {
