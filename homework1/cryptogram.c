@@ -59,11 +59,11 @@ int main(int argc, char **argv) {
                         let_word = let_word - num_key;
                         let_word = (let_word + num_key) % 26 + 'a' - 19;
                     }
-                    } else {
-                        j = j - 1;
-                    }
-                    i++;
-                    j++;
+                } else {
+                    j = j - 1;
+                }
+                i++;
+                j++;
             } else {
                 break;
             }
