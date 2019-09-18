@@ -74,7 +74,7 @@ int main(int argc, char **argv) { //arg[1] = encrypt/decrypt, arg[2] = key, arg[
             printf("%c", let_word);
         }
         //printf("%c\n", let_word);
-        //printf("\n");
+        printf("\n");
     } else if(strcmp(argv[1], "decrypt") == 0){
         int i = 0;
         int j = 0;
