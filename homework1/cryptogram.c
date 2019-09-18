@@ -58,16 +58,10 @@ int main(int argc, char **argv) {
                         let_word = let_word + num_key;                  //move position
                     } else if (let_word >= 'a' && let_word <= 'z') {    //if alphabet, move position
                         let_word = let_word + num_key;                  //move position
-                        if(let_word > 122){
-                            //while (let_word > 122) {
-                                let_word = let_word - num_key;
-                                let_word = (let_word + num_key) % 26 + 'a';
-                                //k++;
-                                //printf("%d", k);
-                            //}
-                            //let_word = 'a';
-                            //let_word = let_word + num_key;
-                            printf("%c", let_word);
+                        if (let_word > 122) {
+                            let_word = let_word - num_key;
+                            let_word = (let_word + num_key) % 26 + 'a' - 19;
+                            //printf("%c", let_word);
                         }
                     } else {          //if the text letter is a character,
                         j = j - 1;    //retain pos of key pointer til it reaches alphabet
