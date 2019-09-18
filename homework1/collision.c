@@ -104,8 +104,10 @@ int main(void) {
     for (int i = 1; i <= n; i++) {
         //Polygon 1: Global transformation
         double p1_yshifted = p1_y[i] - ypivot;
-        double p1_xrotated = xpivot + ((p1_x[i] - xpivot) * cos(p1_radrot) - p1_yshifted * sin(p1_radrot));
-        double p1_yrotated = ypivot + ((p1_x[i] - xpivot) * sin(p1_radrot) + p1_yshifted * cos(p1_radrot));
+        double aa = (p1_x[i] - xpivot) * cos(p1_radrot);
+        double p1_xrotated = xpivot + (aa - p1_yshifted * sin(p1_radrot));
+        double bb = (p1_x[i] - xpivot) * sin(p1_radrot);
+        double p1_yrotated = ypivot + (bb + p1_yshifted * cos(p1_radrot));
         double p1_xtrans = p1_xrotated + p1_xglobal;
         double p1_ytrans = p1_yrotated + p1_yglobal;
         p1_transformed_x[i] = p1_xtrans;
