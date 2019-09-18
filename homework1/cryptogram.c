@@ -94,6 +94,10 @@ int main(int argc, char **argv) {
                     let_word = let_word - num_key;
                 } else if (let_word >= 'a' && let_word <= 'z') {
                     let_word = let_word - num_key;
+                    if (let_word > 122) {
+                        let_word = let_word + num_key;
+                        let_word = (let_word - num_key + 'a') % 26 - 'a';
+                    }
                 } else {
                     j = j - 1;
                 }
