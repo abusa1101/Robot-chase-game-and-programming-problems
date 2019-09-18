@@ -89,7 +89,7 @@ int main(void) {
     }
     j = 1;
     int k2;
-    for (k2 = (k + 4 + n); k2 < (2 * n)+(n - 1) + k; k2++) {
+    for (k2 = (k + 4 + n); k2 < (2 * n) + (n - 1) + k; k2++) {
         p2_y[j] = d[m + k2];
         j++;
     }
@@ -127,18 +127,9 @@ int main(void) {
     int l2_opp = 0;
 
     for (int u = 1; u <= n; u++) {
-        if (u == n) {
-        double line1_x = p1_transformed_x[1] - p1_transformed_x[u];
-        double line1_y = p1_transformed_y[1] - p1_transformed_y[u];
-        }
-        double line1_x = p1_transformed_x[u + 1] - p1_transformed_x[u];
-        double line1_y = p1_transformed_y[u + 1] - p1_transformed_y[u];
-
+            double line1_x = p1_transformed_x[u + 1] - p1_transformed_x[u];
+            double line1_y = p1_transformed_y[u + 1] - p1_transformed_y[u];
         for (int v = 1; v <= n; v++) {
-            if (v == n) {
-                double line2_x = p2_transformed_x[1] - p2_transformed_x[v];
-                double line2_y = p2_transformed_y[1] - p2_transformed_y[v];
-            }
             double line2_x = p2_transformed_x[v + 1] - p2_transformed_x[v];
             double line2_y = p2_transformed_y[v + 1] - p2_transformed_y[v];
             //for each point p in the other line-2 points, compute the cross product between l and p
@@ -189,12 +180,8 @@ int main(void) {
     //POLYGON 1: CONTAINMENT
     int p1_sign[n]; //0 = zero, 1 = positive, 2 = negative
     int p1_previous_sign;
-    int contained_collision = 0;
+    //int contained_collision = 0;
     for (int u = 1; u <= n; u++) {
-        if (u == n) {
-            double line1_x = p1_transformed_x[1] - p1_transformed_x[u];
-            double line1_y = p1_transformed_y[1] - p1_transformed_y[u];
-        }
         double line1_x = p1_transformed_x[u + 1] - p1_transformed_x[u];
         double line1_y = p1_transformed_y[u + 1] - p1_transformed_y[u];
         //for one p in the other line, compute the cross product between l and p
@@ -211,10 +198,10 @@ int main(void) {
             p1_previous_sign = p1_sign[u];
         }
         if (p1_previous_sign == p1_sign[u]) {
-            contained_collision = 0;
+            //contained_collision = 0;
             collision = 1;
         } else {
-            contained_collision = 1;
+            //contained_collision = 1;
         }
         p1_previous_sign = p1_sign[u];
     }
@@ -223,10 +210,6 @@ int main(void) {
     int p2_sign[n]; //0 = zero, 1 = positive, 2 = negative
     int p2_previous_sign;
     for (int v = 1; v <= n; v++) {
-        if (v == n) {
-            double line2_x = p2_transformed_x[1] - p2_transformed_x[v];
-            double line2_y = p2_transformed_y[1] - p2_transformed_y[v];
-        }
         double line2_x = p2_transformed_x[v + 1] - p2_transformed_x[v];
         double line2_y = p2_transformed_y[v + 1] - p2_transformed_y[v];
         //for one p in the other line, compute the cross product between l and p
@@ -243,10 +226,10 @@ int main(void) {
             p2_previous_sign = p2_sign[v];
         }
         if (p2_previous_sign == p2_sign[v]) {
-            contained_collision = 0;
+            //contained_collision = 0;
             collision = 1;
         } else {
-            contained_collision = 1;
+            //contained_collision = 1;
         }
         p2_previous_sign = p2_sign[v];
     }
