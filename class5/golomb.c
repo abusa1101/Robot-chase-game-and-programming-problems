@@ -57,8 +57,11 @@ int main(int argc, char **argv) {
     return 1;
   }
 
-  int max = 0;
-  max = max * 10 + (argv[1][0] - '0');
+  //int max = 0;
+  //max = max * 10 + (argv[1][0] - '0');
+  //char *ptr;
+  long max;
+  max = strtol(argv[1], NULL,10);
 
   vector_t v;
   vector_create(&v);
