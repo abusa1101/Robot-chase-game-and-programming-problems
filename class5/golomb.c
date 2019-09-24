@@ -39,8 +39,6 @@ int golomb_alg(vector_t *v, int input) {
 }
 
 void golomb_find(vector_t *v, int input) {
-  if (input == 0) {
-  }
   int i = 1;
   while (golomb_alg(v, i) != (input) + 1) {
     vector_append(v, golomb_alg(v, i));
