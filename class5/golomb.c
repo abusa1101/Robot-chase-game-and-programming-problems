@@ -12,16 +12,16 @@ typedef struct vector {
 void vector_create(vector_t *v) {
     v->capacity = 2;
     v->size = 0;
-    v->data = malloc(sizeof(int *) * v -> capacity);
+    v->data = malloc(sizeof(int *) * v->capacity);
 }
 
 void vector_append(vector_t *v, int value) {
   if (v->capacity == v->size) {
     //v -> data = realloc(v-> data, sizeof(* v -> data) * (2 * v -> capacity));
-    v->data = realloc(v->data, sizeof(int *) * (2 * v ->capacity));
+    v->data = realloc(v->data, sizeof(int *) * (2 * v->capacity));
     v->capacity *= 2;
   }
-  v->data[ v->size] = value;
+  v->data [v->size] = value;
   //printf("%d ", v -> data[ v -> size]);
   v->size++;
 }
@@ -31,7 +31,7 @@ void vector_free(vector_t *v) {
 }
 
 int golomb_alg(vector_t *v, int input) {
-  if (input == 1){
+  if (input == 1) {
     return 1;
     vector_append(v, 1);
   }
@@ -61,7 +61,7 @@ int main(int argc, char **argv) {
   //max = max * 10 + (argv[1][0] - '0');
   //char *ptr;
   long max;
-  max = strtol(argv[1], NULL,10);
+  max = strtol(argv[1], NULL, 10);
 
   vector_t v;
   vector_create(&v);
