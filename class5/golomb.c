@@ -22,7 +22,6 @@ void vector_append(vector_t *v, int value) {
     v->capacity *= 2;
   }
   v->data[v->size] = value;
-  //printf("%d ", v -> data[ v -> size]);
   v->size++;
 }
 
@@ -41,12 +40,10 @@ int golomb_alg(vector_t *v, int input) {
 
 void golomb_find(vector_t *v, int input) {
   if (input == 0) {
-    //return 0;
   }
   int i = 1;
   while (golomb_alg(v, i) != (input) + 1) {
     vector_append(v, golomb_alg(v, i));
-    //printf("%d ", golomb_alg(v, i));
     i++;
   }
 }
@@ -57,9 +54,6 @@ int main(int argc, char **argv) {
     return 1;
   }
 
-  //int max = 0;
-  //max = max * 10 + (argv[1][0] - '0');
-  //char *ptr;
   long max;
   max = strtol(argv[1], NULL, 10);
 
@@ -69,9 +63,8 @@ int main(int argc, char **argv) {
   for (int i = v.size - 1; i >= 0; i--) {
     printf("%d\n", v.data[i]);
   }
-  //printf("\n");
+
   vector_free(&v);
-  //free(v.data); //free allocated memory
   v.data = NULL;
   return 0;
 }
