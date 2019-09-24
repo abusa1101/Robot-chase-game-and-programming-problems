@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-char file_buffer[64*1024];
+char file_buffer[64 * 1024];
 
 int main(int argc, char **argv) {
     if (argc != 4) {
