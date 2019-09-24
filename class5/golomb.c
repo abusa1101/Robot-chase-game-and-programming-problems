@@ -21,7 +21,7 @@ void vector_append(vector_t *v, int value) {
     v->data = realloc(v->data, sizeof(int *) * (2 * v->capacity));
     v->capacity *= 2;
   }
-  v->data [v->size] = value;
+  v->data[v->size] = value;
   //printf("%d ", v -> data[ v -> size]);
   v->size++;
 }
