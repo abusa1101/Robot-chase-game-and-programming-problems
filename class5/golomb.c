@@ -39,9 +39,9 @@ int golomb_alg(vector_t *v, int input) {
   return result;
 }
 
-int golomb_find(vector_t *v, int input) {
+void golomb_find(vector_t *v, int input) {
   if (input == 0) {
-    return 0;
+    //return 0;
   }
   int i = 1;
   while (golomb_alg(v, i) != (input) + 1) {
@@ -70,7 +70,8 @@ int main(int argc, char **argv) {
     printf("%d\n", v.data[i]);
   }
   //printf("\n");
-
-  vector_free(&v); //free allocated memory
+  vector_free(&v);
+  //free(v.data); //free allocated memory
+  v.data = NULL;
   return 0;
 }
