@@ -3,52 +3,82 @@
 #include <math.h>
 #include <string.h>
 
-int main(void) {
-    char c[100];
-    double d[200]; //all data array
+/*typedef struct object {
+    int trans_x[16];
+    int trans_y[16];
+} p1_t;
 
+typedef struct object {
+    int trans_x[16];
+    int trans_y[16];
+} p2_t;*/
+
+
+int main(void) {
     //PART 1: Read the csv file
     FILE *f = fopen("polygons.csv", "r");
-
     if (!f) {
         fprintf(stderr, "Error: Missing file.\n");
         return 1;
     }
 
-    int invalid = 0;
-    int args_read;
-    int m = 1; //m for mask
-    char skipif = '0';
-    while (skipif != '\n') {
-        args_read = fscanf(f, "%c", &c[m]);
-        skipif = c[m];
-        m++;
-        if (args_read != 1) {
-            invalid = 1;
-        }
-    }
-
-    int values = m;
-
-    while (values < 200) {
-        int args_read = fscanf(f, "%lf", &d[values]);
-        if (values < 14) {
-            if (args_read != 1) {
-                invalid = 1;
-            }
-        }
-        if (args_read != 1) {
+    //while (fgetc(f) != '\n'){;
+      for (int i = 0; i < 100; i++) {
+          int c = fgetc(f);
+          printf("character: %c\n", c);
+          if (c == '\n'){
             break;
+          }
+          if (c == EOF) {
+              fprintf(stderr, "unexpected EOF while reading file\n");
+              exit(1);
+          }
         }
-        values++;
+
+        printf("character last: %d\n", fgetc(f)); // 1
+        int fnum[100];
+
+        while((fgetc(f) != EOF)) {
+          int fnum = strtol(f, NULL, 10);
+          printf("character: %d ", fnum);
+        }
+
+        int args_read = fscanf(f, "%d, %lf, %lf", &obj.int_value,
+                               &obj.double_array[0], &obj.double_array[1]);
+  /*  // we can also check for the EOF (end of file) value from fgetc
+    for (int i = 3; i < 6; i++) {
+        int c = fgetc(f);
+        if (c == EOF) {
+            fprintf(stderr, "unexpected EOF while reading file\n");
+            exit(1);
+        }
+
+        printf("character %d: %c\n", i, c); // ' ', 1, .
     }
 
-    if (invalid == 1) {
-        printf("Error: Invalid file.\n");
-        //return 1;
+    char rest_of_line[128];
+
+    // use sizeof to not have to repeat 128
+    if (!fgets(rest_of_line, sizeof(rest_of_line), f)) {
+        fprintf(stderr, "failed to read rest of first line\n");
+        exit(1);
     }
+    printf("Remainder of that line was: %s\n", rest_of_line); // "0, 2.0"
+
+    // fscanf does not care that the rest of the values are on different lines
+    object_t obj = {0};
+    int args_read = fscanf(f, "%d, %lf, %lf", &obj.int_value,
+                           &obj.double_array[0], &obj.double_array[1]);
+    if (args_read != 3) {
+        fprintf(stderr, "could not read all three values!\n");
+        exit(1);
+    }*/
+
+
+/*
     //PART 2: Store read data. d[i] = first data point, d[values-1] = last data point
-    int n = d[m + 3];
+    int n =
+    printf("%d\n", n);
     double xpivot = 0; //constant
     double ypivot = 0; //constant
 
@@ -58,43 +88,26 @@ int main(void) {
         return 1;
     }
 
+    for(int i = 0; i < 200; i++){
+      printf("%d ", d[i]);
+    }
+
     //POLYGON 1 DATA
-    double p1_xglobal = d[m];
-    double p1_yglobal = d[m + 1];
-    double p1_degrot = d[m + 2];
+    double p1_xglobal =
+    double p1_yglobal =
+    double p1_degrot =
     double p1_radrot = p1_degrot * 22 / (7 * 180);
     double p1_x[n];
     double p1_y[n];
-    int j = 0;
-    for (int k = 4; k < (2 * n) - 1; k++) {
-        p1_x[j] = d[m + k];
-        j++;
-    }
-    j = 0;
-    int k;
-    for (k = (4 + n); k < (2 * n) + (n - 1); k++) {
-        p1_y[j] = d[m + k];
-        j++;
-    }
 
     //POLYGON 2 DATA
-    double p2_xglobal = d[m + k];
-    double p2_yglobal = d[m + k + 1];
-    double p2_degrot = d[m + k + 2];
+    double p2_xglobal =
+    double p2_yglobal =
+    double p2_degrot =
     double p2_radrot = p2_degrot * 22 / (7 * 180);
     double p2_x[n];
     double p2_y[n];
-    j = 0;
-    for (int k2 = k + 4; k2 < (2 * n) - 1 + k; k2++) {
-        p2_x[j] = d[m + k2];
-        j++;
-    }
-    j = 0;
-    int k2;
-    for (k2 = (k + 4 + n); k2 < (2 * n) + (n - 1) + k; k2++) {
-        p2_y[j] = d[m + k2];
-        j++;
-    }
+
     //Part 3: Apply global transformation to all points
     double p1_transformed_x[n];
     double p1_transformed_y[n];
@@ -103,10 +116,10 @@ int main(void) {
 
     for (int i = 0; i < n; i++) {
         //Polygon 1: Global transformation
-        double aa = (p1_x[i] - xpivot) * cos(p1_radrot);
-        double p1_xrotated = xpivot + (aa - p1_y[i] - ypivot * sin(p1_radrot));
-        double bb = (p1_x[i] - xpivot) * sin(p1_radrot);
-        double p1_yrotated = ypivot + (bb + p1_y[i] - ypivot * cos(p1_radrot));
+        double p1_xrotated = xpivot + ((p1_x[i] - xpivot) * cos(p1_radrot)
+                             - p1_y[i] - ypivot * sin(p1_radrot));
+        double p1_yrotated = ypivot + ((p1_x[i] - xpivot) * sin(p1_radrot)
+                             + p1_y[i] - ypivot * cos(p1_radrot));
         double p1_xtrans = p1_xrotated + p1_xglobal;
         double p1_ytrans = p1_yrotated + p1_yglobal;
         p1_transformed_x[i] = p1_xtrans;
@@ -250,6 +263,6 @@ int main(void) {
     } else {
         printf("no collision\n");
     }
-
+*/
     return 0;
 }

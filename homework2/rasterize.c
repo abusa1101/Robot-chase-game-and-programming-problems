@@ -2,7 +2,7 @@
 #include <stdio.h>
 
 int main(void) {
-    /*bitmap_t bmp = { 0 }; // initialize to zeros
+    bitmap_t bmp = { 0 }; // initialize to zeros
     bmp.width = 640;
     bmp.height = 480;
     // color_bgr_t represents the color for each pixel
@@ -36,7 +36,7 @@ int main(void) {
     fwrite(serialized_bmp, bmp_size, 1, f);
     fclose(f);
 
-    // free stuff we malloced*/
+    // free stuff we malloced
 
     printf("hello world!");
 
