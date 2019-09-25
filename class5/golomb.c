@@ -42,20 +42,20 @@ int main(int argc, char **argv) {
     vector_create(&v);
 
     if (max != 0 && max != 1) {
-      vector_append(&v, 1);
-      vector_append(&v, 1);
-      vector_append(&v, 2);
-      vector_append(&v, 2);
+        vector_append(&v, 1);
+        vector_append(&v, 1);
+        vector_append(&v, 2);
+        vector_append(&v, 2);
 
-      for (int i = 3; i <= max; i++) {
-          int count = v.data[i];
-          for (int j = 0; j < count; j++) {
-              vector_append(&v, i);
-          }
-      }
+        for (int i = 3; i <= max; i++) {
+            int count = v.data[i];
+            for (int j = 0; j < count; j++) {
+                vector_append(&v, i);
+            }
+        }
 
-      for(int i = v.size - 1; i > 0; i--) {
-        printf("%d\n", v.data[i]);
+        for (int i = v.size - 1; i > 0; i--) {
+          printf("%d\n", v.data[i]);
       }
     } else if (max == 1) {
         vector_append(&v, 1);
