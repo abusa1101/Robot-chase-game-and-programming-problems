@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 
-char file_buffer[64*1024];
+char file_buffer[64 * 1024];
 
 int get_context (int key_ptr){
   //get the starting location
