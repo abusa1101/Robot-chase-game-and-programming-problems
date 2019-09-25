@@ -61,15 +61,15 @@ int main(int argc, char **argv) {
     }
 
     for(int i = v.size - 1; i > 0; i--) {
-      printf("%d ", v.data[i]);
+      printf("%d\n", v.data[i]);
     }
   } else if (max == 1) {
       vector_append(&v, 1);
-      printf("%d ", v.data[0]);
+      printf("%d\n", v.data[0]);
   }
 
 
-  printf("\n");
+  //printf("\n");
   vector_free(&v); //Free allocated memory
   return 0;
 }
