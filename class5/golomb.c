@@ -17,7 +17,6 @@ void vector_create(vector_t *v) {
 
 void vector_append(vector_t *v, int value) {
     if (v->capacity == v->size) {
-        //v -> data = realloc(v-> data, sizeof(* v -> data) * (2 * v -> capacity));
         v->data = realloc(v->data, sizeof(int *) * (2 * v->capacity));
         v->capacity *= 2;
     }
@@ -31,43 +30,38 @@ void vector_free(vector_t *v) {
 
 //MAIN FUNCTION
 int main(int argc, char **argv) {
-  if (argc != 2) {
-      fprintf(stderr, "Error: Wrong number of arguments\n");
-      return 1;
-  }
-
-  long max;
-  max = strtol(argv[1], NULL, 10);
-
-  vector_t v;
-  vector_create(&v);
-
-  if (max != 0 && max != 1) {
-    vector_append(&v, 1);
-    vector_append(&v, 1);
-    vector_append(&v, 2);
-    vector_append(&v, 2);
-
-    for (int i = 3; i <= max; i++) {
-      //printf("G[i] is %d\n",v.data[i]);
-      int count = v.data[i];
-      //printf("Multiply it %d times\n", count);
-      for (int j = 0; j < count; j++) {
-        vector_append(&v, i);
-        //printf("append by %d \n", i);
-      }
+    if (argc != 2) {
+        fprintf(stderr, "Error: Wrong number of arguments\n");
+        return 1;
     }
 
-    for(int i = v.size - 1; i > 0; i--) {
-      printf("%d\n", v.data[i]);
-    }
-  } else if (max == 1) {
+    long max;
+    max = strtol(argv[1], NULL, 10);
+
+    vector_t v;
+    vector_create(&v);
+
+    if (max != 0 && max != 1) {
       vector_append(&v, 1);
-      printf("%d\n", v.data[0]);
-  }
+      vector_append(&v, 1);
+      vector_append(&v, 2);
+      vector_append(&v, 2);
 
+      for (int i = 3; i <= max; i++) {
+          int count = v.data[i];
+          for (int j = 0; j < count; j++) {
+              vector_append(&v, i);
+          }
+      }
 
-  //printf("\n");
+      for(int i = v.size - 1; i > 0; i--) {
+        printf("%d\n", v.data[i]);
+      }
+    } else if (max == 1) {
+        vector_append(&v, 1);
+        printf("%d\n", v.data[0]);
+    }
+
   vector_free(&v); //Free allocated memory
   return 0;
 }
