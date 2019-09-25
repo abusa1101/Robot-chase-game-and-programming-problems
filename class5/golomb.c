@@ -63,6 +63,6 @@ int main(int argc, char **argv) {
         printf("%d\n", v.data[0]);
     }
 
-  vector_free(&v); //Free allocated memory
-  return 0;
+    vector_free(&v); //Free allocated memory
+    return 0;
 }
