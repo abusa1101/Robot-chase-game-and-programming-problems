@@ -26,7 +26,7 @@ void list_push_start(list_t *list, int value) {
         node->value = value; //set node value
         node->next = NULL;   //set node pointers to NULL
         node->prev = NULL;
-        list->end = node;   //set nodes in list
+        list->end = node;     //set nodes in list
         list->start = node;
     } else {
         node->value = value;
