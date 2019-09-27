@@ -80,6 +80,7 @@ int main(int argc, char **argv) {
     return 0;
 }
 
+//DLL Functions
 list_t *list_create(void) {
     list_t *list = malloc(sizeof(list_t));
     list->start = NULL;
