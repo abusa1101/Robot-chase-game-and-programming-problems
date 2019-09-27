@@ -14,80 +14,80 @@ typedef struct list {
 } list_t;
 
 list_t *list_create(void) {
-  list_t *list = malloc(sizeof(list_t));
-  list->start = NULL;
-  list->end = NULL;
-  return list;
+    list_t *list = malloc(sizeof(list_t));
+    list->start = NULL;
+    list->end = NULL;
+    return list;
 }
 
 void list_push_start(list_t *list, int value) {
-  node_t *node = malloc(sizeof(node_t)); //create node
-  if (!list->end) {
-    node->value = value; //set node value
-    node->next = NULL; //set node pointers to NULL
-    node->prev = NULL;
-    list->end = node; //set nodes in list
-    list->start = node;
-  } else {
-    node->value = value;
-    list->start->prev = node;
-    node->next = list->start;
-    list->start = node;
-    node->prev = NULL;
-  }
+    node_t *node = malloc(sizeof(node_t)); //create node
+    if (!list->end) {
+      node->value = value; //set node value
+      node->next = NULL; //set node pointers to NULL
+      node->prev = NULL;
+      list->end = node; //set nodes in list
+      list->start = node;
+    } else {
+      node->value = value;
+      list->start->prev = node;
+      node->next = list->start;
+      list->start = node;
+      node->prev = NULL;
+    }
 }
 
 void list_push_end(list_t *list, int value) {
-  node_t *node = malloc(sizeof(node_t));
-  if (!list->end) {
-    node->value = value;
-    node->next = NULL;
-    node->prev = NULL;
-    list->start = node;
-    list->end = node;
-  } else {
-    node->value = value;
-    list->end->next = node;
-    node->prev = list->end;
-    list->end = node;
-    node->next = NULL;
-  }
+    node_t *node = malloc(sizeof(node_t));
+    if (!list->end) {
+      node->value = value;
+      node->next = NULL;
+      node->prev = NULL;
+      list->start = node;
+      list->end = node;
+    } else {
+      node->value = value;
+      list->end->next = node;
+      node->prev = list->end;
+      list->end = node;
+      node->next = NULL;
+    }
 }
 
 int list_pop_start(list_t *list) {
-  if (!list->start) {
-    fprintf(stderr, "Error: List is empty\n");
-    exit(1);
-  }
-  int value = list->start->value;
-  node_t *start_node = list->start;
-  if (!start_node->next) {
-    list->start = NULL;
-    list->end = NULL;
-  } else {
-    list->start = start_node->next;
-    list->start->prev = NULL;
-  }
-  free(start_node);
-  return value;
+    if (!list->start) {
+      fprintf(stderr, "Error: List is empty\n");
+      exit(1);
+    }
+    int value = list->start->value;
+    node_t *start_node = list->start;
+    if (!start_node->next) {
+      list->start = NULL;
+      list->end = NULL;
+    } else {
+      list->start = start_node->next;
+      list->start->prev = NULL;
+    }
+    free(start_node);
+    return value;
 }
 
 int list_pop_end(list_t *list) {
-  if (!list->end) {
-    fprintf(stderr, "Error: List is empty\n");
-    exit(1);
-  }
-  int value = list->end->value;
-  node_t *end_node = list->end;
-  if (!end_node->prev) {
-    list->end = NULL;
-    list->start = NULL;
-  } else {
-    list->end = end_node->prev;
-    list->end->next = NULL;
-  }
-  free(end_node);
-  return value;
+    if (!list->end) {
+      fprintf(stderr, "Error: List is empty\n");
+      exit(1);
+    }
+    int value = list->end->value;
+    node_t *end_node = list->end;
+    if (!end_node->prev) {
+      list->end = NULL;
+      list->start = NULL;
+    } else {
+      list->end = end_node->prev;
+      list->end->next = NULL;
+    }
+    free(end_node);
+    return value;
 }
 
 void list_destroy(list_t *list) {
