@@ -3,4 +3,10 @@ CFLAGS += -Wno-sign-compare -Wno-unused-parameter -Wno-unused-variable
 #CFLAGS += -fsanitize=address -fsanitize=undefined
 
 rasterize: rasterize.c
-	gcc -o $@ $^ $(CFLAGS) -lm
+	gcc -o $@ $^ $(CFLAGS) -lpthread
+
+bmp: bmp.c
+		gcc -o $@ $^ $(CFLAGS) -lpthread
+
+braitenberg: braitenberg.c
+	gcc -o $@ $^ $(CFLAGS) -lpthread
