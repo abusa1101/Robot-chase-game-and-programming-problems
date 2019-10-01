@@ -3,24 +3,19 @@
 #include <stdlib.h>
 #include <math.h>
 
-void search(int * data, int n, int input) {
+void search(int *data, int n, int input) {
   int leftval = 0;
   int rightval = n;
   while (leftval < rightval) {
-    //printf("%d ", rightval);
-    //printf("%d\n", leftval);
-      int mid = floor((leftval + rightval) / 2.0);
-      if (data[mid] < input) {
-        leftval = mid + 1;
-      } else {
-        rightval = mid;
-      }
-      printf("mid_i: %d\n", mid);
-      // if(mid < input){
-      //   break;
-      // }
+        int mid = floor((leftval + rightval) / 2.0);
+        if (data[mid] < input) {
+          leftval = mid + 1;
+        } else {
+          rightval = mid;
+        }
+        printf("mid_i: %d\n", mid);
   }
-  if (data[leftval] == input){
+  if (data[leftval] == input) {
       printf("%d\n", leftval);
   }
 }
