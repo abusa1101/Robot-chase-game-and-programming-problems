@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-void search(const *data, int n, int input) {
+void search(int *data, int n, int input) {
     int leftval = 0;
     int rightval = n;
     while (leftval < rightval) {
