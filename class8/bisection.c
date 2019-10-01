@@ -14,16 +14,17 @@ void search(double x0, double x1)  {
     double xmid = x0;
     double threshold = 1e-6;
     while ((x1 - x0) > threshold) {
-          xmid = (x0 + x1)/2;
-          if (polynomial(xmid) == 0.0) {
-              break;
-          } else if (polynomial(xmid) * polynomial(x0) < 0){// Decide the side to repeat the steps
-              x1 = xmid;
-          } else {
-              x0 = xmid;
-          }
-          double ymid = polynomial(xmid);
-          printf("x_mid: %11.4e y_mid: %11.4e\n", xmid, ymid);
+        xmid = (x0 + x1) / 2;
+        if (polynomial(xmid) == 0.0) {
+            break;
+        }
+        if (polynomial(xmid) * polynomial(x0) < 0) {
+            x1 = xmid;
+        } else {
+            x0 = xmid;
+        }
+        double ymid = polynomial(xmid);
+        printf("x_mid: %11.4e y_mid: %11.4e\n", xmid, ymid);
     }
 }
 
