@@ -7,13 +7,13 @@ void search(int *data, int n, int input) {
     int leftval = 0;
     int rightval = n;
     while (leftval < rightval) {
-          int mid = floor((leftval + rightval) / 2.0);
-          if (data[mid] < input) {
-              leftval = mid + 1;
-          } else {
-              rightval = mid;
-          }
-          printf("mid_i: %d\n", mid);
+        int mid = floor((leftval + rightval) / 2.0);
+        if (data[mid] < input) {
+            leftval = mid + 1;
+        } else {
+            rightval = mid;
+        }
+        printf("mid_i: %d\n", mid);
     }
     if (data[leftval] == input) {
         printf("%d\n", leftval);
