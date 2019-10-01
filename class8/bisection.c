@@ -2,12 +2,12 @@
 #include <string.h>
 #include <stdlib.h>
 
-double polynomial(double x)  {
+double polynomial(double x) {
     double func = (2 * x - 20 * x * x + 20 * x * x * x - 4 * x * x * x * x);
     return func;
 }
 
-void search(double x0, double x1)  {
+void search(double x0, double x1) {
     if (polynomial(x0) * polynomial(x1) >= 0) {
         printf("Wrong input bounds\n");
     }
