@@ -1,13 +1,12 @@
-#include <stdio.h>
+#inclu#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-// A linked list node
-struct Node {
+typedef struct node {
+    struct node *prev;
+    struct node *next;
     int value;
-    struct Node* next;
-    struct Node* prev;
-};
+} node_t;
 
 typedef struct list {
     node_t *start;
@@ -16,17 +15,15 @@ typedef struct list {
 
 list_t *list_create(void) {
   //set list to null to indicate empty list
-  /* Start with the empty list */
-  list_t *list = NULL;
+  list = NULL;
   // list_t list;
   // list.start = (int*) calloc(1, sizeof(int));
   // list.end = (int*) calloc(1, sizeof(int));
 }
 
 void list_push_start(list_t *list, int value) {
-  /*//at this point DLL is NOT empty
-  int *head_ref = &list;
-
+  //at this point DLL is NOT empty
+  //int *head_ptr;
   node_t first_node = (node_t)malloc(sizeof(node_t)); //create first node
   new_node->value = new_data; //inserting node value
   //check if DLL is empty, head NULL or size 0
@@ -44,22 +41,8 @@ void list_push_start(list_t *list, int value) {
       (*head_ref)->prev = new_node;
   (*head_ref) = new_node; //head now points to new node
 
-  /* 1. allocate node */
-  struct Node* new_node = (struct Node*)malloc(sizeof(struct Node));
 
-  /* 2. put in the data  */
-  new_node->data = new_data;
 
-  /* 3. Make next of new node as head and previous as NULL */
-  new_node->next = (*head_ref);
-  new_node->prev = NULL;
-
-  /* 4. change prev of head node to new node */
-  if ((*head_ref) != NULL)
-      (*head_ref)->prev = new_node;
-
-  /* 5. move the head to point to the new node */
-  (*head_ref) = new_node;
 
 }
 
