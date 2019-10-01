@@ -1,58 +1,78 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 
 char file_buffer[64 * 1024];
-
-int get_context (int key_ptr){
-  //get the starting location
-  if (argv[3][0] == '0'){
-    printf("%s", argv[2]);
-  } else if (argv[3][0] == '1'){
-    //do something
-  }
-}
+char *get_context(char *context_p, int counter, int len); //func declaration
 
 int main(int argc, char **argv) {
-  //Setup and Failure/Error code////////////////////////////////////////////////
-    if (argc != 4) {
+    if (argc != 4) { //No of arguments error
         fprintf(stderr, "usage: %s <file> <key> <lines before>\n", argv[0]);
         return 1;
     }
-    FILE *f = fopen(argv[1], "r");
-    if (!f) {
+    FILE *f = fopen(argv[1], "r"); //open and read file
+
+    int len = strlen(argv[2]);
+    int text = atoi(argv[3]);
+
+    if (!f) { //file open error
         fprintf(stderr, "Could not open %s: ", argv[1]);
         perror("");
         return 1;
     }
-    int bytes_read = fread(file_buffer, 1, sizeof(file_buffer) - 1, f);
-    if (!feof(f)) {
+
+    fread(file_buffer, 1, sizeof(file_buffer) - 1, f); //read file
+
+    if (!feof(f)) { //file read error
         fprintf(stderr, "Could not read entire file. Is it too big?\n");
         return 1;
     }
+
+    char *context_p = strstr(file_buffer, argv[2]); //string comparison for key word and text
+
+    while (context_p) {
+        char *p = get_context(context_p, text, len);
+        context_p = strstr(p, argv[2]);
+    }
+
     fclose(f);
-    // we want this to be a null-treminated string,
-    // but fread just reads the file as binary, so we add it ourselves
-
-    file_buffer[bytes_read] = '\0';
-    for(int i = 0; i < sizeof(file_buffer); i++){
-      printf("%c", file_buffer[i]);
-    }
-
-    int key = 2;
-    int lines = 3;
-
-    unsigned char let_key;
-    int len = strlen(argv[key]);
-    char keyword[len];
-    for(int i = 0; i < len; i++){
-      keyword[i] = argv[key][i];
-      printf("%c", keyword[i]);
-    }
-
-    //Main code/////////////////////////////////////////////////////////////////
-
-    ptr = strstr(line, argv[key]);
-
-
     return 0;
+}
+
+//function
+char *get_context(char *context_p, int counter, int len) {
+    if (counter == 0) {
+        int m = 0;
+        while (m < len) {
+            printf("%c", context_p[m]);
+            m++;
+        }
+        printf("\n");
+        printf("\n");
+        return &context_p[m];
+    }
+
+    int i = 0;
+    for (int n = 0; n < counter; n++) {
+        while (context_p[-i] != '\n' && &context_p[-i] >= file_buffer) {
+            i++;
+        }
+        if (&context_p[-i] >= file_buffer) {
+            i++;
+        }
+    }
+    int j = 0;
+    if (&context_p[-i] <= file_buffer) {
+        j = -i + 1;
+    } else {
+        j = -i + 2;
+    }
+    while (j < len) {
+        printf("%c", context_p[j]);
+        j++;
+    }
+    printf("\n");
+    printf("\n");
+    return &context_p[j];
 }

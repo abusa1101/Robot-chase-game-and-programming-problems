@@ -1,0 +1,8 @@
+Comments:
+
+- Variable names are reasonably intuitive
+- Long main code. Should create more functions/modularize
+- Define structures instead of multiple arrays
+- Lots of variables created unnecessarily
+- Could structure better
+- Could learn to use functions properly (Ex: using fscanf to read each character is bad when you can just use fgetc)
