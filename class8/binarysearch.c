@@ -13,7 +13,10 @@ void search(int * data , int n, int input) {
     } else {
       rightval = mid;
     }
-    printf("%d\n", mid);
+    printf("mid_i: %d\n", mid);
+  }
+  if (leftval == input){
+    printf("%d\n", leftval);
   }
 }
 
