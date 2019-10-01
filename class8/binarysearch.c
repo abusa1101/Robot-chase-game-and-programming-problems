@@ -16,9 +16,9 @@ void search(int * data, int n, int input) {
         rightval = mid;
       }
       printf("mid_i: %d\n", mid);
-      if(mid < input){
-        break;
-      }
+      // if(mid < input){
+      //   break;
+      // }
   }
   if (data[leftval] == input){
       printf("%d\n", leftval);
