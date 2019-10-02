@@ -1,4 +1,7 @@
 #include "bmp.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 //FUNCTIONS
 size_t bmp_calculate_size(bitmap_t *bmp) {
@@ -9,7 +12,7 @@ void bmp_serialize(bitmap_t *bmp, uint8_t *data) {
   BITMAPFILEHEADER file_header = { 0 }; // start out as all zero values
   file_header.bfType = 0x4d42;//0x424d
   file_header.bfSize = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER) + 921600;
-  file_header.bfOffBits = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER);;
+  file_header.bfOffBits = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER);
   file_header.bfReserved1 = 0;
   file_header.bfReserved2 = 0;
 
@@ -32,8 +35,8 @@ void bmp_serialize(bitmap_t *bmp, uint8_t *data) {
   memcpy(data_out, &info_header, sizeof(info_header));
   data_out += sizeof(info_header);
 
-  for (int i = 480; i >= 1; i--) {
-    memcpy(data_out, &bmp -> data[1], 640);
-    data_out += 640;
+  for (int i = 0; i < bmp->height; i++) {
+    memcpy(data_out, &bmp -> data[i * bmp->width], bmp->width * sizeof(color_bgr_t));
+    data_out += bmp->width*sizeof(color_bgr_t);
   }
 }
