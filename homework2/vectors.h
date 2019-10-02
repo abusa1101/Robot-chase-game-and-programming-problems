@@ -19,7 +19,16 @@ typedef struct pg_points { //clockwise winding points
     double y;
 } pg_points_t;
 
-void vector_create(vector_t *v, struct points);
-void vector_append(vector_t *v, struct points, int xvalue, int yvalue);
+void vector_create(vector_t *v);
+
+void vector_append(vector_t *v, int xvalue, int yvalue);
+
 void vector_free(vector_t *v);
+
 void bresenham(int x0, int y0, int x1, int y1, bitmap_t *bmp, color_bgr_t color);
+
+pg_points_t *give_rect(double width, double height, double xc, double yc);
+
+pg_points_t cd2pixel(pg_points_t *points);
+
+void pg_draw(bitmap_t *bmp, color_bgr_t color, pg_points_t *points);

@@ -7,3 +7,6 @@ bisection: bisection.c
 
 binarysearch: binarysearch.c
 	gcc -o $@ $^ $(CFLAGS) -lm
+
+fibonacci: fibonacci.c
+	gcc -o $@ $^ $(CFLAGS) -lm
