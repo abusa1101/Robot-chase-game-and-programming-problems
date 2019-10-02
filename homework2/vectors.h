@@ -19,6 +19,12 @@ typedef struct pg_points { //clockwise winding points
     double y;
 } pg_points_t;
 
+typedef struct pg_vector {
+    points_t *data;
+    int capacity;
+    int size;
+} pg_vector_t;
+
 void vector_create(vector_t *v);
 
 void vector_append(vector_t *v, int xvalue, int yvalue);
