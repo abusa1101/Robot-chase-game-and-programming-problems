@@ -19,6 +19,13 @@ int main(void) {
   color_bgr_t color = {color_value, color_value, color_value};
 
   bresenham(10,10,200,200, &bmp, color);
+  double xc = 0.0;
+  double yc = 0.0;
+
+
+  //rectangle = *give_rect(10.0, 20.0, xc, yc);
+
+
   size_t bmp_size = bmp_calculate_size(&bmp);
   uint8_t *serialized_bmp = malloc(bmp_size);
   bmp_serialize(&bmp, serialized_bmp);
@@ -26,6 +33,7 @@ int main(void) {
   fwrite(serialized_bmp, bmp_size, 1, f);
 
   fclose(f);
+
   free(serialized_bmp);
   free(bmp.data);
   return 0;
