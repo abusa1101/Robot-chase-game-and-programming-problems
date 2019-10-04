@@ -3,22 +3,26 @@
 #include <string.h>
 #include <stdlib.h>
 #include <math.h>
+__uint64_t seq[100] = {0, 1, 1, 0};
 
-int sequence(int n) {
-  if (n <=1) {
+__uint64_t sequence(__uint64_t n) {
+  if (n < 1) {
+    return 0;
+  }
+  if (n == 1) {
     return 1;
   }
-  n = sequence(n-1) + sequence(n-2);
+  n = sequence(n - 1) + sequence(n - 2);
   return n;
 }
 
-int sequence2(int n) {
-  if (n <=1) {
+__uint64_t sequence2(__uint64_t n) {
+  if (n <= 1) {
        return 1;
      }
-     int fib = 0;
-     int fib2 = 0;
-     int fib1 = 1;
+     __uint64_t fib = 0;
+     __uint64_t fib2 = 0;
+     __uint64_t fib1 = 1;
   for (int i = 2; i <= n; i++) {
     fib = fib1 + fib2;
     fib2 = fib1;
@@ -27,17 +31,32 @@ int sequence2(int n) {
   return fib;
 }
 
+// uint64_t sequence3(uint64_t n) {
+//   if (n <=1) {
+//        return 1;
+//      }
+//      int fib = 0;
+//      int fib2 = 0;
+//      int fib1 = 1;
+//   for (int i = 2; i <= n; i++) {
+//     fib = fib1 + fib2;
+//     fib2 = fib1;
+//     fib1 = fib;
+//   }
+//   return fib;
+// }
+
 int main(void) {
 
     clock_t start = clock();
-    int rs = sequence(38);
+    __uint64_t rs = sequence(38);
     double elapsed = (clock() - start) / (double)CLOCKS_PER_SEC;
-    printf("fib1(38) got %d and took %.2f ms per iteration\n", rs, elapsed*1000);
+    printf("fib1(38) got %ld and took %.6f ms per iteration\n", rs, elapsed*1000);
 
     clock_t start2 = clock();
-    int ls = sequence2(90);
+    __uint64_t ls = sequence2(90);
     double elapsed2 = (clock() - start2) / (double)CLOCKS_PER_SEC;
-    printf("fib2(90) got %d and took %.2f ms per iteration\n", ls, elapsed*1000);
+    printf("fib2(90) got %ld and took %.6f ms per iteration\n", ls, elapsed2*1000);
 
     return 0;
 }
