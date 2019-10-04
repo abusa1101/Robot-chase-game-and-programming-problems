@@ -1,6 +1,8 @@
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 typedef struct points {
     int x;
@@ -31,10 +33,19 @@ void vector_append(vector_t *v, int xvalue, int yvalue);
 
 void vector_free(vector_t *v);
 
+
+void pg_create(pg_vector_t *v);
+
+void pg_append(pg_vector_t *v, double xvalue, double yvalue);
+
+void pg_free(pg_vector_t *v);
+
 void bresenham(int x0, int y0, int x1, int y1, bitmap_t *bmp, color_bgr_t color);
 
-pg_points_t *give_rect(double width, double height, double xc, double yc);
+void give_rect(pg_vector_t *rect_vec, double width, double height, double xc, double yc);
 
-pg_points_t cd2pixel(pg_points_t *points);
+void cd2pixel(pg_vector_t *rect_vec);
 
-void pg_draw(bitmap_t *bmp, color_bgr_t color, pg_points_t *points);
+void translate(pg_vector_t *rect_vec, pg_vector_t *transformed_vec, double xglobal, double yglobal);
+
+void pg_draw(bitmap_t *bmp, color_bgr_t color, pg_vector_t *rect_vec);

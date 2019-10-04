@@ -12,25 +12,9 @@ void vector_create(vector_t *v) {
     v->data = malloc(sizeof(points_t *) * v->capacity);
 }
 
-void pg_create(pg_vector_t *v) {
-    v->capacity = 2;
-    v->size = 0;
-    v->data = malloc(sizeof(pg_points_t *) * v->capacity);
-}
-
 void vector_append(vector_t *v, int xvalue, int yvalue) {
     if (v->capacity == v->size) {
         v->data = realloc(v->data, sizeof(points_t *) * (2 * v->capacity));
-        v->capacity *= 2;
-    }
-    v->data[v->size].x = xvalue;
-    v->data[v->size].y = yvalue;
-    v->size++;
-}
-
-void pg_append(pg_vector_t *v, int xvalue, int yvalue) {
-    if (v->capacity == v->size) {
-        v->data = realloc(v->data, sizeof(pg_points_t *) * (2 * v->capacity));
         v->capacity *= 2;
     }
     v->data[v->size].x = xvalue;
@@ -42,6 +26,27 @@ void vector_free(vector_t *v) {
     free(v->data);
 }
 
+void pg_create(pg_vector_t *v) {
+    v->capacity = 2;
+    v->size = 0;
+    v->data = malloc(sizeof(pg_points_t *) * v->capacity);
+}
+
+void pg_append(pg_vector_t *v, double xvalue, double yvalue) {
+  printf("%f ", xvalue);
+  printf("%f\n", yvalue);
+    if (v->capacity == v->size) {
+        v->data = realloc(v->data, sizeof(pg_points_t *) * (2 * v->capacity));
+        v->capacity *= 2;
+    }
+    v->data[v->size].x = (double) xvalue;
+    v->data[v->size].y = (double) yvalue;
+    printf("%d ", v->data[v->size].x);
+    printf("%d\n", v->data[v->size].y);
+    v->size++;
+
+}
+
 void pg_free(pg_vector_t *v) {
     free(v->data);
 }
@@ -50,6 +55,9 @@ void bresenham(int x0, int y0, int x1, int y1, bitmap_t *bmp, color_bgr_t color)
   //points_t p = {0};
   //vector_t p_vec = {0};
   //vector_create(&p_vec);
+  if (x1 == 0 && y1 == 0){
+    return;
+  }
   double dx =  abs(x1 - x0);
   double sx = x0 < x1 ? 1 : -1;
   double dy = -abs(y1 - y0);
@@ -76,68 +84,115 @@ void bresenham(int x0, int y0, int x1, int y1, bitmap_t *bmp, color_bgr_t color)
   //vector_free(&p_vec);
 }
 
-pg_vector_t *give_rect(double width, double height, double xc, double yc){
-  pg_vector_t rect_vec;
-  pg_create(&rect_vec);
+void give_rect(pg_vector_t *rect_vec, double width, double height, double xc, double yc) {
   double p1x = xc + width / 2.0;
   double p1y = yc + height / 2.0;
-  if (p1x >= 0 && p1y >= 0) {
-    pg_append(&rect_vec,p1x, p1y);
+  // printf("%f ", p1x);
+  // printf("%f\n", p1y);
+  if (p1x < 0) {
+    p1x = 0;
+  }
+  if (p1y < 0) {
+    p1y = 0;
   }
   double p2x = xc + width / 2.0;
   double p2y = yc - height / 2.0;
-  if (p2x >= 0 && p2y >= 0) {
-    pg_append(&rect_vec,p2x, p2y);
+  // printf("%f ", p2x);
+  // printf("%f\n", p2y);
+  if (p2x < 0) {
+    p2x = 0;
+  }
+  if (p2y < 0) {
+    p2y = 0;
   }
   double p3x = xc - width / 2.0;
   double p3y = yc - height / 2.0;
-  if (p3x >= 0 && p3y >= 0) {
-    pg_append(&rect_vec,p3x, p3y);
+  // printf("%f ", p3x);
+  // printf("%f\n", p3y);
+  if (p3x < 0) {
+    p3x = 0;
+  }
+  if (p3y < 0) {
+    p3y = 0;
   }
   double p4x = xc - width / 2.0;
   double p4y = yc + height / 2.0;
-  if (p4x >= 0 && p4y >= 0) {
-    pg_append(&rect_vec,p4x, p4y);
+  // printf("%f ", p4x);
+  // printf("%f\n", p4y);
+  if (p4x < 0) {
+    p4x = 0;
   }
-  return &rect_vec;
-} //MUST FREE STILL!!!!!!
+  if (p4y < 0) {
+    p4y = 0;
+  }
+  pg_append(rect_vec,p4x, p4y);
+  pg_append(rect_vec,p3x, p3y);
+  pg_append(rect_vec,p2x, p2y);
+  pg_append(rect_vec,p1x, p1y);
+  // for(int i = 0; i <rect_vec->size; i++) {
+  //   printf("%f ", rect_vec->data[i].x);
+  //   printf("%f\n", rect_vec->data[i].y);
+  // }
+}
 
-//maybe dont need this function? could just replace initial values with its rounded self
-pg_vector_t *cd2pixel(pg_vector_t *points) {
-  pg_vector_t pixels;
-  pg_create(&pixels);
+void cd2pixel(pg_vector_t *rect_vec) {
   double epsilon = 1e-6;
-  double tempx = points->data[0].x; //find a better way to do this perhaps??
-  double tempy = points->data[0].y;
-  for(int i = 0; i <points->size; i++) { //find min value and store in tempx,tempy
-    if (tempx > points->data[i].x) {
-      tempx = points->data[i].x;
+  double tempx = rect_vec->data[0].x; //find a better way to do this perhaps??
+  double tempy = rect_vec->data[0].y;
+  for(int i = 0; i <rect_vec->size; i++) { //find min value and store in tempx,tempy
+    if (tempx > rect_vec->data[i].x) {
+      tempx = rect_vec->data[i].x;
     }
-    if (tempy > points->data[i].y) {
-      tempy = points->data[i].y;
-    }
-  }
-  for(int i = 0; i <points->size; i++) { //check for min value and round off
-    if (points->data[i].x == tempx) {
-      pixels.data[i].x = ceil(points->data[i].x);
-    } else {
-      pixels.data[i].x = floor(points->data[i].x - epsilon);
-    }
-    if (points->data[i].y == tempy) {
-      pixels.data[i].y = ceil(points->data[i].y);
-    } else {
-      pixels.data[i].y = floor(points->data[i].y - epsilon);
+    if (tempy > rect_vec->data[i].y) {
+      tempy = rect_vec->data[i].y;
     }
   }
-  pg_free(points);
-  return &pixels;
-} //MUST FREE THIS AS WELL!!!
+  for(int i = 0; i <rect_vec->size; i++) { //check for min value and round off
+    if (rect_vec->data[i].x == tempx) {
+      rect_vec->data[i].x = ceil(rect_vec->data[i].x);
+    } else {
+      rect_vec->data[i].x = floor(rect_vec->data[i].x - epsilon);
+    }
+    if (rect_vec->data[i].y == tempy) {
+      rect_vec->data[i].y = ceil(rect_vec->data[i].y);
+    } else {
+      rect_vec->data[i].y = floor(rect_vec->data[i].y - epsilon);
+    }
+  }
+}
 
-void pg_draw(bitmap_t *bmp, color_bgr_t color, pg_points_t *points) {
-  pg_vector_t *pixelpts = cd2pixel(points);
-  for(int i = 0; i < pixelpts->size; i++){
-    bresenham(pixelpts->data[i].x, pixelpts->data[i].y, pixelpts->data[i+1].x, pixelpts->data[i+1].y, bmp, color);
+void translate(pg_vector_t *rect_vec, pg_vector_t *transformed_vec, double xglobal, double yglobal) {
+  //printf("\n");
+  for(int i = 0; i < rect_vec->size ; i++){
+    //give_rect(&rect_vec, 100.0, 100.0, xc +, yc);
+    double transx = rect_vec->data[i].x + xglobal;
+    double transy = rect_vec->data[i].y + yglobal;
+    pg_append(transformed_vec,transx, transy);
+    // printf("%d ", transformed_vec->data[i].x);
+    // printf("%d\n", transformed_vec->data[i].y);
   }
-  bresenham(pixelpts->data[pixelpts.size - 1].x, pixelpts->data[pixelpts.size - 1].y, pixelpts->data[0].x, pixelpts->data[0].y, bmp, color);
-  pg_free(pixelpts);
-} //MUST FREE STILL!!!!!!!!!!!!!!!!
+}
+
+// double xpivot = 0.0; //rotation pivot point
+// double ypivot = 0.0;
+// for(int i = 0; i < rect_vec->size - 1; i++){
+// printf("%d ", transformed_vec->data[i].x);
+// printf("%d\n", transformed_vec->data[i].y);
+// //rotation
+// double rotx = xpivot + ((rect_vec->data[i].x - xpivot) * cos(radrot)
+//                      - rect_vec->data[i].x - ypivot * sin(radrot));
+// double roty = ypivot + ((rect_vec->data[i].y - xpivot) * sin(radrot)
+//                      + rect_vec->data[i].y - ypivot * cos(radrot));
+// pg_append(transformed_vec,rotx, roty);
+// printf("%d ", transformed_vec->data[i].x);
+// printf("%d\n", transformed_vec->data[i].y);
+// }
+
+
+void pg_draw(bitmap_t *bmp, color_bgr_t color, pg_vector_t *rect_vec) {
+  //printf("%d ", rect_vec->size);
+  for(int i = 0; i < rect_vec->size - 1; i++){
+    bresenham(rect_vec->data[i].x, rect_vec->data[i].y, rect_vec->data[i+1].x, rect_vec->data[i+1].y, bmp, color);
+  }
+  bresenham(rect_vec->data[rect_vec->size - 1].x, rect_vec->data[rect_vec->size - 1].y, rect_vec->data[0].x, rect_vec->data[0].y, bmp, color);
+}
