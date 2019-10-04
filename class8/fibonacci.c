@@ -28,6 +28,7 @@ __uint64_t sequence2(__uint64_t n) {
         fib = fib1 + fib2;
         fib2 = fib1;
         fib1 = fib;
+        seq[i] = fib;
     }
     return fib;
 }
@@ -54,7 +55,7 @@ int main(void) {
     clock_t start3 = clock();
     __uint64_t ms = sequence3(90);
     double elapsed3 = (clock() - start3) / (double)CLOCKS_PER_SEC;
-    printf("fib3(90) got %ld and took %.6f ms per iteration\n", ms, elapsed3 * 10);
+    printf("fib3(90) got %ld and took %.6f ms per iteration\n", ms, elapsed3 * 100);
 
     return 0;
 }
