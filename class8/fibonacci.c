@@ -8,10 +8,10 @@ __uint64_t seq[100] = {0, 1, 1, 0};
 
 __uint64_t sequence(__uint64_t n) {
     if (n < 1) {
-      return 0;
+        return 0;
     }
     if (n == 1) {
-      return 1;
+        return 1;
     }
     n = sequence(n - 1) + sequence(n - 2);
     return n;
@@ -19,22 +19,22 @@ __uint64_t sequence(__uint64_t n) {
 
 __uint64_t sequence2(__uint64_t n) {
     if (n <= 1) {
-      return 1;
+        return 1;
     }
     __uint64_t fib = 0;
     __uint64_t fib2 = 0;
     __uint64_t fib1 = 1;
     for (int i = 2; i <= n; i++) {
-      fib = fib1 + fib2;
-      fib2 = fib1;
-      fib1 = fib;
+        fib = fib1 + fib2;
+        fib2 = fib1;
+        fib1 = fib;
     }
     return fib;
 }
 
 __uint64_t sequence3(__uint64_t n) {
     if (seq[n]) {
-      return seq[n];
+        return seq[n];
     }
     seq[n] = sequence3(n - 1) + sequence3(n - 2);
     return seq[n];
@@ -54,7 +54,7 @@ int main(void) {
     clock_t start3 = clock();
     __uint64_t ms = sequence3(90);
     double elapsed3 = (clock() - start3) / (double)CLOCKS_PER_SEC;
-    printf("fib3(90) got %ld and took %.6f ms per iteration\n", ms, elapsed3);
+    printf("fib3(90) got %ld and took %.6f ms per iteration\n", ms, elapsed3*100);
 
     return 0;
 }
