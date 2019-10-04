@@ -1,16 +1,19 @@
+#include <unistd.h>
+#include "image_server.h"
 #include "bmp.h"
 #include "vectors.h"
+#include "test.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
 
-int main(void) {
-  // if (argc != 2) {
-  //     fprintf(stderr, "Error: Wrong number of arguments\n");
-  //     return 1;
-  // }
-  // int testnum = atoi(argv[1]);
+int main(int argc, char **argv) {
+  if (argc != 2) {
+      fprintf(stderr, "Error: Wrong number of arguments\n");
+      return 1;
+  }
+  int input = atoi(argv[1]);
 
   bitmap_t bmp = { 0 }; // initialize to zeros
   bmp.width = 640;
@@ -18,6 +21,29 @@ int main(void) {
   bmp.data = calloc(bmp.width * bmp.height, sizeof(color_bgr_t));
   int color_value = 255;
   color_bgr_t color = {color_value, color_value, color_value};
+  //int input = 2;
+
+  if (input == 2) {
+     bresenham(10,10,200,200, &bmp, color);
+   }
+  //else if (input == 3) {
+  //   test3(&bmp, color);
+  // } else if (input == 4) {
+  //   test4(&bmp, color);
+  // } else if (input == 5) {
+  //   test5(&bmp, color);
+  // } else if (input == 6) {
+  //   test6(&bmp, color);
+  // } else if (input == 7) {
+  //   test7(&bmp, color);
+  // } else if (input == 8) {
+  //   test8(&bmp, color);
+  // } else if (input == 9) {
+  //   test9(&bmp, color);
+  // } else {
+  // }
+
+
   // bresenham(-1,0,4,4, &bmp, color);
   // double xc = 320.0;
   // double yc = 240.0;
@@ -46,14 +72,14 @@ int main(void) {
   // pg_draw(&bmp, color, &rect_vec);
   // //pg_draw(&bmp, color, &transformed_vec);
   // pg_fill(&bmp, color, &rect_vec);
-
-  pg_vector_t tri_vec = {0};
-  pg_create(&tri_vec);
-
-  give_tri(&tri_vec, 21.0, 28.0, 400, 400);
-  cd2pixel(&tri_vec);
-  tri_draw(&bmp, color, &tri_vec);
-  tri_fill(&bmp, color, &tri_vec);
+  //
+  // pg_vector_t tri_vec = {0};
+  // pg_create(&tri_vec);
+  //
+  // give_tri(&tri_vec, 21.0, 28.0, 400, 400);
+  // cd2pixel(&tri_vec);
+  // tri_draw(&bmp, color, &tri_vec);
+  // tri_fill(&bmp, color, &tri_vec);
 
   size_t bmp_size = bmp_calculate_size(&bmp);
   uint8_t *serialized_bmp = malloc(bmp_size);
@@ -61,8 +87,12 @@ int main(void) {
   FILE *f = fopen("my_image.bmp", "wb");
   fwrite(serialized_bmp, bmp_size, 1, f);
   fclose(f);
+
+  image_server_set_data(bmp_size, serialized_bmp);
+  image_server_start("8000"); // you could change the port number, but animation.html wants 8000
+  sleep(1);
   // pg_free(&transformed_vec);
-  pg_free(&tri_vec);
+  //pg_free(&tri_vec);
   //pg_free(&rect_vec);
   free(serialized_bmp);
   free(bmp.data);
