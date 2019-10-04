@@ -51,10 +51,6 @@ void pg_free(pg_vector_t *v) {
 }
 
 void bresenham(int x0, int y0, int x1, int y1, bitmap_t *bmp, color_bgr_t color) {
-  //points_t p = {0};
-  //vector_t p_vec = {0};
-  //vector_create(&p_vec);
-
   int dx =  abs(x1 - x0);
   int sx = x0 < x1 ? 1 : -1;
   int dy = -abs(y1 - y0);
@@ -74,16 +70,12 @@ void bresenham(int x0, int y0, int x1, int y1, bitmap_t *bmp, color_bgr_t color)
       err += dx;
       y0 += sy;
     }
-    //vector_append(&p_vec,x0, y0);
   }
-  //vector_free(&p_vec);
 }
 
 void give_rect(pg_vector_t *rect_vec, double width, double height, double xc, double yc) {
   double p1x = xc + width / 2.0;
   double p1y = yc + height / 2.0;
-  // printf("%f ", p1x);
-  // printf("%f\n", p1y);
   if (p1x < 0) {
     p1x = 0;
   }
@@ -92,8 +84,6 @@ void give_rect(pg_vector_t *rect_vec, double width, double height, double xc, do
   }
   double p2x = xc + width / 2.0;
   double p2y = yc - height / 2.0;
-  // printf("%f ", p2x);
-  // printf("%f\n", p2y);
   if (p2x < 0) {
     p2x = 0;
   }
@@ -102,8 +92,6 @@ void give_rect(pg_vector_t *rect_vec, double width, double height, double xc, do
   }
   double p3x = xc - width / 2.0;
   double p3y = yc - height / 2.0;
-  // printf("%f ", p3x);
-  // printf("%f\n", p3y);
   if (p3x < 0) {
     p3x = 0;
   }
@@ -112,8 +100,6 @@ void give_rect(pg_vector_t *rect_vec, double width, double height, double xc, do
   }
   double p4x = xc - width / 2.0;
   double p4y = yc + height / 2.0;
-  // printf("%f ", p4x);
-  // printf("%f\n", p4y);
   if (p4x < 0) {
     p4x = 0;
   }
@@ -168,7 +154,12 @@ void translate(pg_vector_t *rect_vec, pg_vector_t *transformed_vec, double xglob
   }
 }
 
-void pg_draw(bitmap_t *bmp, color_bgr_t color, pg_vector_t *rect_vec) {
+void pg_draw(bitmap_t *bmp, color_bgr_t color, pg_vector_t *rect_vec, int n) {
+  if (n == 3) {
+    bresenham(rect_vec->data[2].x, rect_vec->data[2].y, rect_vec->data[3].x, rect_vec->data[3].y, bmp, color);
+    bresenham(rect_vec->data[rect_vec->size - 1].x, rect_vec->data[rect_vec->size - 1].y, rect_vec->data[0].x, rect_vec->data[0].y, bmp, color);
+    return;
+  }
   for(int i = 0; i < rect_vec->size - 1; i++){
     bresenham(rect_vec->data[i].x, rect_vec->data[i].y, rect_vec->data[i+1].x, rect_vec->data[i+1].y, bmp, color);
   }

@@ -47,7 +47,7 @@ void cd2pixel(pg_vector_t *rect_vec);
 
 void translate(pg_vector_t *rect_vec, pg_vector_t *transformed_vec, double xglobal, double yglobal);
 
-void pg_draw(bitmap_t *bmp, color_bgr_t color, pg_vector_t *rect_vec);
+void pg_draw(bitmap_t *bmp, color_bgr_t color, pg_vector_t *rect_vec, int n);
 
 void pg_fill(bitmap_t *bmp, color_bgr_t color, pg_vector_t *rect_vec);
 

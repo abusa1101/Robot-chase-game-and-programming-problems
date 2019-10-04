@@ -29,16 +29,15 @@ int main(int argc, char **argv) {
    } else if (input == 3) {
       double xc = 0.0;
        double yc = 0.0;
-
        give_rect(&rect_vec, 4.0, 4.0, xc, yc);
-       cd2pixel(&rect_vec);
-       pg_draw(&bmp, color, &rect_vec);
+       //cd2pixel(&rect_vec);
+       pg_draw(&bmp, color, &rect_vec, 3);
    } else if (input == 4) {
      double xc = 2.0;
        double yc = 2.0;
        give_rect(&rect_vec, 4.0, 4.0, xc, yc);
        cd2pixel(&rect_vec);
-       pg_draw(&bmp, color, &rect_vec);
+       pg_draw(&bmp, color, &rect_vec, 0);
    }
    //else if (input == 5) {
   //   test5(&bmp, color);
