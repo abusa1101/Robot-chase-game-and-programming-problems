@@ -1,3 +1,49 @@
+/else if (input == 8) {
+//   test8(&bmp, color);
+// } else if (input == 9) {
+//   test9(&bmp, color);
+// } else {
+// }
+
+
+// bresenham(-1,0,4,4, &bmp, color);
+// double xc = 320.0;
+// double yc = 240.0;
+// pg_vector_t rect_vec = {0};
+// pg_create(&rect_vec);
+// give_rect(&rect_vec, 600.0, 440.0, xc, yc);
+// // for (int i = 0; i <rect_vec.size; i++) {
+// //   printf("%f ", rect_vec.data[i].x);
+// //   printf("%f\n", rect_vec.data[i].y);
+// //   //bmp.data[rect_vec.data[i].y * bmp.width + rect_vec.data[i].x] = color;
+// // }
+// // printf("\n");
+// cd2pixel(&rect_vec);
+// // for (int i = 0; i <rect_vec.size; i++) {
+// //   printf("%f ", rect_vec.data[i].x);
+// //   printf("%f\n", rect_vec.data[i].y);
+// //   //bmp.data[rect_vec.data[i].y * bmp.width + rect_vec.data[i].x] = color;
+// // }
+//
+// // pg_vector_t transformed_vec = {0};
+// // pg_create(&transformed_vec);
+// // double xglobal = 2.0;
+// // double yglobal = 2.0;
+// // translate(&rect_vec, &transformed_vec, xglobal, yglobal);
+//
+// pg_draw(&bmp, color, &rect_vec);
+// //pg_draw(&bmp, color, &transformed_vec);
+// pg_fill(&bmp, color, &rect_vec);
+//
+// pg_vector_t tri_vec = {0};
+// pg_create(&tri_vec);
+//
+// give_tri(&tri_vec, 21.0, 28.0, 400, 400);
+// cd2pixel(&tri_vec);
+// tri_draw(&bmp, color, &tri_vec);
+// tri_fill(&bmp, color, &tri_vec);
+
+
 if (p1x >= 0 && p1y >= 0) {
   pg_append(rect_vec,p1x, p1y);
 } else {

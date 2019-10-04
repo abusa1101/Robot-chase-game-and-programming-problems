@@ -167,19 +167,9 @@ void pg_draw(bitmap_t *bmp, color_bgr_t color, pg_vector_t *rect_vec, int n) {
 }
 
 void pg_fill(bitmap_t *bmp, color_bgr_t color, pg_vector_t *rect_vec) {
-  // int x0[bmp->height];
-  // int x1[bmp->height];
-  // printf("%f\n", rect_vec->data[1].y);
-  // printf("%f\n", rect_vec->data[0].y);
-  // int dist = rect_vec->data[2].x - rect_vec->data[1].x;
-  // printf("%d\n", dist);
-  // int y = rect_vec->data[1].y;
-  // printf("%d\n", y * bmp->width + dist);
   for (int y = rect_vec->data[1].y; y <rect_vec->data[0].y; y++) {
     for (int x = rect_vec->data[1].x; x <rect_vec->data[2].x; x++) {
-      //dist = rect_vec->data[2].x - rect_vec->data[1].x;
       bmp->data[y * bmp->width + x] = color;
-      //bresenham(rect_vec->data[1].x, y, rect_vec->data[i+1].x, y, bmp, color);
     }
   }
 
@@ -233,39 +223,36 @@ void tri_draw(bitmap_t *bmp, color_bgr_t color, pg_vector_t *tri_vec) {
 }
 
 void tri_fill(bitmap_t *bmp, color_bgr_t color, pg_vector_t *tri_vec) {
-//   for (int y = tri_vec->data[1].y; y <tri_vec->data[0].y; y++) {
-//     for (int x = tri_vec->data[1].x; x <tri_vec->data[2].x; x++) {
-//       bmp->data[y * bmp->width + x] = color;
-//     }
-// }
+  //   for (int y = tri_vec->data[1].y; y <tri_vec->data[0].y; y++) {
+  //     for (int x = tri_vec->data[1].x; x <tri_vec->data[2].x; x++) {
+  //       bmp->data[y * bmp->width + x] = color;
+  //     }
+  // }
 
-int x0[bmp->height];
-//int x1[bmp->height];
-int val = tri_vec->data[3].y;
-for (int i = 0; i <21; i++) {
+  int x0[bmp->height];
+  //int x1[bmp->height];
+  int val = tri_vec->data[3].y;
+  for (int i = 0; i <21; i++) {
     x0[i] = val;
     // x1[i] = 28;
     printf("%d ", x0[i]);
     for (int y = tri_vec->data[3].y; y <tri_vec->data[1].y; y++) {
-          bmp->data[y * bmp->width + x0[i]] = color;
-  }
+      bmp->data[y * bmp->width + x0[i]] = color;
+    }
     val++;
   }
 
 
 }
-// void rotate(pg_vector_t *rect_vec, pg_vector_t *transformed_vec, double radrot) {
-// // double xpivot = 0.0; //rotation pivot point
-// // double ypivot = 0.0;
-// // for(int i = 0; i < rect_vec->size - 1; i++){
-// // printf("%d ", transformed_vec->data[i].x);
-// // printf("%d\n", transformed_vec->data[i].y);
-// // //rotation
-// // double rotx = xpivot + ((rect_vec->data[i].x - xpivot) * cos(radrot)
-// //                      - rect_vec->data[i].x - ypivot * sin(radrot));
-// // double roty = ypivot + ((rect_vec->data[i].y - xpivot) * sin(radrot)
-// //                      + rect_vec->data[i].y - ypivot * cos(radrot));
-// // pg_append(transformed_vec,rotx, roty);
-// // printf("%d ", transformed_vec->data[i].x);
-// // printf("%d\n", transformed_vec->data[i].y);
-//  }
+
+void rotate(pg_vector_t *rect_vec, pg_vector_t *transformed_vec, double radrot) {
+  double xpivot = 0.0; //rotation pivot point
+  double ypivot = 0.0;
+  for(int i = 0; i < rect_vec->size - 1; i++) {
+    double rotx = xpivot + ((rect_vec->data[i].x - xpivot) * cos(radrot) - rect_vec->data[i].x - ypivot * sin(radrot));
+    double roty = ypivot + ((rect_vec->data[i].y - xpivot) * sin(radrot) + rect_vec->data[i].y - ypivot * cos(radrot));
+    pg_append(transformed_vec,rotx, roty);
+    // printf("%d ", transformed_vec->data[i].x);
+    // printf("%d\n", transformed_vec->data[i].y);
+  }
+}
