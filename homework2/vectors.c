@@ -54,23 +54,18 @@ void bresenham(int x0, int y0, int x1, int y1, bitmap_t *bmp, color_bgr_t color)
   //points_t p = {0};
   //vector_t p_vec = {0};
   //vector_create(&p_vec);
-  if (x0 == 0 && y0 == 0){
-    for (int i = x0; i < x1; i++) {
-      bmp->data[1 * bmp->width + i] = color;
-    }
-    return;
-  }
-  double dx =  abs(x1 - x0);
-  double sx = x0 < x1 ? 1 : -1;
-  double dy = -abs(y1 - y0);
-  double sy = y0 < y1 ? 1 : -1;
-  double err = dx + dy;
-  double e2;
+
+  int dx =  abs(x1 - x0);
+  int sx = x0 < x1 ? 1 : -1;
+  int dy = -abs(y1 - y0);
+  int sy = y0 < y1 ? 1 : -1;
+  int err = dx + dy;
   while (1) {
+    bmp->data[y0 * bmp->width + x0] = color;
     if (x0 == x1 && y0 == y1) {
       break;
     }
-    e2 = 2 * err;
+    int e2 = 2 * err;
     if (e2 >= dy) {
       err += dy;
       x0 += sx;
@@ -79,7 +74,6 @@ void bresenham(int x0, int y0, int x1, int y1, bitmap_t *bmp, color_bgr_t color)
       err += dx;
       y0 += sy;
     }
-    bmp->data[y0 * bmp->width + x0] = color;
     //vector_append(&p_vec,x0, y0);
   }
   //vector_free(&p_vec);
