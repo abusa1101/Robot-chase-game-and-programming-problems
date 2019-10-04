@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <math.h>
+
 __uint64_t seq[100] = {0, 1, 1, 0};
 
 __uint64_t sequence(__uint64_t n) {
@@ -40,16 +41,15 @@ __uint64_t sequence3(__uint64_t n) {
 }
 
 int main(void) {
-
     clock_t start = clock();
     __uint64_t rs = sequence(38);
     double elapsed = (clock() - start) / (double)CLOCKS_PER_SEC;
-    printf("fib1(38) got %ld and took %.6f ms per iteration\n", rs, elapsed*1000);
+    printf("fib1(38) got %ld and took %.6f ms per iteration\n", rs, elapsed);
 
     clock_t start2 = clock();
     __uint64_t ls = sequence2(90);
     double elapsed2 = (clock() - start2) / (double)CLOCKS_PER_SEC;
-    printf("fib2(90) got %ld and took %.6f ms per iteration\n", ls, elapsed2*1000);
+    printf("fib2(90) got %ld and took %.6f ms per iteration\n", ls, elapsed2);
 
     clock_t start3 = clock();
     // int iterations = 0;
@@ -59,7 +59,7 @@ int main(void) {
     //   iterations += 100;
     // }
     double elapsed3 = (clock() - start3) / (double)CLOCKS_PER_SEC;
-    printf("fib3(90) got %ld and took %.6f ms per iteration\n", ms, elapsed3*1000);
+    printf("fib3(90) got %ld and took %.6f ms per iteration\n", ms, elapsed3);
 
     return 0;
 }
