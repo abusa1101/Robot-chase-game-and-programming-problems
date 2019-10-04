@@ -39,7 +39,7 @@ int main(int argc, char **argv) {
        cd2pixel(&rect_vec);
        pg_draw(&bmp, color, &rect_vec, 0);
    } else if (input == 5) {
-     double xc = 1.0;
+     double xc = 2.0;
        double yc = 2.0;
        give_rect(&rect_vec, 5.0, 5.0, xc, yc);
        cd2pixel(&rect_vec);
