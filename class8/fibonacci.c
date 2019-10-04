@@ -44,17 +44,17 @@ int main(void) {
     clock_t start = clock();
     __uint64_t rs = sequence(38);
     double elapsed = (clock() - start) / (double)CLOCKS_PER_SEC;
-    printf("fib1(38) got %ld and took %.6f ms per iteration\n", rs, elapsed*100);
+    printf("fib1(38) got %ld and took %.6f ms per iteration\n", rs, elapsed * 100);
 
     clock_t start2 = clock();
     __uint64_t ls = sequence2(90);
     double elapsed2 = (clock() - start2) / (double)CLOCKS_PER_SEC;
-    printf("fib2(90) got %ld and took %.6f ms per iteration\n", ls, elapsed2*100);
+    printf("fib2(90) got %ld and took %.6f ms per iteration\n", ls, elapsed2 * 100);
 
     clock_t start3 = clock();
     __uint64_t ms = sequence3(90);
     double elapsed3 = (clock() - start3) / (double)CLOCKS_PER_SEC;
-    printf("fib3(90) got %ld and took %.6f ms per iteration\n", ms, elapsed3*100);
+    printf("fib3(90) got %ld and took %.6f ms per iteration\n", ms, elapsed3 * 10);
 
     return 0;
 }
