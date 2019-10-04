@@ -22,7 +22,7 @@ typedef struct pg_points { //clockwise winding points
 } pg_points_t;
 
 typedef struct pg_vector {
-    points_t *data;
+    pg_points_t *data;
     int capacity;
     int size;
 } pg_vector_t;
@@ -32,7 +32,6 @@ void vector_create(vector_t *v);
 void vector_append(vector_t *v, int xvalue, int yvalue);
 
 void vector_free(vector_t *v);
-
 
 void pg_create(pg_vector_t *v);
 
@@ -49,3 +48,11 @@ void cd2pixel(pg_vector_t *rect_vec);
 void translate(pg_vector_t *rect_vec, pg_vector_t *transformed_vec, double xglobal, double yglobal);
 
 void pg_draw(bitmap_t *bmp, color_bgr_t color, pg_vector_t *rect_vec);
+
+void pg_fill(bitmap_t *bmp, color_bgr_t color, pg_vector_t *rect_vec);
+
+void give_tri(pg_vector_t *tri_vec, double w, double h, double xc, double yc);
+
+void tri_draw(bitmap_t *bmp, color_bgr_t color, pg_vector_t *tri_vec);
+
+void tri_fill(bitmap_t *bmp, color_bgr_t color, pg_vector_t *tri_vec);
