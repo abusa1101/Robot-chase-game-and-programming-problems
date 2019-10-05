@@ -53,7 +53,7 @@ void CallFunctions(bitmap_t bmp, color_bgr_t color, int input,
         //cd2pixel(&transformed_vec);
         //tri_draw(&bmp, color, &transformed_vec);
         callb2(&fillbuff, &transformed_vec);
-        //cd2pixel(&fillbuff);
+        cd2pixel(&fillbuff);
         tri_fill(&bmp, color, &transformed_vec, &fillbuff);
         // bmp.data[393 * bmp.width + 412].r = 255;
         // bmp.data[393 * bmp.width + 412].g = 255;
