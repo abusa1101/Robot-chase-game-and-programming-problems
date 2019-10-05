@@ -50,9 +50,24 @@ void CallFunctions(bitmap_t bmp, color_bgr_t color, int input,
         give_tri(&rect_vec, 21.0, 28.0, 400, 400);
         rotate(&rect_vec, &transformed_vec, -30);
         cd2pixel(&transformed_vec);
-        //tri_draw(&bmp, color, &transformed_vec);
+        tri_draw(&bmp, color, &transformed_vec);
         callb2(&fillbuff, &transformed_vec);
         cd2pixel(&fillbuff);
         tri_fill(&bmp, color, &transformed_vec, &fillbuff);
+        bmp.data[393 * bmp.width + 412].r = 255;
+        bmp.data[393 * bmp.width + 412].g = 255;
+        bmp.data[393 * bmp.width + 412].b = 255;
+
+        bmp.data[393 * bmp.width + 408].r = 0;
+        bmp.data[393 * bmp.width + 408].g = 0;
+        bmp.data[393 * bmp.width + 408].b = 0;
+
+        bmp.data[393 * bmp.width + 407].r = 0;
+        bmp.data[393 * bmp.width + 407].g = 0;
+        bmp.data[393 * bmp.width + 407].b = 0;
+
+        bmp.data[393 * bmp.width + 406].r = 0;
+        bmp.data[393 * bmp.width + 406].g = 0;
+        bmp.data[393 * bmp.width + 406].b = 0;
     }
 }
