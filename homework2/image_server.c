@@ -31,7 +31,7 @@ size_t image_server_data_size = 0;
 uint8_t *image_server_data = NULL;
 
 int start_server(char *port) {
-    struct addrinfo hints = { 0 };
+    struct addrinfo hints = {0};
     struct addrinfo *info;
 
     hints.ai_family = AF_INET; // ipv4
@@ -76,7 +76,7 @@ int start_server(char *port) {
 
 //client connection
 void respond(int connection_desc) {
-    char mesg[MAX_READ_BYTES] = { 0 };
+    char mesg[MAX_READ_BYTES] = {0};
 
     int read_status = read(connection_desc, mesg, sizeof(mesg));
 
