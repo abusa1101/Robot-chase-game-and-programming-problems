@@ -1,9 +1,7 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#define M_PI 3.14159265358979323846
 
 typedef struct pg_points { //clockwise winding points
     double x;
@@ -42,4 +40,5 @@ void tri_fill(bitmap_t *bmp, color_bgr_t color, pg_vector_t *tri_vec);
 
 void rotate(pg_vector_t *rect_vec, pg_vector_t *transformed_vec, double angle);
 
-void CallFunctions(bitmap_t bmp, color_bgr_t color, int input, pg_vector_t rect_vec, pg_vector_t transformed_vec);
+void CallFunctions(bitmap_t bmp, color_bgr_t color, int input,
+                   pg_vector_t rect_vec, pg_vector_t transformed_vec);

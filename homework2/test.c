@@ -6,7 +6,7 @@
 #include <math.h>
 
 void CallFunctions(bitmap_t bmp, color_bgr_t color, int input,
-  pg_vector_t rect_vec, pg_vector_t transformed_vec) {
+                  pg_vector_t rect_vec, pg_vector_t transformed_vec) {
     if (input == 2) {
         bresenham(10, 10, 200, 200, &bmp, color);
     } else if (input == 3) {
