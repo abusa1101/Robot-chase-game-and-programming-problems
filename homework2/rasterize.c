@@ -2,7 +2,6 @@
 #include "image_server.h"
 #include "bmp.h"
 #include "vectors.h"
-#include "test.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -22,56 +21,13 @@ int main(int argc, char **argv) {
   bmp.data = calloc(bmp.width * bmp.height, sizeof(color_bgr_t));
   int color_value = 255;
   color_bgr_t color = {color_value, color_value, color_value};
+
   pg_vector_t rect_vec = {0};
   pg_create(&rect_vec);
   pg_vector_t transformed_vec = {0};
   pg_create(&transformed_vec);
 
-  if (input == 2) {
-     bresenham(10,10,200,200, &bmp, color);
-   } else if (input == 3) {
-       double xc = 0.0;
-       double yc = 0.0;
-       give_rect(&rect_vec, 4.0, 4.0, xc, yc);
-       cd2pixel(&rect_vec);
-       pg_draw(&bmp, color, &rect_vec, 3);
-   } else if (input == 4) {
-     double xc = 2.0;
-       double yc = 2.0;
-       give_rect(&rect_vec, 4.0, 4.0, xc, yc);
-       cd2pixel(&rect_vec);
-       pg_draw(&bmp, color, &rect_vec, 0);
-   } else if (input == 5) {
-     double xc = 2.0;
-       double yc = 2.0;
-       give_rect(&rect_vec, 5.0, 5.0, xc, yc);
-       cd2pixel(&rect_vec);
-       pg_draw(&bmp, color, &rect_vec, 0);
-  } else if (input == 6) {
-    double xc = 320.0;
-      double yc = 240.0;
-      give_rect(&rect_vec, 600.0, 440.0, xc, yc);
-      cd2pixel(&rect_vec);
-      pg_draw(&bmp, color, &rect_vec, 0);
-  } else if (input == 7) {
-      double xc = 320.0;
-      double yc = 240.0;
-      give_rect(&rect_vec, 600.0, 440.0, xc, yc);
-      cd2pixel(&rect_vec);
-      pg_draw(&bmp, color, &rect_vec, 0);
-      pg_fill(&bmp, color, &rect_vec);
-   } else if (input == 8) {
-     give_tri(&rect_vec, 21.0, 28.0, 400, 400);
-     cd2pixel(&rect_vec);
-     tri_draw(&bmp, color, &rect_vec);
-     //tri_fill(&bmp, color, &rect_vec);
-   } else if (input == 9) {
-     give_tri(&rect_vec, 21.0, 28.0, 400, 400);
-     cd2pixel(&rect_vec);
-     rotate(&rect_vec, &transformed_vec, 30.0);
-     tri_draw(&bmp, color, &transformed_vec);
-     //tri_fill(&bmp, color, &rect_vec);
-   }
+  CallFunctions(bmp, color, input, rect_vec, transformed_vec);
 
   size_t bmp_size = bmp_calculate_size(&bmp);
   uint8_t *serialized_bmp = malloc(bmp_size);

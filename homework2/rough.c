@@ -1,4 +1,106 @@
-/else if (input == 8) {
+//   for (int y = tri_vec->data[1].y; y <tri_vec->data[0].y; y++) {
+//     for (int x = tri_vec->data[1].x; x <tri_vec->data[2].x; x++) {
+//       bmp->data[y * bmp->width + x] = color;
+//     }
+// }
+
+// int x0[bmp->height];
+// //int x1[bmp->height];
+// int val = tri_vec->data[3].y;
+// for (int i = 0; i <21; i++) {
+//   x0[i] = val;
+//   // x1[i] = 28;
+//   printf("%d ", x0[i]);
+//   for (int y = tri_vec->data[3].y; y <tri_vec->data[1].y; y++) {
+//     bmp->data[y * bmp->width + x0[i]] = color;
+//   }
+//   val++;
+// }
+for each line in polygon, represented by index i that the line starts on
+for (int i = 0; i <bmp->height - 1; i++) {
+for (int i = 0; )
+  i2 = (i + 1) % n; // index of second point of the line
+  points = rasterize_line(point at i, point at i2);
+  for (int i = 0; i <bmp->height - 1; i++) {
+    x0[i] = -1;
+    x1[i] = -1;
+  }
+  for point (x, y) in points {
+    // follow logic in homework2 document to modify x0[y] and x1[y]
+    for (int y = 0; y <bmp->height - 1; y++) {
+      if (x0[y] == -1) {
+        x0[y] = x;
+        x1[y] = x;
+      } else {
+        x0[y] = min(x0[y], x);
+        x1[y] = max(x1[y], x);
+      }
+    }
+  }
+}
+
+void test2 (bitmap_t *bmp, color_bgr_t color) {
+  bresenham(10,10,200,200, &bmp, color);
+}
+
+void test3 (bitmap_t *bmp, color_bgr_t color) {
+  double xc = -1.0;
+  double yc = 0.0;
+  pg_vector_t rect_vec = {0};
+  pg_create(&rect_vec);
+  give_rect(&rect_vec, 4.0, 4.0, xc, yc);
+  pg_draw(&bmp, color, &rect_vec);
+}
+
+void test4 (bitmap_t *bmp, color_bgr_t color) {
+  double xc = 1.0;
+  double yc = 2.0;
+  pg_vector_t rect_vec = {0};
+  pg_create(&rect_vec);
+  give_rect(&rect_vec, 4.0, 4.0, xc, yc);
+  cd2pixel(&rect_vec);
+  pg_draw(&bmp, color, &rect_vec);
+}
+
+void test5 (bitmap_t *bmp, color_bgr_t color) {
+  double xc = 1.0;
+  double yc = 2.0;
+  pg_vector_t rect_vec = {0};
+  pg_create(&rect_vec);
+  give_rect(&rect_vec, 5.0, 5.0, xc, yc);
+  cd2pixel(&rect_vec);
+  pg_draw(&bmp, color, &rect_vec);
+}
+
+void test6 (bitmap_t *bmp, color_bgr_t color) {
+  double xc = 320.0;
+  double yc = 240.0;
+  pg_vector_t rect_vec = {0};
+  pg_create(&rect_vec);
+  give_rect(&rect_vec, 600.0, 440.0, xc, yc);
+  cd2pixel(&rect_vec);
+  pg_draw(&bmp, color, &rect_vec);
+}
+
+void test7 (bitmap_t *bmp, color_bgr_t color) {
+  double xc = 320.0;
+  double yc = 240.0;
+  pg_vector_t rect_vec = {0};
+  pg_create(&rect_vec);
+  give_rect(&rect_vec, 600.0, 440.0, xc, yc);
+  cd2pixel(&rect_vec);
+  pg_draw(&bmp, color, &rect_vec);
+  pg_fill(&bmp, color, &rect_vec);
+}
+
+void test8 (bitmap_t *bmp, color_bgr_t color) {
+}
+
+void test9 (bitmap_t *bmp, color_bgr_t color) {
+}
+
+
+else if (input == 8) {
 //   test8(&bmp, color);
 // } else if (input == 9) {
 //   test9(&bmp, color);

@@ -4,28 +4,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#define SIN(x) sin(x * 3.14159265358979323846/180)
+#define COS(x) cos(x * 3.14159265358979323846/180)
 
 //FUNCTIONS
-void vector_create(vector_t *v) {
-    v->capacity = 2;
-    v->size = 0;
-    v->data = malloc(sizeof(points_t *) * v->capacity);
-}
-
-void vector_append(vector_t *v, int xvalue, int yvalue) {
-    if (v->capacity == v->size) {
-        v->data = realloc(v->data, sizeof(points_t *) * (2 * v->capacity));
-        v->capacity *= 2;
-    }
-    v->data[v->size].x = xvalue;
-    v->data[v->size].y = yvalue;
-    v->size++;
-}
-
-void vector_free(vector_t *v) {
-    free(v->data);
-}
-
 void pg_create(pg_vector_t *v) {
     v->capacity = 10;
     v->size = 0;
@@ -117,10 +99,13 @@ void give_rect(pg_vector_t *rect_vec, double width, double height, double xc, do
 }
 
 void cd2pixel(pg_vector_t *rect_vec) {
+  printf("in function");
+  printf(" %d ",rect_vec->size);
   double epsilon = 1e-6;
-  double tempx = rect_vec->data[0].x; //find a better way to do this perhaps??
+  double tempx = rect_vec->data[0].x;
   double tempy = rect_vec->data[0].y;
-  for(int i = 0; i <rect_vec->size; i++) { //find min value and store in tempx,tempy
+  for(int i = 0; i <rect_vec->size; i++) {
+    printf("in function 2");
     if (tempx > rect_vec->data[i].x) {
       tempx = rect_vec->data[i].x;
     }
@@ -172,28 +157,6 @@ void pg_fill(bitmap_t *bmp, color_bgr_t color, pg_vector_t *rect_vec) {
       bmp->data[y * bmp->width + x] = color;
     }
   }
-
-  // //for each line in polygon, represented by index i that the line starts on
-  // for (int i = 0; i <bmp->height - 1; i++) {
-  //   i2 = (i + 1) % n; // index of second point of the line
-  //   points = rasterize_line(point at i, point at i2);
-  //   for (int i = 0; i <bmp->height - 1; i++) {
-  //     x0[i] = -1;
-  //     x1[i] = -1;
-  //   }
-  //   for point (x, y) in points {
-  //     // follow logic in homework2 document to modify x0[y] and x1[y]
-  //     for (int y = 0; y <bmp->height - 1; y++) {
-  //       if (x0[y] == -1) {
-  //         x0[y] = x;
-  //         x1[y] = x;
-  //       } else {
-  //         x0[y] = min(x0[y], x);
-  //         x1[y] = max(x1[y], x);
-  //       }
-  //     }
-  //   }
-  // }
 }
 
 void give_tri(pg_vector_t *tri_vec, double w, double h, double xc, double yc){
@@ -209,10 +172,6 @@ void give_tri(pg_vector_t *tri_vec, double w, double h, double xc, double yc){
   pg_append(tri_vec,p3x, p3y);
   pg_append(tri_vec,p2x, p2y);
   pg_append(tri_vec,p1x, p1y);
-  for(int i = 0; i < tri_vec->size; i++){
-    printf("%f ", tri_vec->data[i].x);
-    printf("%f\n", tri_vec->data[i].y);
-  }
 }
 
 void tri_draw(bitmap_t *bmp, color_bgr_t color, pg_vector_t *tri_vec) {
@@ -223,36 +182,72 @@ void tri_draw(bitmap_t *bmp, color_bgr_t color, pg_vector_t *tri_vec) {
 }
 
 void tri_fill(bitmap_t *bmp, color_bgr_t color, pg_vector_t *tri_vec) {
-  //   for (int y = tri_vec->data[1].y; y <tri_vec->data[0].y; y++) {
-  //     for (int x = tri_vec->data[1].x; x <tri_vec->data[2].x; x++) {
-  //       bmp->data[y * bmp->width + x] = color;
-  //     }
-  // }
-
-  int x0[bmp->height];
-  //int x1[bmp->height];
-  int val = tri_vec->data[3].y;
-  for (int i = 0; i <21; i++) {
-    x0[i] = val;
-    // x1[i] = 28;
-    printf("%d ", x0[i]);
-    for (int y = tri_vec->data[3].y; y <tri_vec->data[1].y; y++) {
-      bmp->data[y * bmp->width + x0[i]] = color;
-    }
-    val++;
+int x0[bmp->height];
+int x1[bmp->height];
+  for (int i = 0; i <bmp->height; i++) { //bmp height or minus one?
+    x0[i] = -1;
+    x1[i] = -1;
   }
+  int n = tri_vec->size;
+  for (int i = 0; i < n; i++){
+    bresenham((int) tri_vec->data[i % n].x, (int) tri_vec->data[i % n].y, (int) tri_vec->data[(i+1) % n].x,(int) tri_vec->data[(i+1) % n].y, bmp, color);
+    for (int j = 0; j < n; j++) {
+      if (x0[(int) tri_vec->data[j].y] == -1) {
+        x0[(int) tri_vec->data[j].y] = (int) tri_vec->data[j].x;
+        x1[(int) tri_vec->data[j].y] = (int) tri_vec->data[j].x;
+      } else {
+        x0[(int) tri_vec->data[j].y] = fmin(x0[(int) tri_vec->data[j].y], (int) tri_vec->data[j].x);
+        x1[(int) tri_vec->data[j].y] = fmax(x0[(int) tri_vec->data[j].y], (int) tri_vec->data[j].x);
+      }
+    }
 
+  }
+int y0 = 0;
+int y1 = 0;
+int y = 0;
 
+while (x0[y] == -1) {
+  y++;
+  if (x0[y] != -1) {
+    break;
+  }
+}
+y0 = y;
+y = bmp->height - 1;
+
+while (x1[y] == -1) {
+  y--;
+  if (x1[y] != -1) {
+    break;
+  }
+}
+y1 = y;
+
+int min_x0 = x0[y0];
+int max_x1 = x1[y1];
+for (int yf = y0; yf <= y1; yf++) {
+  for (int xf = x0[yf]; xf <= x1[yf]; xf++) {
+    //int pix = yf * bmp->width + xf;
+    bmp->data[yf * bmp->width + xf] = color;
+  }
+}
 }
 
-void rotate(pg_vector_t *rect_vec, pg_vector_t *transformed_vec, double radrot) {
-  double xpivot = 0.0; //rotation pivot point
-  double ypivot = 0.0;
-  for(int i = 0; i < rect_vec->size - 1; i++) {
-    double rotx = xpivot + ((rect_vec->data[i].x - xpivot) * cos(radrot) - rect_vec->data[i].x - ypivot * sin(radrot));
-    double roty = ypivot + ((rect_vec->data[i].y - xpivot) * sin(radrot) + rect_vec->data[i].y - ypivot * cos(radrot));
-    pg_append(transformed_vec,rotx, roty);
-    // printf("%d ", transformed_vec->data[i].x);
-    // printf("%d\n", transformed_vec->data[i].y);
-  }
+void rotate(pg_vector_t *rect_vec, pg_vector_t *transformed_vec, double angle) {
+  double x_pivot = 400.0;
+  double y_pivot = 400.0;
+  double rotx = 0;
+  double roty = 0;
+    int i = 0;
+    while (i < 4) {
+        double x_shifted = rect_vec->data[i].x - x_pivot;
+        double y_shifted = rect_vec->data[i].y - y_pivot;
+        rotx = x_pivot + (x_shifted*COS(angle)
+                          - y_shifted*SIN(angle));
+        roty = y_pivot + (x_shifted*SIN(angle)
+                          + y_shifted*COS(angle));
+        pg_append(transformed_vec,rotx, roty);
+        //printf("(%f, %f)\n", transformed_vec->data[i].x, transformed_vec->data[i].y);
+        i++;
+    }
 }
