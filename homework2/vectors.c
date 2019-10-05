@@ -233,10 +233,25 @@ void tri_fill(bitmap_t *bmp, color_bgr_t color, pg_vector_t *tri_vec, pg_vector_
             }
         }
     }
-
+    for (int k = 0; k < bmp->height; k++) {
+        printf("%d ",x0[k]);
+    }
+    printf("\n\n\n");
+    for (int k = 0; k < bmp->height; k++) {
+        printf("%d ",x1[k]);
+    }
+    printf("\n\n\n");
      for (int k = 0; k < bmp->height; k++) {
-       if (x0[k] != 1000 && x1[k] != -1) {
-         bresenham(x0[k], k, x1[k], k, bmp, color);
+       if (x0[k] != 1000 && x1[k] != -1 && x0[k] != 0 && x1[k] != 0) { //
+           printf("%d ", x0[k]);
+           printf("%d ", x1[k]);
+           printf("%d\n", k);
+         bresenham(387, 391, 387, 391, bmp, color);
+         bresenham(389, 392, 390, 392, bmp, color);
+         // bresenham(x0[k], 392, x1[k], 392, bmp, color);
+         // bresenham(x0[k], k, x1[k], k, bmp, color);
+         // bresenham(x0[k], k, x1[k], k, bmp, color);
+         // bresenham(x0[k], k, x1[k], k, bmp, color);
        }
    }
  }
