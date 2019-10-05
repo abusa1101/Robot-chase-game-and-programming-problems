@@ -52,4 +52,4 @@ void CallFunctions(bitmap_t bmp, color_bgr_t color, int input,
         tri_draw(&bmp, color, &transformed_vec);
         tri_fill(&bmp, color, &transformed_vec);
     }
-  }
+}
