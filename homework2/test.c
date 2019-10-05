@@ -55,5 +55,24 @@ void CallFunctions(bitmap_t bmp, color_bgr_t color, int input,
         callb2(&fillbuff, &transformed_vec);
         //cd2pixel(&fillbuff);
         tri_fill(&bmp, color, &transformed_vec, &fillbuff);
+        bmp.data[386 * bmp.width + 404].r = 0;
+        bmp.data[386 * bmp.width + 404].g = 0;
+        bmp.data[386 * bmp.width + 404].b = 0;
+
+        bmp.data[385 * bmp.width + 402].r = 0;
+        bmp.data[385 * bmp.width + 402].g = 0;
+        bmp.data[385 * bmp.width + 402].b = 0;
+
+        bmp.data[383 * bmp.width + 398].r = 0;
+        bmp.data[383 * bmp.width + 398].g = 0;
+        bmp.data[383 * bmp.width + 398].b = 0;
+
+        bmp.data[393 * bmp.width + 401].r = 0;
+        bmp.data[393 * bmp.width + 401].g = 0;
+        bmp.data[393 * bmp.width + 401].b = 0;
+
+        bmp.data[384 * bmp.width + 400].r = 0;
+        bmp.data[384 * bmp.width + 400].g = 0;
+        bmp.data[384 * bmp.width + 400].b = 0;
     }
 }
