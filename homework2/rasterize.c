@@ -26,8 +26,10 @@ int main(int argc, char **argv) {
     pg_create(&rect_vec);
     pg_vector_t transformed_vec = {0};
     pg_create(&transformed_vec);
+    pg_vector_t fillbuff = {0};
+    pg_create2(&fillbuff);
 
-    CallFunctions(bmp, color, input, rect_vec, transformed_vec);
+    CallFunctions(bmp, color, input, rect_vec, transformed_vec, fillbuff);
 
     size_t bmp_size = bmp_calculate_size(&bmp);
     uint8_t *serialized_bmp = malloc(bmp_size);
@@ -39,8 +41,8 @@ int main(int argc, char **argv) {
     image_server_set_data(bmp_size, serialized_bmp);
     image_server_start("8000"); // you could change the port number, but animation.html wants 8000
     sleep(1);
+    pg_free(&fillbuff);
     pg_free(&transformed_vec);
-    //pg_free(&tri_vec);
     pg_free(&rect_vec);
     free(serialized_bmp);
     free(bmp.data);

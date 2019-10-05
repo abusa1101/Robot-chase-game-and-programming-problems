@@ -14,6 +14,12 @@ void pg_create(pg_vector_t *v) {
     v->data = malloc(sizeof(pg_points_t *) * v->capacity);
 }
 
+void pg_create2(pg_vector_t *v) {
+    v->capacity = 200;
+    v->size = 0;
+    v->data = malloc(sizeof(pg_points_t *) * v->capacity);
+}
+
 void pg_append(pg_vector_t *v, double xvalue, double yvalue) {
     if (v->capacity == v->size) {
         v->data = realloc(v->data, sizeof(pg_points_t *) * (2 * v->capacity));
@@ -49,6 +55,38 @@ void bresenham(int x0, int y0, int x1, int y1, bitmap_t *bmp, color_bgr_t color)
           y0 += sy;
       }
   }
+}
+
+void bresenham2(pg_vector_t *fillbuff, int x0, int y0, int x1, int y1) {
+  int dx =  abs(x1 - x0);
+  int sx = x0 < x1 ? 1 : -1;
+  int dy = -abs(y1 - y0);
+  int sy = y0 < y1 ? 1 : -1;
+  int err = dx + dy;
+  while (1) {
+    pg_append(fillbuff, x0, y0);
+      if (x0 == x1 && y0 == y1) {
+          break;
+      }
+      int e2 = 2 * err;
+      if (e2 >= dy) {
+          err += dy;
+          x0 += sx;
+      }
+      if (e2 <= dx) {
+          err += dx;
+          y0 += sy;
+      }
+  }
+}
+
+void callb2(pg_vector_t *fillbuff, pg_vector_t *transformed_vec) {
+  for (int i = 0; i < transformed_vec->size - 1; i++) {
+      bresenham2(fillbuff, (int)transformed_vec->data[i].x, (int)transformed_vec->data[i].y,
+                (int)transformed_vec->data[i + 1].x, (int)transformed_vec->data[i + 1].y);
+  }
+  bresenham2(fillbuff, (int)transformed_vec->data[transformed_vec->size - 1].x, (int)transformed_vec->data[transformed_vec->size - 1].y,
+            (int)transformed_vec->data[0].x, (int)transformed_vec->data[0].y);
 }
 
 void give_rect(pg_vector_t *rect_vec, double width, double height, double xc, double yc) {
@@ -173,59 +211,35 @@ void tri_draw(bitmap_t *bmp, color_bgr_t color, pg_vector_t *tri_vec) {
               tri_vec->data[0].x, tri_vec->data[0].y, bmp, color);
 }
 
-void tri_fill(bitmap_t *bmp, color_bgr_t color, pg_vector_t *tri_vec) {
-    // int x0[bmp->height];
-    // int x1[bmp->height];
-    // for (int i = 0; i < bmp->height; i++) { //bmp height or minus one?
-    //     x0[i] = -1;
-    //     x1[i] = -1;
-    // }
-    // int n = tri_vec->size;
-    // for (int i = 0; i < n; i++) {
-    //       bresenham((int)tri_vec->data[i % n].x, (int)tri_vec->data[i % n].y,
-    //                 (int)tri_vec->data[(i + 1) % n].x,
-    //                 (int)tri_vec->data[(i + 1) % n].y, bmp, color);
-    //     for (int j = 0; j < n; j++) {
-    //           if (x0[(int)tri_vec->data[j].y] == -1) {
-    //               x0[(int)tri_vec->data[j].y] = (int)tri_vec->data[j].x;
-    //               x1[(int)tri_vec->data[j].y] = (int)tri_vec->data[j].x;
-    //         } else {
-    //               x0[(int)tri_vec->data[j].y] = fmin(x0[(int)tri_vec->data[j].y],
-    //                                                 (int)tri_vec->data[j].x);
-    //               x1[(int)tri_vec->data[j].y] = fmax(x0[(int)tri_vec->data[j].y],
-    //                                                 (int)tri_vec->data[j].x);
-    //         }
-    //     }
-    // }
-    // int y0 = 0;
-    // int y1 = 0;
-    // int y = 0;
-    // while (x0[y] == -1) {
-    //         y++;
-    //         if (x0[y] != -1) {
-    //             break;
-    //         }
-    // }
-    // y0 = y;
-    // y = bmp->height - 1;
-    //
-    // while (x1[y] == -1) {
-    //         y--;
-    //         if (x1[y] != -1) {
-    //             break;
-    //         }
-    // }
-    // y1 = y;
-    //
-    // int min_x0 = x0[y0];
-    // int max_x1 = x1[y1];
-    // for (int yf = y0; yf <= y1; yf++) {
-    //      for (int xf = x0[yf]; xf <= x1[yf]; xf++) {
-    //         //int pix = yf * bmp->width + xf;
-    //          bmp->data[yf * bmp->width + xf] = color;
-    //      }
-    // }
-}
+void tri_fill(bitmap_t *bmp, color_bgr_t color, pg_vector_t *tri_vec, pg_vector_t *fillbuff) {
+    int x0[bmp->height];
+    int x1[bmp->height];
+    for (int i = 0; i < bmp->height; i++) {
+        x0[i] = 1000;
+        x1[i] = -1;
+    }
+
+    for (int j = 0; j < fillbuff->size; j++) {
+        if (x0[(int)tri_vec->data[j].y] == 1000) {
+            x0[(int)tri_vec->data[j].y] = (int)tri_vec->data[j].x;
+            x1[(int)tri_vec->data[j].y] = (int)tri_vec->data[j].x;
+        } else {
+            if (x0[(int)tri_vec->data[j].y] > (int)tri_vec->data[j].x) {
+                x0[(int)tri_vec->data[j].y] = (int)tri_vec->data[j].x;
+            }
+
+            if (x0[(int)tri_vec->data[j].y] < (int)tri_vec->data[j].x) {
+                x1[(int)tri_vec->data[j].y] = (int)tri_vec->data[j].x;
+            }
+        }
+    }
+
+     for (int k = 0; k < bmp->height; k++) {
+       if (x0[k] != 1000 && x1[k] != -1) {
+         bresenham(x0[k], k, x1[k], k, bmp, color);
+       }
+   }
+ }
 
 void rotate(pg_vector_t *rect_vec, pg_vector_t *transformed_vec, double angle) {
     double x_pivot = 400.0;

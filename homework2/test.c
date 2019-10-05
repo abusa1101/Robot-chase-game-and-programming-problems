@@ -6,7 +6,7 @@
 #include <math.h>
 
 void CallFunctions(bitmap_t bmp, color_bgr_t color, int input,
-                   pg_vector_t rect_vec, pg_vector_t transformed_vec) {
+                   pg_vector_t rect_vec, pg_vector_t transformed_vec, pg_vector_t fillbuff) {
     if (input == 2) {
         bresenham(10, 10, 200, 200, &bmp, color);
     } else if (input == 3) {
@@ -44,12 +44,14 @@ void CallFunctions(bitmap_t bmp, color_bgr_t color, int input,
         give_tri(&rect_vec, 21.0, 28.0, 400, 400);
         cd2pixel(&rect_vec);
         tri_draw(&bmp, color, &rect_vec);
-        //tri_fill(&bmp, color, &rect_vec);
+        callb2(&fillbuff,&rect_vec);
+        tri_fill(&bmp, color, &rect_vec, &fillbuff);
     } else if (input == 9) {
         give_tri(&rect_vec, 21.0, 28.0, 400, 400);
         rotate(&rect_vec, &transformed_vec, -30);
         cd2pixel(&transformed_vec);
         tri_draw(&bmp, color, &transformed_vec);
-        tri_fill(&bmp, color, &transformed_vec);
+        callb2(&fillbuff,&transformed_vec);
+        tri_fill(&bmp, color, &transformed_vec, &fillbuff);
     }
 }
