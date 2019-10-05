@@ -9,32 +9,32 @@
 
 // https://docs.microsoft.com/en-us/windows/win32/api/wingdi/ns-wingdi-tagbitmapfileheader
 typedef struct tagBITMAPFILEHEADER {
-  WORD  bfType;
-  DWORD bfSize;
-  WORD  bfReserved1;
-  WORD  bfReserved2;
-  DWORD bfOffBits;
+    WORD  bfType;
+    DWORD bfSize;
+    WORD  bfReserved1;
+    WORD  bfReserved2;
+    DWORD bfOffBits;
 } __attribute__((__packed__)) BITMAPFILEHEADER;
 
 // https://docs.microsoft.com/en-us/windows/win32/api/wingdi/ns-wingdi-tagbitmapinfoheader
 typedef struct tagBITMAPINFOHEADER {
-  DWORD biSize;
-  LONG  biWidth;
-  LONG  biHeight;
-  WORD  biPlanes;
-  WORD  biBitCount;
-  DWORD biCompression;
-  DWORD biSizeImage;
-  LONG  biXPelsPerMeter;
-  LONG  biYPelsPerMeter;
-  DWORD biClrUsed;
-  DWORD biClrImportant;
+    DWORD biSize;
+    LONG  biWidth;
+    LONG  biHeight;
+    WORD  biPlanes;
+    WORD  biBitCount;
+    DWORD biCompression;
+    DWORD biSizeImage;
+    LONG  biXPelsPerMeter;
+    LONG  biYPelsPerMeter;
+    DWORD biClrUsed;
+    DWORD biClrImportant;
 } __attribute__((__packed__)) BITMAPINFOHEADER;
 
 typedef struct bgr {
-  uint8_t b;
-  uint8_t g;
-  uint8_t r;
+    uint8_t b;
+    uint8_t g;
+    uint8_t r;
 } __attribute__((__packed__)) color_bgr_t;
 
 typedef struct bitmap {
