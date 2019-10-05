@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include "bmp.h"
 
 typedef struct pg_points {
     double x;
