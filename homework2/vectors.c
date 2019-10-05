@@ -151,11 +151,11 @@ void pg_draw(bitmap_t *bmp, color_bgr_t color, pg_vector_t *rect_vec, int n) {
 }
 
 void pg_fill(bitmap_t *bmp, color_bgr_t color, pg_vector_t *rect_vec) {
-      for (int y = rect_vec->data[1].y; y < rect_vec->data[0].y; y++) {
-          for (int x = rect_vec->data[1].x; x < rect_vec->data[2].x; x++) {
-                bmp->data[y * bmp->width + x] = color;
-           }
-       }
+    for (int y = rect_vec->data[1].y; y < rect_vec->data[0].y; y++) {
+        for (int x = rect_vec->data[1].x; x < rect_vec->data[2].x; x++) {
+             bmp->data[y * bmp->width + x] = color;
+         }
+     }
  }
 
 void give_tri(pg_vector_t *tri_vec, double w, double h, double xc, double yc){
@@ -192,7 +192,8 @@ void tri_fill(bitmap_t *bmp, color_bgr_t color, pg_vector_t *tri_vec) {
       // int n = tri_vec->size;
       // for (int i = 0; i < n; i++) {
       //       bresenham((int)tri_vec->data[i % n].x, (int)tri_vec->data[i % n].y,
-      //                 (int)tri_vec->data[(i + 1) % n].x, (int)tri_vec->data[(i + 1) % n].y, bmp, color);
+      //                 (int)tri_vec->data[(i + 1) % n].x,
+      //                 (int)tri_vec->data[(i + 1) % n].y, bmp, color);
       //     for (int j = 0; j < n; j++) {
       //           if (x0[(int)tri_vec->data[j].y] == -1) {
       //               x0[(int)tri_vec->data[j].y] = (int)tri_vec->data[j].x;
@@ -242,14 +243,14 @@ void rotate(pg_vector_t *rect_vec, pg_vector_t *transformed_vec, double angle) {
       double roty = 0;
       int i = 0;
       while (i < 4) {
-          double x_shifted = rect_vec->data[i].x - x_pivot;
-          double y_shifted = rect_vec->data[i].y - y_pivot;
-          rotx = x_pivot + (x_shifted * COS(angle)
-          - y_shifted * SIN(angle));
-          roty = y_pivot + (x_shifted * SIN(angle)
-          + y_shifted * COS(angle));
-          pg_append(transformed_vec, rotx, roty);
-          //printf("(%f, %f)\n", transformed_vec->data[i].x, transformed_vec->data[i].y);
-          i++;
+        double x_shifted = rect_vec->data[i].x - x_pivot;
+        double y_shifted = rect_vec->data[i].y - y_pivot;
+        rotx = x_pivot + (x_shifted * COS(angle)
+        - y_shifted * SIN(angle));
+        roty = y_pivot + (x_shifted * SIN(angle)
+        + y_shifted * COS(angle));
+        pg_append(transformed_vec, rotx, roty);
+        //printf("(%f, %f)\n", transformed_vec->data[i].x, transformed_vec->data[i].y);
+        i++;
       }
 }
