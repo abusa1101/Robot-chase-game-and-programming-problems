@@ -15,7 +15,7 @@ int main(int argc, char **argv) {
     }
     int input = atoi(argv[1]);
 
-    bitmap_t bmp = { 0 }; // initialize to zeros
+    bitmap_t bmp = {0}; // initialize to zeros
     bmp.width = 640;
     bmp.height = 480;
     bmp.data = calloc(bmp.width * bmp.height, sizeof(color_bgr_t));
