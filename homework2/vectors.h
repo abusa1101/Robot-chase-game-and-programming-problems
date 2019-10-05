@@ -27,7 +27,7 @@ void bresenham(int x0, int y0, int x1, int y1, bitmap_t *bmp, color_bgr_t color)
 
 void bresenham2(pg_vector_t *fillbuff, int x0, int y0, int x1, int y1);
 
-void callb2(pg_vector_t *fillbuff,pg_vector_t *transformed_vec);
+void callb2(pg_vector_t *fillbuff, pg_vector_t *transformed_vec);
 
 void give_rect(pg_vector_t *rect_vec, double width, double height, double xc, double yc);
 

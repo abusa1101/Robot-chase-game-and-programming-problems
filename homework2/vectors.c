@@ -35,99 +35,93 @@ void pg_free(pg_vector_t *v) {
 }
 
 void bresenham(int x0, int y0, int x1, int y1, bitmap_t *bmp, color_bgr_t color) {
-  int dx =  abs(x1 - x0);
-  int sx = x0 < x1 ? 1 : -1;
-  int dy = -abs(y1 - y0);
-  int sy = y0 < y1 ? 1 : -1;
-  int err = dx + dy;
-  while (1) {
-      bmp->data[y0 * bmp->width + x0] = color;
-      if (x0 == x1 && y0 == y1) {
-          break;
-      }
-      int e2 = 2 * err;
-      if (e2 >= dy) {
-          err += dy;
-          x0 += sx;
-      }
-      if (e2 <= dx) {
-          err += dx;
-          y0 += sy;
-      }
-  }
+    int dx =  abs(x1 - x0);
+    int sx = x0 < x1 ? 1 : -1;
+    int dy = -abs(y1 - y0);
+    int sy = y0 < y1 ? 1 : -1;
+    int err = dx + dy;
+    while (1) {
+        bmp->data[y0 * bmp->width + x0] = color;
+        if (x0 == x1 && y0 == y1) {
+            break;
+        }
+        int e2 = 2 * err;
+        if (e2 >= dy) {
+            err += dy;
+            x0 += sx;
+        }
+        if (e2 <= dx) {
+            err += dx;
+            y0 += sy;
+        }
+    }
 }
 
 void bresenham2(pg_vector_t *fillbuff, int x0, int y0, int x1, int y1) {
-  int dx =  abs(x1 - x0);
-  int sx = x0 < x1 ? 1 : -1;
-  int dy = -abs(y1 - y0);
-  int sy = y0 < y1 ? 1 : -1;
-  int err = dx + dy;
-  while (1) {
-    pg_append(fillbuff, x0, y0);
-      if (x0 == x1 && y0 == y1) {
-          break;
-      }
-      int e2 = 2 * err;
-      if (e2 >= dy) {
-          err += dy;
-          x0 += sx;
-      }
-      if (e2 <= dx) {
-          err += dx;
-          y0 += sy;
-      }
-  }
+    int dx =  abs(x1 - x0);
+    int sx = x0 < x1 ? 1 : -1;
+    int dy = -abs(y1 - y0);
+    int sy = y0 < y1 ? 1 : -1;
+    int err = dx + dy;
+    while (1) {
+        pg_append(fillbuff, x0, y0);
+        if (x0 == x1 && y0 == y1) {
+            break;
+        }
+        int e2 = 2 * err;
+        if (e2 >= dy) {
+            err += dy;
+            x0 += sx;
+        }
+        if (e2 <= dx) {
+            err += dx;
+            y0 += sy;
+        }
+    }
 }
 
 void callb2(pg_vector_t *fillbuff, pg_vector_t *transformed_vec) {
-  for (int i = 0; i < transformed_vec->size - 1; i++) {
-      bresenham2(fillbuff, (int)transformed_vec->data[i].x, (int)transformed_vec->data[i].y,
-                (int)transformed_vec->data[i + 1].x, (int)transformed_vec->data[i + 1].y);
-  }
-  bresenham2(fillbuff, (int)transformed_vec->data[transformed_vec->size - 1].x, (int)transformed_vec->data[transformed_vec->size - 1].y,
-            (int)transformed_vec->data[0].x, (int)transformed_vec->data[0].y);
-
-  //int n = fillbuff->size;
-   for (int i = 0; i <fillbuff->size; i++) {
-    printf("%f ", fillbuff->data[i].x);
-    printf("%f\n", fillbuff->data[i].y);
-    //printf("%d ", i);
-  }
+    for (int i = 0; i < transformed_vec->size - 1; i++) {
+        bresenham2(fillbuff, (int)transformed_vec->data[i].x, (int)transformed_vec->data[i].y,
+                  (int)transformed_vec->data[i + 1].x, (int)transformed_vec->data[i + 1].y);
+    }
+    bresenham2(fillbuff, (int)transformed_vec->data[transformed_vec->size - 1].x,
+              (int)transformed_vec->data[transformed_vec->size - 1].y,
+              (int)transformed_vec->data[0].x, (int)transformed_vec->data[0].y);
 }
 
 void give_rect(pg_vector_t *rect_vec, double width, double height, double xc, double yc) {
     double p1x = xc + width / 2.0;
     double p1y = yc + height / 2.0;
     if (p1x < 0) {
-      p1x = 0;
+        p1x = 0;
     }
     if (p1y < 0) {
-      p1y = 0;
+        p1y = 0;
     }
     double p2x = xc + width / 2.0;
     double p2y = yc - height / 2.0;
     if (p2x < 0) {
-      p2x = 0;
+        p2x = 0;
     }
     if (p2y < 0) {
-      p2y = 0;
+        p2y = 0;
     }
     double p3x = xc - width / 2.0;
     double p3y = yc - height / 2.0;
     if (p3x < 0) {
-      p3x = 0;
+        p3x = 0;
     }
     if (p3y < 0) {
-      p3y = 0;
+        p3y = 0;
     }
     double p4x = xc - width / 2.0;
     double p4y = yc + height / 2.0;
     if (p4x < 0) {
-      p4x = 0;
+        p4x = 0;
     }
     if (p4y < 0) {
-      p4y = 0;
+        p4y = 0;
     }
     pg_append(rect_vec, p4x, p4y);
     pg_append(rect_vec, p3x, p3y);
@@ -226,12 +220,6 @@ void tri_fill(bitmap_t *bmp, color_bgr_t color, pg_vector_t *tri_vec, pg_vector_
         x1[i] = -1;
     }
 
-    for (int k = 0; k < tri_vec->size; k++) {
-          printf("%d ", (int)tri_vec->data[k].x);
-          printf("%d ", (int)tri_vec->data[k].y);
-          printf("%d\n", k);
-        }
-
     for (int j = 0; j < fillbuff->size; j++) {
         if (x0[(int)fillbuff->data[j].y] == 1000) {
             x0[(int)fillbuff->data[j].y] = (int)fillbuff->data[j].x;
@@ -246,13 +234,13 @@ void tri_fill(bitmap_t *bmp, color_bgr_t color, pg_vector_t *tri_vec, pg_vector_
             }
         }
     }
-    
+
     for (int k = 0; k < bmp->height; k++) {
-      if (x0[k] != 1000 && x1[k] != -1 && x0[k] != 0 && x1[k] != 0) {
-        bresenham(x0[k], k, x1[k], k, bmp, color);
-      }
+        if (x0[k] != 1000 && x1[k] != -1 && x0[k] != 0 && x1[k] != 0) {
+            bresenham(x0[k], k, x1[k], k, bmp, color);
+        }
     }
- }
+}
 
 void rotate(pg_vector_t *rect_vec, pg_vector_t *transformed_vec, double angle) {
     double x_pivot = 400.0;
