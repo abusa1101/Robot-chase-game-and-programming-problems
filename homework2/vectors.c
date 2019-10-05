@@ -35,7 +35,7 @@ void pg_free(pg_vector_t *v) {
 }
 
 void bresenham(int x0, int y0, int x1, int y1, bitmap_t *bmp, color_bgr_t color) {
-    int dx =  abs(x1 - x0);
+    int dx = abs(x1 - x0);
     int sx = x0 < x1 ? 1 : -1;
     int dy = -abs(y1 - y0);
     int sy = y0 < y1 ? 1 : -1;
@@ -58,7 +58,7 @@ void bresenham(int x0, int y0, int x1, int y1, bitmap_t *bmp, color_bgr_t color)
 }
 
 void bresenham2(pg_vector_t *fillbuff, int x0, int y0, int x1, int y1) {
-    int dx =  abs(x1 - x0);
+    int dx = abs(x1 - x0);
     int sx = x0 < x1 ? 1 : -1;
     int dy = -abs(y1 - y0);
     int sy = y0 < y1 ? 1 : -1;
@@ -188,7 +188,7 @@ void pg_fill(bitmap_t *bmp, color_bgr_t color, pg_vector_t *rect_vec) {
     }
 }
 
-void give_tri(pg_vector_t *tri_vec, double w, double h, double xc, double yc){
+void give_tri(pg_vector_t *tri_vec, double w, double h, double xc, double yc) {
     double p1x = xc - h / 2.0;
     double p1y = yc - w / 2.0;
     double p2x = xc + h / 2.0;
@@ -204,7 +204,7 @@ void give_tri(pg_vector_t *tri_vec, double w, double h, double xc, double yc){
 }
 
 void tri_draw(bitmap_t *bmp, color_bgr_t color, pg_vector_t *tri_vec) {
-    for (int i = 0; i < tri_vec->size - 1; i++){
+    for (int i = 0; i < tri_vec->size - 1; i++) {
         bresenham(tri_vec->data[i].x, tri_vec->data[i].y, tri_vec->data[i + 1].x,
                   tri_vec->data[i + 1].y, bmp, color);
     }
