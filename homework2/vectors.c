@@ -152,11 +152,11 @@ void pg_draw(bitmap_t *bmp, color_bgr_t color, pg_vector_t *rect_vec, int n) {
 
 void pg_fill(bitmap_t *bmp, color_bgr_t color, pg_vector_t *rect_vec) {
     for (int y = rect_vec->data[1].y; y < rect_vec->data[0].y; y++) {
-         for (int x = rect_vec->data[1].x; x < rect_vec->data[2].x; x++) {
-              bmp->data[y * bmp->width + x] = color;
-         }
-     }
- }
+        for (int x = rect_vec->data[1].x; x < rect_vec->data[2].x; x++) {
+            bmp->data[y * bmp->width + x] = color;
+        }
+    }
+}
 
 void give_tri(pg_vector_t *tri_vec, double w, double h, double xc, double yc){
   double p1x = xc - h / 2.0;
