@@ -8,6 +8,7 @@ size_t bmp_calculate_size(bitmap_t *bmp) {
   size_t size = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER) + 921600;
   return size;
 }
+
 void bmp_serialize(bitmap_t *bmp, uint8_t *data) {
   BITMAPFILEHEADER file_header = { 0 }; // start out as all zero values
   file_header.bfType = 0x4d42;//0x424d
@@ -36,7 +37,7 @@ void bmp_serialize(bitmap_t *bmp, uint8_t *data) {
   data_out += sizeof(info_header);
 
   for (int i = bmp->height - 1; i >= 0; i--) {
-    memcpy(data_out, &bmp -> data[i * bmp->width], bmp->width * sizeof(color_bgr_t));
-    data_out += bmp->width*sizeof(color_bgr_t);
+    memcpy(data_out, &bmp->data[i * bmp->width], bmp->width * sizeof(color_bgr_t));
+    data_out += bmp->width * sizeof(color_bgr_t);
   }
 }

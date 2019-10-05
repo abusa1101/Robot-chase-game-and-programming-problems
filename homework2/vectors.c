@@ -4,8 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#define SIN(x) sin(x * 3.14159265358979323846/180)
-#define COS(x) cos(x * 3.14159265358979323846/180)
+#define SIN(x) sin((x) * 3.14159265358979323846 / 180)
+#define COS(x) cos((x) * 3.14159265358979323846 / 180)
 
 //FUNCTIONS
 void pg_create(pg_vector_t *v) {
@@ -41,16 +41,16 @@ void bresenham(int x0, int y0, int x1, int y1, bitmap_t *bmp, color_bgr_t color)
   while (1) {
     bmp->data[y0 * bmp->width + x0] = color;
     if (x0 == x1 && y0 == y1) {
-      break;
+        break;
     }
     int e2 = 2 * err;
     if (e2 >= dy) {
-      err += dy;
-      x0 += sx;
+        err += dy;
+        x0 += sx;
     }
     if (e2 <= dx) {
-      err += dx;
-      y0 += sy;
+        err += dx;
+        y0 += sy;
     }
   }
 }
@@ -88,10 +88,10 @@ void give_rect(pg_vector_t *rect_vec, double width, double height, double xc, do
   if (p4y < 0) {
     p4y = 0;
   }
-  pg_append(rect_vec,p4x, p4y);
-  pg_append(rect_vec,p3x, p3y);
-  pg_append(rect_vec,p2x, p2y);
-  pg_append(rect_vec,p1x, p1y);
+  pg_append(rect_vec, p4x, p4y);
+  pg_append(rect_vec, p3x, p3y);
+  pg_append(rect_vec, p2x, p2y);
+  pg_append(rect_vec, p1x, p1y);
   // for(int i = 0; i <rect_vec->size; i++) {
   //   printf("%d ", rect_vec->data[i].x);
   //   printf("%d\n", rect_vec->data[i].y);
@@ -99,13 +99,10 @@ void give_rect(pg_vector_t *rect_vec, double width, double height, double xc, do
 }
 
 void cd2pixel(pg_vector_t *rect_vec) {
-  printf("in function");
-  printf(" %d ",rect_vec->size);
   double epsilon = 1e-6;
   double tempx = rect_vec->data[0].x;
   double tempy = rect_vec->data[0].y;
-  for(int i = 0; i <rect_vec->size; i++) {
-    printf("in function 2");
+  for(int i = 0; i < rect_vec->size; i++) {
     if (tempx > rect_vec->data[i].x) {
       tempx = rect_vec->data[i].x;
     }
@@ -127,40 +124,41 @@ void cd2pixel(pg_vector_t *rect_vec) {
   }
 }
 
-void translate(pg_vector_t *rect_vec, pg_vector_t *transformed_vec, double xglobal, double yglobal) {
-  //printf("\n");
-  for(int i = 0; i < rect_vec->size ; i++){
-    //give_rect(&rect_vec, 100.0, 100.0, xc +, yc);
-    double transx = rect_vec->data[i].x + xglobal;
-    double transy = rect_vec->data[i].y + yglobal;
-    pg_append(transformed_vec,transx, transy);
-    // printf("%d ", transformed_vec->data[i].x);
-    // printf("%d\n", transformed_vec->data[i].y);
+void translate(pg_vector_t *rect_vec, pg_vector_t *transformed_vec,
+  double xglobal, double yglobal) {
+    for (int i = 0; i < rect_vec->size ; i++){
+      double transx = rect_vec->data[i].x + xglobal;
+      double transy = rect_vec->data[i].y + yglobal;
+      pg_append(transformed_vec, transx, transy);
+    }
   }
-}
 
 void pg_draw(bitmap_t *bmp, color_bgr_t color, pg_vector_t *rect_vec, int n) {
   if (n == 3) {
-    bresenham(rect_vec->data[2].x, rect_vec->data[2].y, rect_vec->data[3].x, rect_vec->data[3].y, bmp, color);
-    bresenham(rect_vec->data[rect_vec->size - 1].x, rect_vec->data[rect_vec->size - 1].y, rect_vec->data[0].x, rect_vec->data[0].y, bmp, color);
-    return;
-  }
-  for(int i = 0; i < rect_vec->size - 1; i++){
-    bresenham(rect_vec->data[i].x, rect_vec->data[i].y, rect_vec->data[i+1].x, rect_vec->data[i+1].y, bmp, color);
-  }
-  bresenham(rect_vec->data[rect_vec->size - 1].x, rect_vec->data[rect_vec->size - 1].y, rect_vec->data[0].x, rect_vec->data[0].y, bmp, color);
-}
+    bresenham(rect_vec->data[2].x, rect_vec->data[2].y, rect_vec->data[3].x,
+      rect_vec->data[3].y, bmp, color);
+      bresenham(rect_vec->data[rect_vec->size - 1].x, rect_vec->data[rect_vec->size - 1].y,
+        rect_vec->data[0].x, rect_vec->data[0].y, bmp, color);
+        return;
+      }
+      for (int i = 0; i < rect_vec->size - 1; i++){
+        bresenham(rect_vec->data[i].x, rect_vec->data[i].y, rect_vec->data[i + 1].x,
+          rect_vec->data[i + 1].y, bmp, color);
+        }
+        bresenham(rect_vec->data[rect_vec->size - 1].x, rect_vec->data[rect_vec->size - 1].y,
+          rect_vec->data[0].x, rect_vec->data[0].y, bmp, color);
+        }
 
 void pg_fill(bitmap_t *bmp, color_bgr_t color, pg_vector_t *rect_vec) {
-  for (int y = rect_vec->data[1].y; y <rect_vec->data[0].y; y++) {
-    for (int x = rect_vec->data[1].x; x <rect_vec->data[2].x; x++) {
-      bmp->data[y * bmp->width + x] = color;
-    }
-  }
-}
+  for (int y = rect_vec->data[1].y; y < rect_vec->data[0].y; y++) {
+     for (int x = rect_vec->data[1].x; x < rect_vec->data[2].x; x++) {
+         bmp->data[y * bmp->width + x] = color;
+       }
+     }
+   }
 
 void give_tri(pg_vector_t *tri_vec, double w, double h, double xc, double yc){
-  double p1x = xc - h/ 2.0;
+  double p1x = xc - h / 2.0;
   double p1y = yc - w / 2.0;
   double p2x = xc + h / 2.0;
   double p2y = yc;
@@ -168,17 +166,19 @@ void give_tri(pg_vector_t *tri_vec, double w, double h, double xc, double yc){
   double p3y = yc + w / 2.0;
   double p4x = xc - h / 2.0;
   double p4y = yc;
-  pg_append(tri_vec,p4x, p4y);
-  pg_append(tri_vec,p3x, p3y);
-  pg_append(tri_vec,p2x, p2y);
-  pg_append(tri_vec,p1x, p1y);
+  pg_append(tri_vec, p4x, p4y);
+  pg_append(tri_vec, p3x, p3y);
+  pg_append(tri_vec, p2x, p2y);
+  pg_append(tri_vec, p1x, p1y);
 }
 
 void tri_draw(bitmap_t *bmp, color_bgr_t color, pg_vector_t *tri_vec) {
   for(int i = 0; i < tri_vec->size - 1; i++){
-    bresenham(tri_vec->data[i].x, tri_vec->data[i].y, tri_vec->data[i+1].x, tri_vec->data[i+1].y, bmp, color);
+    bresenham(tri_vec->data[i].x, tri_vec->data[i].y, tri_vec->data[i + 1].x,
+              tri_vec->data[i + 1].y, bmp, color);
   }
-  bresenham(tri_vec->data[tri_vec->size - 1].x, tri_vec->data[tri_vec->size - 1].y, tri_vec->data[0].x, tri_vec->data[0].y, bmp, color);
+  bresenham(tri_vec->data[tri_vec->size - 1].x, tri_vec->data[tri_vec->size - 1].y,
+            tri_vec->data[0].x, tri_vec->data[0].y, bmp, color);
 }
 
 void tri_fill(bitmap_t *bmp, color_bgr_t color, pg_vector_t *tri_vec) {
@@ -190,47 +190,46 @@ int x1[bmp->height];
   }
   int n = tri_vec->size;
   for (int i = 0; i < n; i++){
-    bresenham((int) tri_vec->data[i % n].x, (int) tri_vec->data[i % n].y, (int) tri_vec->data[(i+1) % n].x,(int) tri_vec->data[(i+1) % n].y, bmp, color);
-    for (int j = 0; j < n; j++) {
-      if (x0[(int) tri_vec->data[j].y] == -1) {
-        x0[(int) tri_vec->data[j].y] = (int) tri_vec->data[j].x;
-        x1[(int) tri_vec->data[j].y] = (int) tri_vec->data[j].x;
-      } else {
-        x0[(int) tri_vec->data[j].y] = fmin(x0[(int) tri_vec->data[j].y], (int) tri_vec->data[j].x);
-        x1[(int) tri_vec->data[j].y] = fmax(x0[(int) tri_vec->data[j].y], (int) tri_vec->data[j].x);
+      bresenham((int)tri_vec->data[i % n].x, (int)tri_vec->data[i % n].y,
+      (int)tri_vec->data[(i + 1) % n].x,(int)tri_vec->data[(i + 1) % n].y, bmp, color);
+      for (int j = 0; j < n; j++) {
+          if (x0[(int)tri_vec->data[j].y] == -1) {
+            x0[(int)tri_vec->data[j].y] = (int)tri_vec->data[j].x;
+            x1[(int)tri_vec->data[j].y] = (int)tri_vec->data[j].x;
+          } else {
+            x0[(int)tri_vec->data[j].y] = fmin(x0[(int)tri_vec->data[j].y], (int)tri_vec->data[j].x);
+            x1[(int)tri_vec->data[j].y] = fmax(x0[(int)tri_vec->data[j].y], (int)tri_vec->data[j].x);
+          }
       }
-    }
-
   }
-int y0 = 0;
-int y1 = 0;
-int y = 0;
-
-while (x0[y] == -1) {
-  y++;
-  if (x0[y] != -1) {
-    break;
+  int y0 = 0;
+  int y1 = 0;
+  int y = 0;
+  while (x0[y] == -1) {
+      y++;
+      if (x0[y] != -1) {
+          break;
+      }
   }
-}
-y0 = y;
-y = bmp->height - 1;
+  y0 = y;
+  y = bmp->height - 1;
 
-while (x1[y] == -1) {
-  y--;
-  if (x1[y] != -1) {
-    break;
+  while (x1[y] == -1) {
+      y--;
+      if (x1[y] != -1) {
+          break;
+      }
   }
-}
-y1 = y;
+  y1 = y;
 
-int min_x0 = x0[y0];
-int max_x1 = x1[y1];
-for (int yf = y0; yf <= y1; yf++) {
-  for (int xf = x0[yf]; xf <= x1[yf]; xf++) {
-    //int pix = yf * bmp->width + xf;
-    bmp->data[yf * bmp->width + xf] = color;
+  int min_x0 = x0[y0];
+  int max_x1 = x1[y1];
+  for (int yf = y0; yf <= y1; yf++) {
+      for (int xf = x0[yf]; xf <= x1[yf]; xf++) {
+          //int pix = yf * bmp->width + xf;
+          bmp->data[yf * bmp->width + xf] = color;
+      }
   }
-}
 }
 
 void rotate(pg_vector_t *rect_vec, pg_vector_t *transformed_vec, double angle) {
@@ -238,16 +237,16 @@ void rotate(pg_vector_t *rect_vec, pg_vector_t *transformed_vec, double angle) {
   double y_pivot = 400.0;
   double rotx = 0;
   double roty = 0;
-    int i = 0;
-    while (i < 4) {
-        double x_shifted = rect_vec->data[i].x - x_pivot;
-        double y_shifted = rect_vec->data[i].y - y_pivot;
-        rotx = x_pivot + (x_shifted*COS(angle)
-                          - y_shifted*SIN(angle));
-        roty = y_pivot + (x_shifted*SIN(angle)
-                          + y_shifted*COS(angle));
-        pg_append(transformed_vec,rotx, roty);
-        //printf("(%f, %f)\n", transformed_vec->data[i].x, transformed_vec->data[i].y);
-        i++;
-    }
+  int i = 0;
+  while (i < 4) {
+      double x_shifted = rect_vec->data[i].x - x_pivot;
+      double y_shifted = rect_vec->data[i].y - y_pivot;
+      rotx = x_pivot + (x_shifted * COS(angle)
+      - y_shifted * SIN(angle));
+      roty = y_pivot + (x_shifted * SIN(angle)
+      + y_shifted * COS(angle));
+      pg_append(transformed_vec, rotx, roty);
+      //printf("(%f, %f)\n", transformed_vec->data[i].x, transformed_vec->data[i].y);
+      i++;
+  }
 }
