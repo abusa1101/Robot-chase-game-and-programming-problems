@@ -62,7 +62,7 @@ void CallFunctions(bitmap_t bmp, color_bgr_t color, int input,
         bmp.data[393 * bmp.width + 408].r = 0;
         bmp.data[393 * bmp.width + 408].g = 0;
         bmp.data[393 * bmp.width + 408].b = 0;
-        
+
         bmp.data[393 * bmp.width + 407].r = 0;
         bmp.data[393 * bmp.width + 407].g = 0;
         bmp.data[393 * bmp.width + 407].b = 0;
@@ -70,5 +70,21 @@ void CallFunctions(bitmap_t bmp, color_bgr_t color, int input,
         bmp.data[393 * bmp.width + 406].r = 0;
         bmp.data[393 * bmp.width + 406].g = 0;
         bmp.data[393 * bmp.width + 406].b = 0;
+
+        bmp.data[393 * bmp.width + 405].r = 0;
+        bmp.data[393 * bmp.width + 405].g = 0;
+        bmp.data[393 * bmp.width + 408].b = 0;
+
+        bmp.data[393 * bmp.width + 404].r = 0;
+        bmp.data[393 * bmp.width + 404].g = 0;
+        bmp.data[393 * bmp.width + 404].b = 0;
+
+        bmp.data[393 * bmp.width + 403].r = 0;
+        bmp.data[393 * bmp.width + 403].g = 0;
+        bmp.data[393 * bmp.width + 403].b = 0;
+
+        bmp.data[393 * bmp.width + 402].r = 0;
+        bmp.data[393 * bmp.width + 402].g = 0;
+        bmp.data[393 * bmp.width + 402].b = 0;
     }
 }
