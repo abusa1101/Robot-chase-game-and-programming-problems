@@ -102,60 +102,60 @@ void cd2pixel(pg_vector_t *rect_vec) {
   double epsilon = 1e-6;
   double tempx = rect_vec->data[0].x;
   double tempy = rect_vec->data[0].y;
-  for(int i = 0; i < rect_vec->size; i++) {
+  for (int i = 0; i < rect_vec->size; i++) {
     if (tempx > rect_vec->data[i].x) {
-      tempx = rect_vec->data[i].x;
+        tempx = rect_vec->data[i].x;
     }
     if (tempy > rect_vec->data[i].y) {
-      tempy = rect_vec->data[i].y;
+        tempy = rect_vec->data[i].y;
     }
   }
-  for(int i = 0; i <rect_vec->size; i++) { //check for min value and round off
+  for (int i = 0; i < rect_vec->size; i++) { //check for min value and round off
     if (rect_vec->data[i].x == tempx) {
-      rect_vec->data[i].x = ceil(rect_vec->data[i].x);
+        rect_vec->data[i].x = ceil(rect_vec->data[i].x);
     } else {
-      rect_vec->data[i].x = floor(rect_vec->data[i].x - epsilon);
+        rect_vec->data[i].x = floor(rect_vec->data[i].x - epsilon);
     }
     if (rect_vec->data[i].y == tempy) {
-      rect_vec->data[i].y = ceil(rect_vec->data[i].y);
+        rect_vec->data[i].y = ceil(rect_vec->data[i].y);
     } else {
-      rect_vec->data[i].y = floor(rect_vec->data[i].y - epsilon);
+        rect_vec->data[i].y = floor(rect_vec->data[i].y - epsilon);
     }
   }
 }
 
 void translate(pg_vector_t *rect_vec, pg_vector_t *transformed_vec,
-  double xglobal, double yglobal) {
-    for (int i = 0; i < rect_vec->size ; i++){
-      double transx = rect_vec->data[i].x + xglobal;
-      double transy = rect_vec->data[i].y + yglobal;
-      pg_append(transformed_vec, transx, transy);
+               double xglobal, double yglobal) {
+    for (int i = 0; i < rect_vec->size ; i++) {
+        double transx = rect_vec->data[i].x + xglobal;
+        double transy = rect_vec->data[i].y + yglobal;
+        pg_append(transformed_vec, transx, transy);
     }
   }
 
 void pg_draw(bitmap_t *bmp, color_bgr_t color, pg_vector_t *rect_vec, int n) {
   if (n == 3) {
-    bresenham(rect_vec->data[2].x, rect_vec->data[2].y, rect_vec->data[3].x,
-      rect_vec->data[3].y, bmp, color);
+      bresenham(rect_vec->data[2].x, rect_vec->data[2].y, rect_vec->data[3].x,
+                rect_vec->data[3].y, bmp, color);
       bresenham(rect_vec->data[rect_vec->size - 1].x, rect_vec->data[rect_vec->size - 1].y,
-        rect_vec->data[0].x, rect_vec->data[0].y, bmp, color);
-        return;
+                rect_vec->data[0].x, rect_vec->data[0].y, bmp, color);
+          return;
+        }
+      for (int i = 0; i < rect_vec->size - 1; i++) {
+          bresenham(rect_vec->data[i].x, rect_vec->data[i].y, rect_vec->data[i + 1].x,
+                    rect_vec->data[i + 1].y, bmp, color);
       }
-      for (int i = 0; i < rect_vec->size - 1; i++){
-        bresenham(rect_vec->data[i].x, rect_vec->data[i].y, rect_vec->data[i + 1].x,
-          rect_vec->data[i + 1].y, bmp, color);
-        }
-        bresenham(rect_vec->data[rect_vec->size - 1].x, rect_vec->data[rect_vec->size - 1].y,
-          rect_vec->data[0].x, rect_vec->data[0].y, bmp, color);
-        }
+      bresenham(rect_vec->data[rect_vec->size - 1].x, rect_vec->data[rect_vec->size - 1].y,
+               rect_vec->data[0].x, rect_vec->data[0].y, bmp, color);
+      }
 
 void pg_fill(bitmap_t *bmp, color_bgr_t color, pg_vector_t *rect_vec) {
-  for (int y = rect_vec->data[1].y; y < rect_vec->data[0].y; y++) {
-     for (int x = rect_vec->data[1].x; x < rect_vec->data[2].x; x++) {
-         bmp->data[y * bmp->width + x] = color;
+    for (int y = rect_vec->data[1].y; y < rect_vec->data[0].y; y++) {
+         for (int x = rect_vec->data[1].x; x < rect_vec->data[2].x; x++) {
+              bmp->data[y * bmp->width + x] = color;
+           }
        }
-     }
-   }
+ }
 
 void give_tri(pg_vector_t *tri_vec, double w, double h, double xc, double yc){
   double p1x = xc - h / 2.0;
@@ -173,7 +173,7 @@ void give_tri(pg_vector_t *tri_vec, double w, double h, double xc, double yc){
 }
 
 void tri_draw(bitmap_t *bmp, color_bgr_t color, pg_vector_t *tri_vec) {
-  for(int i = 0; i < tri_vec->size - 1; i++){
+  for (int i = 0; i < tri_vec->size - 1; i++){
     bresenham(tri_vec->data[i].x, tri_vec->data[i].y, tri_vec->data[i + 1].x,
               tri_vec->data[i + 1].y, bmp, color);
   }
@@ -182,23 +182,25 @@ void tri_draw(bitmap_t *bmp, color_bgr_t color, pg_vector_t *tri_vec) {
 }
 
 void tri_fill(bitmap_t *bmp, color_bgr_t color, pg_vector_t *tri_vec) {
-int x0[bmp->height];
-int x1[bmp->height];
+  int x0[bmp->height];
+  int x1[bmp->height];
   for (int i = 0; i <bmp->height; i++) { //bmp height or minus one?
-    x0[i] = -1;
-    x1[i] = -1;
+      x0[i] = -1;
+      x1[i] = -1;
   }
   int n = tri_vec->size;
   for (int i = 0; i < n; i++){
       bresenham((int)tri_vec->data[i % n].x, (int)tri_vec->data[i % n].y,
-      (int)tri_vec->data[(i + 1) % n].x,(int)tri_vec->data[(i + 1) % n].y, bmp, color);
+                (int)tri_vec->data[(i + 1) % n].x, (int)tri_vec->data[(i + 1) % n].y, bmp, color);
       for (int j = 0; j < n; j++) {
           if (x0[(int)tri_vec->data[j].y] == -1) {
-            x0[(int)tri_vec->data[j].y] = (int)tri_vec->data[j].x;
-            x1[(int)tri_vec->data[j].y] = (int)tri_vec->data[j].x;
+              x0[(int)tri_vec->data[j].y] = (int)tri_vec->data[j].x;
+              x1[(int)tri_vec->data[j].y] = (int)tri_vec->data[j].x;
           } else {
-            x0[(int)tri_vec->data[j].y] = fmin(x0[(int)tri_vec->data[j].y], (int)tri_vec->data[j].x);
-            x1[(int)tri_vec->data[j].y] = fmax(x0[(int)tri_vec->data[j].y], (int)tri_vec->data[j].x);
+              x0[(int)tri_vec->data[j].y] = fmin(x0[(int)tri_vec->data[j].y],
+                                                (int)tri_vec->data[j].x);
+              x1[(int)tri_vec->data[j].y] = fmax(x0[(int)tri_vec->data[j].y],
+                                                (int)tri_vec->data[j].x);
           }
       }
   }
@@ -225,10 +227,10 @@ int x1[bmp->height];
   int min_x0 = x0[y0];
   int max_x1 = x1[y1];
   for (int yf = y0; yf <= y1; yf++) {
-      for (int xf = x0[yf]; xf <= x1[yf]; xf++) {
+       for (int xf = x0[yf]; xf <= x1[yf]; xf++) {
           //int pix = yf * bmp->width + xf;
-          bmp->data[yf * bmp->width + xf] = color;
-      }
+           bmp->data[yf * bmp->width + xf] = color;
+       }
   }
 }
 

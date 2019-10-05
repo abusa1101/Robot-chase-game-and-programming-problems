@@ -49,10 +49,6 @@ void CallFunctions(bitmap_t bmp, color_bgr_t color, int input,
         give_tri(&rect_vec, 21.0, 28.0, 400, 400);
         rotate(&rect_vec, &transformed_vec, -30);
         cd2pixel(&transformed_vec);
-        for (int i = 0; i < transformed_vec.size; i++) {
-          printf("%f ", transformed_vec.data[i].x);
-          printf("%f\n", transformed_vec.data[i].y);
-        }
         tri_draw(&bmp, color, &transformed_vec);
         tri_fill(&bmp, color, &transformed_vec);
     }
