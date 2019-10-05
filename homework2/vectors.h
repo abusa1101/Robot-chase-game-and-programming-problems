@@ -3,7 +3,7 @@
 #include <string.h>
 #include <math.h>
 
-typedef struct pg_points { //clockwise winding points
+typedef struct pg_points {
     double x;
     double y;
 } pg_points_t;
