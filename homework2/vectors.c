@@ -83,11 +83,11 @@ void bresenham2(pg_vector_t *fillbuff, int x0, int y0, int x1, int y1) {
 void callb2(pg_vector_t *fillbuff, pg_vector_t *transformed_vec) {
     for (int i = 0; i < transformed_vec->size - 1; i++) {
         bresenham2(fillbuff, (int)transformed_vec->data[i].x, (int)transformed_vec->data[i].y,
-                  (int)transformed_vec->data[i + 1].x, (int)transformed_vec->data[i + 1].y);
+                   (int)transformed_vec->data[i + 1].x, (int)transformed_vec->data[i + 1].y);
     }
     bresenham2(fillbuff, (int)transformed_vec->data[transformed_vec->size - 1].x,
               (int)transformed_vec->data[transformed_vec->size - 1].y,
-              (int)transformed_vec->data[0].x, (int)transformed_vec->data[0].y);
+               (int)transformed_vec->data[0].x, (int)transformed_vec->data[0].y);
 }
 
 void give_rect(pg_vector_t *rect_vec, double width, double height, double xc, double yc) {
