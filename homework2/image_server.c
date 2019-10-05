@@ -51,8 +51,6 @@ int start_server(char *port) {
         exit(1);
     }
 
-    // lets the program immediately rebind the socket after quitting
-    // otherwise there is a wait time and bind will fail with "Address already in use"
     int enable = 1;
     if (setsockopt(server_num, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0) {
         perror("setsockopt(SO_REUSEADDR)");
