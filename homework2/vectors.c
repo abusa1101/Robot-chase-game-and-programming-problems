@@ -87,6 +87,13 @@ void callb2(pg_vector_t *fillbuff, pg_vector_t *transformed_vec) {
   }
   bresenham2(fillbuff, (int)transformed_vec->data[transformed_vec->size - 1].x, (int)transformed_vec->data[transformed_vec->size - 1].y,
             (int)transformed_vec->data[0].x, (int)transformed_vec->data[0].y);
+
+  //int n = fillbuff->size;
+   for (int i = 0; i <fillbuff->size; i++) {
+    printf("%f ", fillbuff->data[i].x);
+    printf("%f\n", fillbuff->data[i].y);
+    //printf("%d ", i);
+  }
 }
 
 void give_rect(pg_vector_t *rect_vec, double width, double height, double xc, double yc) {
@@ -219,41 +226,67 @@ void tri_fill(bitmap_t *bmp, color_bgr_t color, pg_vector_t *tri_vec, pg_vector_
         x1[i] = -1;
     }
 
+    for (int k = 0; k < tri_vec->size; k++) {
+          printf("%d ", (int)tri_vec->data[k].x);
+          printf("%d ", (int)tri_vec->data[k].y);
+          printf("%d\n", k);
+        }
+
     for (int j = 0; j < fillbuff->size; j++) {
-        if (x0[(int)tri_vec->data[j].y] == 1000) {
-            x0[(int)tri_vec->data[j].y] = (int)tri_vec->data[j].x;
-            x1[(int)tri_vec->data[j].y] = (int)tri_vec->data[j].x;
+        if (x0[(int)fillbuff->data[j].y] == 1000) {
+            x0[(int)fillbuff->data[j].y] = (int)fillbuff->data[j].x;
+            x1[(int)fillbuff->data[j].y] = (int)fillbuff->data[j].x;
         } else {
-            if (x0[(int)tri_vec->data[j].y] > (int)tri_vec->data[j].x) {
-                x0[(int)tri_vec->data[j].y] = (int)tri_vec->data[j].x;
+            if (x0[(int)fillbuff->data[j].y] > (int)fillbuff->data[j].x) {
+                x0[(int)fillbuff->data[j].y] = (int)fillbuff->data[j].x;
             }
 
-            if (x0[(int)tri_vec->data[j].y] < (int)tri_vec->data[j].x) {
-                x1[(int)tri_vec->data[j].y] = (int)tri_vec->data[j].x;
+            if (x0[(int)fillbuff->data[j].y] < (int)fillbuff->data[j].x) {
+                x1[(int)fillbuff->data[j].y] = (int)fillbuff->data[j].x;
             }
         }
     }
+    // for (int k = 0; k < bmp->height; k++) {
+    //     //printf("%d ",x0[k]);
+    // }
+    // printf("\n\n\n");
+    // for (int k = 0; k < bmp->height; k++) {
+    //     //printf("%d ",x1[k]);
+    // }
+    // printf("\n\n\n");
+    //
+    //   for (int k = 0; k < bmp->height; k++) {
+    //     if (x0[k] != 1000 && x1[k] != -1 && x0[k] != 0 && x1[k] != 0) {
+    //       int m = k + 10;
+    //       bresenham(x0[k], k, x1[k], k, bmp, color);
+    //       bresenham(x0[k], m, x1[k], m, bmp, color);
+    //       while (m != k) {
+    //       bresenham(x0[k], k, x1[k], k, bmp, color);
+    //       bresenham(x0[k], m, x1[k], m, bmp, color);
+    //         m--;
+    //       } //
+    //       bresenham(x0[k], k, x1[k], k, bmp, color);
+    //       bresenham(x0[k], m, x1[k], m, bmp, color);
+    //     }
+    // }
+
     for (int k = 0; k < bmp->height; k++) {
-        printf("%d ",x0[k]);
+      if (x0[k] != 1000 && x1[k] != -1 && x0[k] != 0 && x1[k] != 0) {
+        //int m = k + 10;
+        bresenham(x0[k], k, x1[k], k, bmp, color);
+        // while (m != k) {
+        //   bresenham(x0[k], k, x1[k], k, bmp, color);
+        //   // printf("%d ", k);
+        //   // printf("%d\n", m);
+        //   m--;
+        //} //
+        // printf("%d ", x0[k]);
+        // printf("%d ", x1[k]);
+        // printf("%d\n", k);
+        // bresenham(387, 391, 387, 391, bmp, color);
+        // bresenham(389, 392, 390, 392, bmp, color);
+      }
     }
-    printf("\n\n\n");
-    for (int k = 0; k < bmp->height; k++) {
-        printf("%d ",x1[k]);
-    }
-    printf("\n\n\n");
-     for (int k = 0; k < bmp->height; k++) {
-       if (x0[k] != 1000 && x1[k] != -1 && x0[k] != 0 && x1[k] != 0) { //
-           printf("%d ", x0[k]);
-           printf("%d ", x1[k]);
-           printf("%d\n", k);
-         bresenham(387, 391, 387, 391, bmp, color);
-         bresenham(389, 392, 390, 392, bmp, color);
-         // bresenham(x0[k], 392, x1[k], 392, bmp, color);
-         // bresenham(x0[k], k, x1[k], k, bmp, color);
-         // bresenham(x0[k], k, x1[k], k, bmp, color);
-         // bresenham(x0[k], k, x1[k], k, bmp, color);
-       }
-   }
  }
 
 void rotate(pg_vector_t *rect_vec, pg_vector_t *transformed_vec, double angle) {
