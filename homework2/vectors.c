@@ -86,7 +86,7 @@ void callb2(pg_vector_t *fillbuff, pg_vector_t *transformed_vec) {
                    (int)transformed_vec->data[i + 1].x, (int)transformed_vec->data[i + 1].y);
     }
     bresenham2(fillbuff, (int)transformed_vec->data[transformed_vec->size - 1].x,
-              (int)transformed_vec->data[transformed_vec->size - 1].y,
+               (int)transformed_vec->data[transformed_vec->size - 1].y,
                (int)transformed_vec->data[0].x, (int)transformed_vec->data[0].y);
 }
 
