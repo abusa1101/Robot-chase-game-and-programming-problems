@@ -50,10 +50,10 @@ void CallFunctions(bitmap_t bmp, color_bgr_t color, int input,
         give_tri(&rect_vec, 21.0, 28.0, 400, 400);
         //cd2pixel(&rect_vec);
         rotate(&rect_vec, &transformed_vec, -30);
-        //cd2pixel(&transformed_vec);
+        cd2pixel(&transformed_vec);
         //tri_draw(&bmp, color, &transformed_vec);
         callb2(&fillbuff, &transformed_vec);
-        cd2pixel(&fillbuff);
+        //cd2pixel(&fillbuff);
         tri_fill(&bmp, color, &transformed_vec, &fillbuff);
     }
 }
