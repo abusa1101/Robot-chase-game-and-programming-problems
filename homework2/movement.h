@@ -17,6 +17,53 @@ typedef struct pg_vector {
     int size;
 } pg_vector_t;
 
+typedef struct pos_data {
+    double x;
+    double y;
+} pos_data_t;
+
+typedef struct rob_position {
+    pos_data_t *data;
+    int capacity;
+    int size;
+} rob_position_t;
+
+typedef struct unitvec {
+    double x;
+    double y;
+} unitvec_t;
+
+typedef struct lamp {
+    unitvec_t location;
+    int size;
+    int rot;
+    //int power;
+} lamp_t;
+
+typedef struct robot {
+    unitvec_t location;
+    //unitvec_t dir;
+    //unitvec_t eye_l;
+    //unitvec_t eye_r;
+    //double dist_sq;
+    //double move_l;
+    //double move_r;
+    //double theta;
+    //double fwd_dist;
+    //double max_movement;
+    //double wheel_base;
+    double width;
+    double length;
+} robot_t;
+
+typedef struct game {
+	robot_t robot;
+	lamp_t lamp[3];
+	int n_lamp;
+} game_t;
+
+void setConstants(lamp_t *lamp1, lamp_t *lamp2, lamp_t *lamp3);
+
 void pg_create(pg_vector_t *v);
 
 void pg_create2(pg_vector_t *v);

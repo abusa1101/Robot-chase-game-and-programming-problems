@@ -47,5 +47,7 @@ void tri_fill(bitmap_t *bmp, color_bgr_t color, pg_vector_t *tri_vec, pg_vector_
 
 void rotate(pg_vector_t *rect_vec, pg_vector_t *transformed_vec, double angle);
 
+void rotate2(pg_vector_t *rect_vec, pg_vector_t *transformed_vec, double angle, double x_pivot, double y_pivot);
+
 void CallFunctions(bitmap_t bmp, color_bgr_t color, int input,
                    pg_vector_t rect_vec, pg_vector_t transformed_vec, pg_vector_t fillbuff);

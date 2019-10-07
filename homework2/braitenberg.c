@@ -57,54 +57,18 @@ int main(int argc, char **argv) {
     color_bgr_t color_robot = {0, 255, 0};
     color_bgr_t color = {255, 255, 255};
     color_bgr_t color_lamp = {0, 255, 255};
+    robot_t robot = {0};
+    lamp_t lamp1 = {0};
+    lamp_t lamp2 = {0};
+    lamp_t lamp3 = {0};
 
-     //border
-     double xcb = 320.0;
-     double ycb = 240.0;
-     give_rect(&rect_vec, 600.0, 440.0, xcb, ycb);
-     cd2pixel(&rect_vec);
-     pg_draw(&bmp, color, &rect_vec, 0);
+    initGraphics(bmp, color, color_robot, color_lamp, &robot, &lamp1, &lamp2, &lamp3,
+                      rect_vec, trans1_vec, fillbuff1, trans2_vec, fillbuff2, trans3_vec,
+                      fillbuff3, trans4_vec, fillbuff4);
 
-     //robot
-     //printf("%f %f", robot.width, robot.length);
-     give_tri(&trans4_vec, 21, 28, 320, 240);
-     cd2pixel(&trans4_vec);
-     tri_draw(&bmp, color_robot, &trans4_vec);
-     callb2(&fillbuff4, &trans4_vec);
-     tri_fill(&bmp, color_robot, &trans4_vec, &fillbuff4);
-
-     //lamps
-     double lamp_size = 12.0;
-     double xcl1 = 124.1;
-     double ycl1 = 224.1;
-     give_rect(&l1_vec, lamp_size, lamp_size, xcl1, ycl1);
-     rotate2(&l1_vec, &trans1_vec, 45, xcl1, ycl1);
-     cd2pixel(&trans1_vec);
-     pg_draw(&bmp, color_lamp, &trans1_vec, 0);
-     callb2(&fillbuff1, &trans1_vec);
-     tri_fill(&bmp, color_lamp, &trans1_vec, &fillbuff1);
-
-     double xcl2 = 349.1;
-     double ycl2 = 99.1;
-     give_rect(&l2_vec, lamp_size, lamp_size, xcl2, ycl2);
-     rotate2(&l2_vec, &trans2_vec, 45, xcl2, ycl2);
-     cd2pixel(&trans2_vec);
-     pg_draw(&bmp, color_lamp, &trans2_vec, 0);
-     callb2(&fillbuff2, &trans2_vec);
-     tri_fill(&bmp, color_lamp, &trans2_vec, &fillbuff2);
-
-     double xcl3 = 449.1;
-     double ycl3 = 349.1;
-     give_rect(&l3_vec, lamp_size, lamp_size, xcl3, ycl3);
-     rotate2(&l3_vec, &trans3_vec, 45, xcl3, ycl3);
-     cd2pixel(&trans3_vec);
-     pg_draw(&bmp, color_lamp, &trans3_vec, 0);
-     callb2(&fillbuff3, &trans3_vec);
-     tri_fill(&bmp, color_lamp, &trans3_vec, &fillbuff3);
-
-    // //Update movement
+    //Update movement
     // for (int i = 0; i < timesteps; i++) { //Lamp1
-    //   activateLamp(game, robot);
+    //   activateMove(&game);
     //   check4collision(robot, lamp);
     //   retreat(robot, lamp); //repeat till collision resolved
     //   updateGraphics(game); //clear existing and create new
