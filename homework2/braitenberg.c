@@ -24,57 +24,103 @@ int main(int argc, char **argv) {
   }
   int timesteps = atoi(argv[1]);
   int fast = atoi(argv[2]);
+  printf("%d,%d\n", timesteps, fast); //for no reason at all
 
   //Initialize and set black image
   bitmap_t bmp = {0}; // initialize to zeros
   bmp.width = 640;
   bmp.height = 480;
   bmp.data = calloc(bmp.width * bmp.height, sizeof(color_bgr_t));
-  //Set up my game objects
+
+  //Set up my game objects and vectors
   game_t game = {0};
   robot_t robot = {0};
   lamp_t lamp1 = {0};
   lamp_t lamp2 = {0};
   lamp_t lamp3 = {0};
-  //Constants
-  game.color = {255, 255, 255}; //color_bgr_t color_robot =
-  robot.color = {0, 255, 0};
-  lamp1.color = {0, 255, 255};
-  lamp2.color = {0, 255, 255};
-  lamp3.color = {0, 255, 255};
-  robot.max_movement = 12; //max pixels mvmt in a timestep
-  lamp1.lamp_power = 100000;
-  lamp2.lamp_power = 100000;
-  lamp3.lamp_power = 100000;
-  lamp1.size = 12;
-  lamp2.size = 12;
-  lamp3.size = 12;
-  lamp1.location.x = 124.1;
-  lamp1.location.y = 224.1;
-  lamp2.location.x = 349.1;
-  lamp2.location.y = 99.1;
-  lamp3.location.x = 449.1;
-  lamp3.location.y = 349.1;
 
-  //Variables
-  robot.location.x = 320;
-  robot.location.y = 240;
-  //robot.move_l = 0;
-  //robot.move_r = 0;
-  robot.dir = {0};
-  robot.wheel_base = 80;
+  pg_vector_t rect_vec = {0};
+  pg_create2(&rect_vec);
+  pg_vector_t rob_vec = {0};
+  pg_create2(&rob_vec);
+  pg_vector_t trans1_vec = {0};
+  pg_create2(&trans1_vec);
+  pg_vector_t trans2_vec = {0};
+  pg_create2(&trans2_vec);
+  pg_vector_t trans3_vec = {0};
+  pg_create2(&trans3_vec);
+  pg_vector_t fillbuff = {0};
+  pg_create2(&fillbuff);
+  pg_vector_t l1_vec = {0};
+  pg_create2(&l1_vec);
+  pg_vector_t l2_vec = {0};
+  pg_create2(&l2_vec);
+  pg_vector_t l3_vec = {0};
+  pg_create2(&l3_vec);
+  pg_vector_t fillbuff1 = {0};
+  pg_create2(&fillbuff1);
+  pg_vector_t fillbuff2 = {0};
+  pg_create2(&fillbuff2);
+  pg_vector_t fillbuff3 = {0};
+  pg_create2(&fillbuff3);
 
-  //Update movement
-  for (int i = 0; i < timesteps; i++) { //Lamp1
-    activateLamp(game, robot);
-    //check4collision
-    //move away - repeat till collision resolved
-    //update graphics- clear existing and create new
+  //Set or initialize constants
+  //setConstants(robot, lamp1, lamp2, lamp3);
+  color_bgr_t color_robot = {0, 255, 0};
+  color_bgr_t color = {255, 255, 255};
+  color_bgr_t color_lamp = {0, 255, 255};
+   //initGraphics(game, lamp1, lamp2, lamp3, &rect_vec);
 
+   //border
+   double xcb = 320.0;
+   double ycb = 240.0;
+   give_rect(&rect_vec, 600.0, 440.0, xcb, ycb);
+   cd2pixel(&rect_vec);
+   pg_draw(&bmp, color, &rect_vec, 0);
 
-}
+   //robot
+   give_tri(&rob_vec, 21.0, 28.0, 320, 240);
+   cd2pixel(&rob_vec);
+   tri_draw(&bmp, color_robot, &rob_vec);
+   //callb2(&fillbuff, &rob_vec);
+   //tri_fill(&bmp, color_robot, &rob_vec, &fillbuff);
 
+   //lamps
+   double lamp_size = 12.0;
+   double xcl1 = 124.1;
+   double ycl1 = 224.1;
+   give_rect(&l1_vec, lamp_size, lamp_size, xcl1, ycl1);
+   rotate2(&l1_vec, &trans1_vec, 45, xcl1, ycl1);
+   cd2pixel(&trans1_vec);
+   pg_draw(&bmp, color_lamp, &trans1_vec, 0);
+   //callb2(&fillbuff1, &trans1_vec);
+   //tri_fill(&bmp, color_lamp, &trans1_vec, &fillbuff1);
 
+   double xcl2 = 349.1;
+   double ycl2 = 99.1;
+   give_rect(&l2_vec, lamp_size, lamp_size, xcl2, ycl2);
+   rotate2(&l2_vec, &trans2_vec, 45, xcl2, ycl2);
+   cd2pixel(&trans2_vec);
+   pg_draw(&bmp, color_lamp, &trans2_vec, 0);
+   //callb2(&fillbuff2, &trans2_vec);
+   //tri_fill(&bmp, color_lamp, &trans2_vec, &fillbuff2);
+
+   double xcl3 = 449.1;
+   double ycl3 = 349.1;
+   give_rect(&l3_vec, lamp_size, lamp_size, xcl3, ycl3);
+   rotate2(&l3_vec, &trans3_vec, 45, xcl3, ycl3);
+   cd2pixel(&trans3_vec);
+   pg_draw(&bmp, color_lamp, &trans3_vec, 0);
+   //callb2(&fillbuff3, &trans3_vec);
+   //tri_fill(&bmp, color_lamp, &trans3_vec, &fillbuff3);
+
+  // //Update movement
+  // for (int i = 0; i < timesteps; i++) { //Lamp1
+  //   activateLamp(game, robot);
+  //   check4collision(robot, lamp);
+  //   retreat(robot, lamp); //repeat till collision resolved
+  //   updateGraphics(game); //clear existing and create new
+  // }
 
   //Image serializing & game sleep settings
   size_t bmp_size = bmp_calculate_size(&bmp);
@@ -84,7 +130,23 @@ int main(int argc, char **argv) {
   fwrite(serialized_bmp, bmp_size, 1, f);
   fclose(f);
   image_server_set_data(bmp_size, serialized_bmp);
-  image_server_start("8000"); // you could change the port number, but animation.html wants 8000
+  image_server_start("8000");
+
+  //Free vectors
+  pg_free(&fillbuff);
+  pg_free(&fillbuff1);
+  pg_free(&fillbuff2);
+  pg_free(&fillbuff3);
+  pg_free(&rob_vec);
+  pg_free(&rect_vec);
+  pg_free(&l1_vec);
+  pg_free(&l2_vec);
+  pg_free(&l3_vec);
+  pg_free(&trans1_vec);
+  pg_free(&trans2_vec);
+  pg_free(&trans3_vec);
+
+  //Update sleep settings
   sleep(1);
   free(serialized_bmp);
   free(bmp.data);
