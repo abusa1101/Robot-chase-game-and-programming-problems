@@ -45,7 +45,7 @@ int main(void) {
 
         int args_read = fscanf(f, "%d, %lf, %lf", &obj.int_value,
                                &obj.double_array[0], &obj.double_array[1]);
-  /*  // we can also check for the EOF (end of file) value from fgetc
+   // we can also check for the EOF (end of file) value from fgetc
     for (int i = 3; i < 6; i++) {
         int c = fgetc(f);
         if (c == EOF) {
@@ -75,7 +75,7 @@ int main(void) {
     }*/
 
 
-/*
+
     //PART 2: Store read data. d[i] = first data point, d[values-1] = last data point
     int n =
     printf("%d\n", n);
@@ -263,6 +263,6 @@ int main(void) {
     } else {
         printf("no collision\n");
     }
-*/
+
     return 0;
 }

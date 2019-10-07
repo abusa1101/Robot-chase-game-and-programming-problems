@@ -55,7 +55,7 @@ int main(void) {
     clock_t start3 = clock();
     __uint64_t ms = sequence3(90);
     double elapsed3 = (clock() - start3) / (double)CLOCKS_PER_SEC;
-    printf("fib3(90) got %ld and took %.6f ms per iteration\n", ms, elapsed3 * 1000);
+    printf("fib3(90) got %ld and took %.6f ms per iteration\n", ms, elapsed3 * 100);
 
     return 0;
 }

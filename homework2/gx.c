@@ -23,7 +23,7 @@ void pg_append(pg_vector_t *v, double xvalue, double yvalue) {
     v->data[v->size].x = xvalue;
     v->data[v->size].y = yvalue;
     v->size++;
-}
+}/;
 
 void pg_free(pg_vector_t *v) {
     free(v->data);
