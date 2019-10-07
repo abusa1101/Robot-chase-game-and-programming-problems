@@ -33,7 +33,28 @@ void pg_free(pg_vector_t *v) {
 
 vector_xy_i32_t *gx_rasterize_line(int x0, int y0, int x1, int y1);
 
-void gx_draw_line(bitmap_t *bmp, color_bgr_t color, int x0, int y0, int x1, int y1);
+void gx_draw_line(bitmap_t *bmp, color_bgr_t color, int x0, int y0, int x1, int y1) {
+    int dx = abs(x1 - x0);
+    int sx = x0 < x1 ? 1 : -1;
+    int dy = -abs(y1 - y0);
+    int sy = y0 < y1 ? 1 : -1;
+    int err = dx + dy;
+    while (1) {
+        bmp->data[y0 * bmp->width + x0] = color;
+        if (x0 == x1 && y0 == y1) {
+            break;
+        }
+        int e2 = 2 * err;
+        if (e2 >= dy) {
+            err += dy;
+            x0 += sx;
+        }
+        if (e2 <= dx) {
+            err += dx;
+            y0 += sy;
+        }
+    }
+}
 
 void gx_draw(bitmap_t *bmp, color_bgr_t color, vector_xy_t *points) {
     for (int i = 0; i < tri_vec->size - 1; i++) {
@@ -136,17 +157,20 @@ vector_xy_t *gx_lamp(double width, double height) {
 vector_xy_t *gx_robot(double dim);
 
 vector_xy_t *gx_rot(double theta, vector_xy_t *points, double xpivot, double ypivot) {
-    double rotx = 0;
-    double roty = 0;
+    double rotated_x = 0;
+    double rotated_y = 0;
     int i = 0;
     while (i < 4) {
         double x_shifted = points->data[i].x - x_pivot;
         double y_shifted = points->data[i].y - y_pivot;
-        rotx = x_pivot + (x_shifted * COS(angle) - y_shifted * SIN(angle));
-        roty = y_pivot + (x_shifted * SIN(angle) + y_shifted * COS(angle));
-        pg_append(transformed_vec, rotx, roty);
+        rotated_x = x_pivot + (x_shifted * COS(angle) - y_shifted * SIN(angle));
+        rotated_y = y_pivot + (x_shifted * SIN(angle) + y_shifted * COS(angle));
+        //pg_append(transformed_vec, rotx, roty);
+        points->data[i].x = rotated_x;
+        points->data[i].y = rotated_y;
         i++;
     }
+    return points;
 }
 
 vector_xy_t *gx_trans(double x, double y, vector_xy_t *points) {
@@ -156,6 +180,33 @@ vector_xy_t *gx_trans(double x, double y, vector_xy_t *points) {
         //pg_append(transformed_vec, transx, transy);
         points->data[i].x = transformed_x;
         points->data[i].y = transformed_y;
+    }
+    return points;
+}
+
+vector_xy_t *gx_round(vector_xy_t *points) {
+    double epsilon = 1e-6;
+    double tempx = points->data[0].x;
+    double tempy = points->data[0].y;
+    for (int i = 0; i < points->size; i++) {
+        if (tempx > points->data[i].x) {
+            tempx = points->data[i].x;
+        }
+        if (tempy > points->data[i].y) {
+            tempy = points->data[i].y;
+        }
+    }
+    for (int i = 0; i < points->size; i++) { //check for min value and round off
+        if (points->data[i].x == tempx) {
+            points->data[i].x = ceil(points->data[i].x);
+        } else {
+            points->data[i].x = floor(points->data[i].x - epsilon);
+        }
+        if (points->data[i].y == tempy) {
+            points->data[i].y = ceil(points->data[i].y);
+        } else {
+            points->data[i].y = floor(points->data[i].y - epsilon);
+        }
     }
     return points;
 }
