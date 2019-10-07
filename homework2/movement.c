@@ -260,16 +260,17 @@ void rotate(pg_vector_t *rect_vec, pg_vector_t *transformed_vec, double angle) {
     }
 }
 
-void rotate2(pg_vector_t *rect_vec, pg_vector_t *transformed_vec, double angle, double x_pivot, double y_pivot) {
-  double rotx = 0;
-  double roty = 0;
-  int i = 0;
-  while (i < 4) {
-      double x_shifted = rect_vec->data[i].x - x_pivot;
-      double y_shifted = rect_vec->data[i].y - y_pivot;
-      rotx = x_pivot + (x_shifted * COS(angle) - y_shifted * SIN(angle));
-      roty = y_pivot + (x_shifted * SIN(angle) + y_shifted * COS(angle));
-      pg_append(transformed_vec, rotx, roty);
-      i++;
-  }
+void rotate2(pg_vector_t *rect_vec, pg_vector_t *transformed_vec, double angle,
+             double x_pivot, double y_pivot) {
+    double rotx = 0;
+    double roty = 0;
+    int i = 0;
+    while (i < 4) {
+        double x_shifted = rect_vec->data[i].x - x_pivot;
+        double y_shifted = rect_vec->data[i].y - y_pivot;
+        rotx = x_pivot + (x_shifted * COS(angle) - y_shifted * SIN(angle));
+        roty = y_pivot + (x_shifted * SIN(angle) + y_shifted * COS(angle));
+        pg_append(transformed_vec, rotx, roty);
+        i++;
+    }
 }
