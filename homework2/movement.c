@@ -9,44 +9,44 @@
 #define COS(x) cos((x)*M_PI / 180)
 
 //Movement
-void setConstants(robot_t robot, lamp_t lamp1, lamp_t lamp2, lamp_t lamp3) {
-  // game.color.b = 255; //color_bgr_t color_robot =
-  // game.color.g = 255;
-  // game.color.r = 255;
-  // robot.color.b = 0;
-  // robot.color.g = 255;
-  // robot.color.r = 0;
-  robot.location.data->x = 320;
-  robot.location.data->y = 240;
-  robot.max_movement = 12; //max pixels mvmt in a timestep
-  robot.wheel_base = 80;
-  robot.width = 21;
-  robot.length = 28;
-  // lamp1.color.b = 0;
-  // lamp1.color.g = 255;
-  // lamp1.color.r = 255;
-  // lamp2.color.b = 0;
-  // lamp2.color.g = 255;
-  // lamp2.color.r = 255;
-  // lamp3.color.b = 0;
-  // lamp3.color.g = 255;
-  // lamp3.color.r = 255;
-  lamp1.power = 100000;
-  lamp2.power = 100000;
-  lamp3.power = 100000;
-  lamp1.size = 12;
-  lamp2.size = 12;
-  lamp3.size = 12;
-  lamp1.rot = 45;
-  lamp2.rot = 45;
-  lamp3.rot = 45;
-  lamp1.location.data->x = 124.1;
-  lamp1.location.data->y = 224.1;
-  lamp2.location.data->x = 349.1;
-  lamp2.location.data->y = 99.1;
-  lamp3.location.data->x = 449.1;
-  lamp3.location.data->y = 349.1;
-}
+// void setConstants(robot_t robot, lamp_t lamp1, lamp_t lamp2, lamp_t lamp3) {
+//   // game.color.b = 255; //color_bgr_t color_robot =
+//   // game.color.g = 255;
+//   // game.color.r = 255;
+//   // robot.color.b = 0;
+//   // robot.color.g = 255;
+//   // robot.color.r = 0;
+//   robot.location.data->x = 320;
+//   robot.location.data->y = 240;
+//   robot.max_movement = 12; //max pixels mvmt in a timestep
+//   robot.wheel_base = 80;
+//   robot.width = 21;
+//   robot.length = 28;
+//   // lamp1.color.b = 0;
+//   // lamp1.color.g = 255;
+//   // lamp1.color.r = 255;
+//   // lamp2.color.b = 0;
+//   // lamp2.color.g = 255;
+//   // lamp2.color.r = 255;
+//   // lamp3.color.b = 0;
+//   // lamp3.color.g = 255;
+//   // lamp3.color.r = 255;
+//   lamp1.power = 100000;
+//   lamp2.power = 100000;
+//   lamp3.power = 100000;
+//   lamp1.size = 12;
+//   lamp2.size = 12;
+//   lamp3.size = 12;
+//   lamp1.rot = 45;
+//   lamp2.rot = 45;
+//   lamp3.rot = 45;
+//   lamp1.location.data->x = 124.1;
+//   lamp1.location.data->y = 224.1;
+//   lamp2.location.data->x = 349.1;
+//   lamp2.location.data->y = 99.1;
+//   lamp3.location.data->x = 449.1;
+//   lamp3.location.data->y = 349.1;
+// }
 
 // double dotP(game_t game) {
 //   double product = 0;
@@ -247,7 +247,7 @@ void pg_create(pg_vector_t *v) {
 }
 
 void pg_create2(pg_vector_t *v) {
-    v->capacity = 200;
+    v->capacity = 400;
     v->size = 0;
     v->data = malloc(sizeof(pg_points_t *) * v->capacity);
 }
