@@ -105,14 +105,13 @@ int check4containment(polygon_t *pg, double x, double y) {
   }
 } //check if polygon contains a point (x,y) of the other polygon
 
-// //Open file using fopen, skip first 256 characters using fgets and set pointer to start of new line
+
 // //Error messages setup
-// polygon_t pg1 = poly(f); //datapoints
-// polygon_t pg2 = poly(f);//datapoints
+// polygon_t pg1 = poly(f);
+// polygon_t pg2 = poly(f);
 // //check collision
 // if(pg_collision(&pg1, &pg2)) {
 //   printf("collision!");
 // } else {
 //   printf("no collision\n");
 // }
-// return 0;
