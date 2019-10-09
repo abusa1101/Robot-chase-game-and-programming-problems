@@ -31,11 +31,6 @@ typedef struct game {
 	int n_lamp;
 } game_t;
 
-typedef struct polygon {
-  int npoints;
-  double x[4];
-  double y[4];
-} polygon_t;
 
 
 

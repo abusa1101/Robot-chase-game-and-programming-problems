@@ -22,42 +22,39 @@ int main(void) {
     color_bgr_t color_lamp = {0, 255, 255};
 
     game_t game = {0};
-    polygon_t rob = {0};
-    polygon_t lamp1 ={0};
-    polygon_t lamp2 ={0};
-    polygon_t lamp3 ={0};
+    vector_xy_t *rob_points = vector_create();
+    vector_xy_t *lamp1_points = vector_create();
+    vector_xy_t *lamp2_points = vector_create();
+    vector_xy_t *lamp3_points = vector_create();
 
     init_values(&game);
     gx_update(&bmp, &game, color_back, color_lamp, color_robot);
+    pg_store(rob_points, lamp1_points, lamp2_points, lamp3_points);
 
     int timesteps = 200;
-    for (int i = 0; i < timesteps; i++) { //Lamp1
+    for (int i = 0; i < timesteps; i++) {
         activateMove(&game);
         // check4collision(robot, lamp);
         // retreat(robot, lamp); //repeat till collision resolved
         gx_update(&bmp, &game, color_back, color_lamp, color_robot); //clear existing and create new
 
-
         //Image serializing & game sleep settings
         size_t bmp_size = bmp_calculate_size(&bmp);
         uint8_t *serialized_bmp = malloc(bmp_size);
         bmp_serialize(&bmp, serialized_bmp);
-        // FILE *f = fopen("my_image3.bmp", "wb");
-        // fwrite(serialized_bmp, bmp_size, 1, f);
-        // fclose(f);
         image_server_set_data(bmp_size, serialized_bmp);
 
-
-        //Update sleep settings
-        //sleep(1);
         free(serialized_bmp);
-
 
         int seconds = 0;
         long nanoseconds = 40 * 1000 * 1000;
         struct timespec interval = { seconds, nanoseconds };
         nanosleep(&interval, NULL);
     }
+    free(lamp3_points);
+    free(lamp2_points);
+    free(lamp1_points);
+    free(rob_points);
     free(bmp.data);
     return 0;
 }

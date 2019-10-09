@@ -95,17 +95,35 @@ int check4containment(polygon_t *rob, double x, double y) {
 }
 
 
-void store_pg(polygon_t *rob, polygon_t *lamp1, polygon_t *lamp2, polygon_t *lamp3) {
-for (int i = 0; i < 4; i++) {
-    rob->x[i] =
-    rob->y[i] =
-}
-for (int i = 0; i < 3; i++) {
-    lamp1->x[i] = 
-    lamp2->y[i] =
-}
+void pg_store(vector_xy_t *lamp1_points, vector_xy_t *lamp2_points, vector_xy_t *lamp3_points) {
+    double xc = 0;
+    double yc = 0;
+    double p1x = xc + width / 2.0;
+    double p1y = yc + height / 2.0;
+    double p2x = xc + width / 2.0;
+    double p2y = yc - height / 2.0;
+    double p3x = xc - width / 2.0;
+    double p3y = yc - height / 2.0;
+    double p4x = xc - width / 2.0;
+    double p4y = yc + height / 2.0;
 
+    vector_append(rob_points, p4x, p4y);
+    vector_append(rob_points, p3x, p3y);
+    vector_append(rob_points, p2x, p2y);
+    vector_append(rob_points, p1x, p1y);
 
+    double xc = 0;
+    double yc = 0;
+    double p1x = xc - h / 2.0;
+    double p1y = yc - w / 2.0;
+    double p2x = xc - h / 2.0;
+    double p2y = yc + w / 2.0;
+    double p3x = xc + h / 2.0;
+    double p3y = yc;
+
+    vector_append(points, p3x, p3y);
+    vector_append(points, p2x, p2y);
+    vector_append(points, p1x, p1y);
 
 
 }
