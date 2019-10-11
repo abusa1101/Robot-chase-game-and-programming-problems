@@ -95,11 +95,11 @@ void gx_draw(bitmap_t *bmp, color_bgr_t color, vector_xy_t *pathpoints) {
     for (int i = 0; i < pathpoints->size - 1; i++) {
         gx_draw_line(bmp, color, pathpoints->data[i].x, pathpoints->data[i].y,
                      pathpoints->data[i + 1].x, pathpoints->data[i + 1].y);
-        }
-        gx_draw_line(bmp, color, pathpoints->data[pathpoints->size - 1].x,
-                     pathpoints->data[pathpoints->size - 1].y,
-                     pathpoints->data[0].x, pathpoints->data[0].y);
-        vector_free(pathpoints);
+    }
+    gx_draw_line(bmp, color, pathpoints->data[pathpoints->size - 1].x,
+                 pathpoints->data[pathpoints->size - 1].y,
+                 pathpoints->data[0].x, pathpoints->data[0].y);
+    vector_free(pathpoints);
     }
 
 void gx_fill(bitmap_t *bmp, color_bgr_t color, vector_xy_t *pathpoints) {
@@ -287,13 +287,13 @@ void activateMove(game_t *game) {
     double lamp_power = 100000;
     for (int i = 0; i < game->n_lamp; i++) {
         double dist_sq = pow(game->lpos[i].x - game->rpos.x, 2) +
-                             pow(game->lpos[i].y - game->rpos.y, 2);
+                         pow(game->lpos[i].y - game->rpos.y, 2);
         double dir_x = (game->lpos[i].x - game->rpos.x) / sqrt(dist_sq);
         double dir_y = (game->lpos[i].y - game->rpos.y) / sqrt(dist_sq);
         double eye_l_x = cos(game->rtheta + (M_PI / 3));
         double eye_l_y = -sin(game->rtheta + (M_PI / 3));
-        double eye_r_x  = cos(game->rtheta - (M_PI / 3));
-        double eye_r_y  = -sin(game->rtheta - (M_PI / 3));
+        double eye_r_x = cos(game->rtheta - (M_PI / 3));
+        double eye_r_y = -sin(game->rtheta - (M_PI / 3));
         move_l += fmax(0.0, dotP(dir_x, dir_y, eye_r_x, eye_r_y)) * lamp_power / (dist_sq);
         move_r += fmax(0.0, dotP(dir_x, dir_y, eye_l_x, eye_l_y)) * lamp_power / (dist_sq);
     }
@@ -317,7 +317,7 @@ bool robot_collision(game_t *game, vector_xy_t *lamp) {
 }
 
 void resolve_collision(game_t *game, double lamp_x, double lamp_y) {
-    vector_xy_t* lamp = gx_rect(12, 12);
+    vector_xy_t *lamp = gx_rect(12, 12);
     gx_rot(M_PI / 4, lamp);
     gx_trans(lamp_x, lamp_y, lamp);
     while (robot_collision(game, lamp)) {

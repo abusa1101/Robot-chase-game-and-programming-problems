@@ -26,10 +26,10 @@ typedef struct lamps {
 } lamp_t;
 
 typedef struct game {
-	unitvec_t rpos;
+    unitvec_t rpos;
     double rtheta;
-	unitvec_t lpos[3];
-	int n_lamp;
+    unitvec_t lpos[3];
+    int n_lamp;
 } game_t;
 
 // Vector Operations
