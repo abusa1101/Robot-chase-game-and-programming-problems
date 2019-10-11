@@ -38,24 +38,24 @@ int main(int argc, char **argv) {
 
     for (int t = 0; t < timesteps; t++) {
         //if (t == 0) {
-            gx_update(&bmp, &game, color_back, color_lamp, color_robot);
+        gx_update(&bmp, &game, color_back, color_lamp, color_robot);
         //} else {
-            activateMove(&game);
-            for (int i = 0; i < game.n_lamp; i++) {
-                resolve_collision(&game, game.lpos[i].x, game.lpos[i].y);
-            }
-            if (speed == 0) {
-                gx_update(&bmp, &game, color_back, color_lamp, color_robot);
-                size_t bmp_size = bmp_calculate_size(&bmp);
-                uint8_t *serialized_bmp = malloc(bmp_size);
-                bmp_serialize(&bmp, serialized_bmp);
-                image_server_set_data(bmp_size, serialized_bmp);
-                free(serialized_bmp);
-                int seconds = 0;
-                long nanoseconds = 40 * 1000 * 1000;
-                struct timespec interval = { seconds, nanoseconds };
-                nanosleep(&interval, NULL);
-            }
+        activateMove(&game);
+        for (int i = 0; i < game.n_lamp; i++) {
+            resolve_collision(&game, game.lpos[i].x, game.lpos[i].y);
+        }
+        if (speed == 0) {
+            gx_update(&bmp, &game, color_back, color_lamp, color_robot);
+            size_t bmp_size = bmp_calculate_size(&bmp);
+            uint8_t *serialized_bmp = malloc(bmp_size);
+            bmp_serialize(&bmp, serialized_bmp);
+            image_server_set_data(bmp_size, serialized_bmp);
+            free(serialized_bmp);
+            int seconds = 0;
+            long nanoseconds = 40 * 1000 * 1000;
+            struct timespec interval = { seconds, nanoseconds };
+            nanosleep(&interval, NULL);
+        }
         //}
     }
     gx_update(&bmp, &game, color_back, color_lamp, color_robot);
@@ -73,19 +73,3 @@ int main(int argc, char **argv) {
     free(bmp.data);
     return 0;
 }
-
-// printf("%f, %f\n", lamp1.c_x, lamp1.c_y);
-//     for (int i = 0; i < 3; i++) {
-//         printf("%f, %f\n", lamp1.x[i], lamp1.y[i]);
-//     }
-//     printf("\n");
-//     printf("%f, %f\n", lamp2.c_x, lamp2.c_y);
-//     for (int i = 0; i < 3; i++) {
-//         printf("%f, %f\n", lamp2.x[i], lamp2.y[i]);
-//     }
-//     printf("\n");
-//     printf("%f, %f\n", lamp3.c_x, lamp3.c_y);
-//     for (int i = 0; i < 3; i++) {
-//         printf("%f, %f\n", lamp3.x[i], lamp3.y[i]);
-//     }
-// printf("\n");
