@@ -39,7 +39,16 @@ void tst_destroy(tst_t *tst) {
 }
 
 void tst_add(tst_t *tst, const char *word) {
-
+    make root node of tree if it doesn't exist
+    forever {
+        depending on word[0] {
+            * move to node->left, creating it if it doesn't exist
+            * move to node->right, creating it if it doesn't exist
+            * move to node->equal, returning if word[0] is '\0'
+                * advancing word (moving the pointer with word++) if word[0] is not '\0',
+                * creating node->equal if it doesn't exist
+        }
+    }
 }
 
 void tst_node_search(tst_node_t *node, char *word, char *suggestion, char *sugg_start, int errs) {

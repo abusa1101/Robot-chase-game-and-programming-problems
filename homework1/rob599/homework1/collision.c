@@ -44,17 +44,12 @@ polygon_t poly_scan(FILE *f) {
           exit(1);
       }
   }
-//
-// printf("%f, %f, %f\n", x, y, rot);
 
   for (int i = 0; i < pg.npoints; i++) {
-    double trans_x = x + (cos(rot) * pg.x[i]) - (sin(rot) * pg.y[i]);
-    double trans_y = y + (sin(rot) * pg.x[i]) + (cos(rot) * pg.y[i]);
+    double trans_x = x + cos(rot) * pg.x[i] - sin(rot) * pg.y[i];
+    double trans_y = y + sin(rot) * pg.x[i] + cos(rot) * pg.y[i];
     pg.x[i] = trans_x;
     pg.y[i] = trans_y;
-
-    // printf("%f, %f\n", pg.x[i], pg.y[i]);
-    // printf("%d\n", pg.npoints);
   }
 
   return pg;
@@ -148,7 +143,7 @@ int main(void) {
     polygon_t pg2 = poly_scan(f);
     fclose(f);
     if(pg_collision(&pg1, &pg2)) {
-      printf("collision!\n");
+      printf("collision!");
     } else {
       printf("no collision\n");
     }
