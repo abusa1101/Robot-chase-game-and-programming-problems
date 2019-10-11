@@ -35,11 +35,8 @@ int main(int argc, char **argv) {
     vector_xy_t *lamp3 = vector_create();
 
     init_values(&game);
-
+    gx_update(&bmp, &game, color_back, color_lamp, color_robot);
     for (int t = 0; t < timesteps; t++) {
-        //if (t == 0) {
-        gx_update(&bmp, &game, color_back, color_lamp, color_robot);
-        //} else {
         activateMove(&game);
         for (int i = 0; i < game.n_lamp; i++) {
             resolve_collision(&game, game.lpos[i].x, game.lpos[i].y);

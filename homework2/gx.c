@@ -322,7 +322,6 @@ void resolve_collision(game_t *game, double lamp_x, double lamp_y) {
     gx_rot(M_PI / 4, lamp);
     gx_trans(lamp_x, lamp_y, lamp);
     while (robot_collision(game, lamp)) {
-        printf("collision taking place\n");
         double dx = game->rpos.x - lamp_x;
         double dy = game->rpos.y - lamp_y;
         double dist_sq = pow(dx, 2) + pow(dy, 2);
