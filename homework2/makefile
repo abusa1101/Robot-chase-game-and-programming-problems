@@ -5,8 +5,5 @@ CFLAGS += -fsanitize=address -fsanitize=undefined
 rasterize: rasterize.c bmp.c vectors.c test.c image_server.c
 	gcc -o $@ $^ $(CFLAGS) -lpthread -lm
 
-braitenberg: braitenberg.c bmp.c image_server.c movement.c
-	gcc -o $@ $^ $(CFLAGS) -lpthread -lm
-
-game: game.c bmp.c gx.c image_server.c
+braitenberg: braitenberg.c bmp.c image_server.c gx.c
 	gcc -o $@ $^ $(CFLAGS) -lpthread -lm

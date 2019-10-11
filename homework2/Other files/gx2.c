@@ -1,25 +1,73 @@
-//activateMove(&game);
- check4collision(robot, lamp) {
-
-
-     if(pg_collision(&rob, &lamp)) {
-       printf("collision!");
-     } else {
-       printf("no collision\n");
-     }
- }
-
-
- void retreat(game_t *game) {
-     int flag = check4collision(game);
-     while (flag == 1) {
-         game->rpos.x += 0.5; //or y?
-         game->rpos.y += 0.5;
-         flag = check4collision(game);
-     }
- }
+// //activateMove(&game);
+//  check4collision(robot, lamp) {
+//      if(pg_collision(&rob, &lamp)) {
+//        printf("collision!");
+//      } else {
+//        printf("no collision\n");
+//      }
+//  }
+//  void retreat(game_t *game) {
+//      int flag = check4collision(game);
+//      while (flag == 1) {
+//          game->rpos.x += 0.5; //or y?
+//          game->rpos.y += 0.5;
+//          flag = check4collision(game);
+//      }
+//  }
 //gx_update(&bmp, &game, color_back, color_lamp, color_robot);
 
+// double h = 12;
+// double w = 12;
+// double xcl1 = 124.1;
+// double ycl1 = 224.1;
+// double p1xl1 = xcl1 - h / 2.0;
+// double p1yl1 = ycl1 - w / 2.0;
+// double p2xl1 = xcl1 - h / 2.0;
+// double p2yl1 = ycl1 + w / 2.0;
+// double p3xl1 = xcl1 + h / 2.0;
+// double p3yl1 = ycl1;
+// lamp1->c_x = xcl1;
+// lamp1->c_y = ycl1;
+// lamp1->x[0] = p3xl1;
+// lamp1->y[0] = p3yl1;
+// lamp1->x[1] = p2xl1;
+// lamp1->y[1] = p2yl1;
+// lamp1->x[2] = p1xl1;
+// lamp1->y[2] = p1yl1;
+//
+// double xcl2 = 349.1;
+// double ycl2 = 99.1;
+// double p1xl2 = xcl2 - h / 2.0;
+// double p1yl2 = ycl2 - w / 2.0;
+// double p2xl2 = xcl2 - h / 2.0;
+// double p2yl2 = ycl2 + w / 2.0;
+// double p3xl2 = xcl2 + h / 2.0;
+// double p3yl2 = ycl2;
+// lamp2->c_x = xcl2;
+// lamp2->c_y = ycl2;
+// lamp2->x[0] = p3xl2;
+// lamp2->y[0] = p3yl2;
+// lamp2->x[1] = p2xl2;
+// lamp2->y[1] = p2yl2;
+// lamp2->x[2] = p1xl2;
+// lamp2->y[2] = p1yl2;
+//
+// double xcl3 = 449.1;
+// double ycl3 = 349.1;
+// double p1xl3 = xcl3 - h / 2.0;
+// double p1yl3 = ycl3 - w / 2.0;
+// double p2xl3 = xcl3 - h / 2.0;
+// double p2yl3 = ycl3 + w / 2.0;
+// double p3xl3 = xcl3 + h / 2.0;
+// double p3yl3 = ycl3;
+// lamp3->c_x = xcl3;
+// lamp3->c_y = ycl3;
+// lamp3->x[0] = p3xl3;
+// lamp3->y[0] = p3yl3;
+// lamp3->x[1] = p2xl3;
+// lamp3->y[1] = p2yl3;
+// lamp3->x[2] = p1xl3;
+// lamp3->y[2] = p1yl3;
 
 //Collision
 int line_intersection(double x0, double y0, double x1, double y1, double x2, double y2, double x3, double y3) {
@@ -38,7 +86,7 @@ int line_intersection(double x0, double y0, double x1, double y1, double x2, dou
   } else {
     return 0;
   }
-} //check if 2 lines (2 endpoints each) collide
+}
 
 int pg_intersection(polygon_t *rob, polygon_t *lamp) {
   for (int i = 0; i < rob->npoints; i++) {
@@ -58,7 +106,7 @@ int pg_intersection(polygon_t *rob, polygon_t *lamp) {
       }
     }
   }
-} //check for 2 polygon intersection
+}
 
 int pg_collision(polygon_t *rob, polygon_t *lamp) {
   if (pg_intersection(rob,lamp) == 1) {
@@ -70,7 +118,7 @@ int pg_collision(polygon_t *rob, polygon_t *lamp) {
   } else {
     return 0;
   }
-} // check for 2 polygon collision
+}
 
 int check4containment(polygon_t *rob, double x, double y) {
   int counter1 = 0;
@@ -92,38 +140,4 @@ int check4containment(polygon_t *rob, double x, double y) {
   } else {
     return 0;
   }
-}
-
-
-void pg_store(vector_xy_t *lamp1_points, vector_xy_t *lamp2_points, vector_xy_t *lamp3_points) {
-    double xc = 0;
-    double yc = 0;
-    double p1x = xc + width / 2.0;
-    double p1y = yc + height / 2.0;
-    double p2x = xc + width / 2.0;
-    double p2y = yc - height / 2.0;
-    double p3x = xc - width / 2.0;
-    double p3y = yc - height / 2.0;
-    double p4x = xc - width / 2.0;
-    double p4y = yc + height / 2.0;
-
-    vector_append(rob_points, p4x, p4y);
-    vector_append(rob_points, p3x, p3y);
-    vector_append(rob_points, p2x, p2y);
-    vector_append(rob_points, p1x, p1y);
-
-    double xc = 0;
-    double yc = 0;
-    double p1x = xc - h / 2.0;
-    double p1y = yc - w / 2.0;
-    double p2x = xc - h / 2.0;
-    double p2y = yc + w / 2.0;
-    double p3x = xc + h / 2.0;
-    double p3y = yc;
-
-    vector_append(points, p3x, p3y);
-    vector_append(points, p2x, p2y);
-    vector_append(points, p1x, p1y);
-
-
 }
