@@ -100,7 +100,7 @@ void gx_draw(bitmap_t *bmp, color_bgr_t color, vector_xy_t *pathpoints) {
                  pathpoints->data[pathpoints->size - 1].y,
                  pathpoints->data[0].x, pathpoints->data[0].y);
     vector_free(pathpoints);
-    }
+}
 
 void gx_fill(bitmap_t *bmp, color_bgr_t color, vector_xy_t *pathpoints) {
     int x0[bmp->height];
@@ -378,8 +378,8 @@ bool check4containment(vector_xy_t *pg, double x, double y) {
     int counter2 = 0;
     for (int i = 0; i < pg->size; i++) {
         int i2 = (i + 1) % pg->size;
-        double cp = ((y - pg->data[i].y) * (pg->data[i2].x - pg->data[i].x))
-                     - ((x - pg->data[i].x) * (pg->data[i2].y - pg->data[i].y));
+        double cp = ((y - pg->data[i].y) * (pg->data[i2].x - pg->data[i].x)) -
+                    ((x - pg->data[i].x) * (pg->data[i2].y - pg->data[i].y));
         if (cp > 0) {
             counter1++;
         } else if (cp < 0) {
