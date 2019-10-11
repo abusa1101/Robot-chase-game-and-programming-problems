@@ -320,12 +320,14 @@ void resolve_collision(game_t *game, double lamp_x, double lamp_y) {
     vector_xy_t *lamp = gx_rect(12, 12);
     gx_rot(M_PI / 4, lamp);
     gx_trans(lamp_x, lamp_y, lamp);
+    //printf("Before resolution %f, %f\n", game->rpos.x, game->rpos.y);
     while (robot_collision(game, lamp)) {
         double dx = game->rpos.x - lamp_x;
         double dy = game->rpos.y - lamp_y;
-        double dist_sq = pow(dx, 2) + pow(dy, 2);
-        game->rpos.x += 0.5 * dx / dist_sq;
-        game->rpos.y += 0.5 * dy / dist_sq;
+        double dist = sqrt(pow(dx, 2) + pow(dy, 2));
+        game->rpos.x += 0.5 * dx / dist;
+        game->rpos.y += 0.5 * dy / dist;
+        //printf("%f, %f\n", game->rpos.x, game->rpos.y);
     }
     vector_free(lamp);
 }
