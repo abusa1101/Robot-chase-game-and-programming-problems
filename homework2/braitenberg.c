@@ -50,7 +50,7 @@ int main(int argc, char **argv) {
             free(serialized_bmp);
             int seconds = 0;
             long nanoseconds = 40 * 1000 * 1000;
-            struct timespec interval = { seconds, nanoseconds };
+            struct timespec interval = {seconds, nanoseconds};
             nanosleep(&interval, NULL);
         }
         //}

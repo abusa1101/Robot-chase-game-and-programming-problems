@@ -59,7 +59,7 @@ vector_xy_t *call_rasterize(vector_xy_t *points) {
     vector_xy_t *pathpoints = vector_create();
     for (int i = 0; i < points->size - 1; i++) {
         gx_rasterize_line(pathpoints, (int)points->data[i].x, (int)points->data[i].y,
-        (int)points->data[i + 1].x, (int)points->data[i + 1].y);
+                          (int)points->data[i + 1].x, (int)points->data[i + 1].y);
     }
     gx_rasterize_line(pathpoints, (int)points->data[points->size - 1].x,
                       (int)points->data[points->size - 1].y,
@@ -93,11 +93,12 @@ void gx_draw_line(bitmap_t *bmp, color_bgr_t color, int x0, int y0, int x1, int 
 
 void gx_draw(bitmap_t *bmp, color_bgr_t color, vector_xy_t *pathpoints) {
     for (int i = 0; i < pathpoints->size - 1; i++) {
-        gx_draw_line(bmp, color, pathpoints->data[i].x, pathpoints->data[i].y, pathpoints->data[i + 1].x,
-            pathpoints->data[i + 1].y);
+        gx_draw_line(bmp, color, pathpoints->data[i].x, pathpoints->data[i].y,
+                     pathpoints->data[i + 1].x, pathpoints->data[i + 1].y);
         }
-        gx_draw_line(bmp, color, pathpoints->data[pathpoints->size - 1].x, pathpoints->data[pathpoints->size - 1].y,
-            pathpoints->data[0].x, pathpoints->data[0].y);
+        gx_draw_line(bmp, color, pathpoints->data[pathpoints->size - 1].x,
+                     pathpoints->data[pathpoints->size - 1].y,
+                     pathpoints->data[0].x, pathpoints->data[0].y);
         vector_free(pathpoints);
     }
 
@@ -214,28 +215,28 @@ void gx_round(vector_xy_t *pathpoints) {
 
 //Objects
 void lamp(bitmap_t *bmp, color_bgr_t color, double x, double y) {
-    vector_xy_t* points = gx_rect(12, 12);
+    vector_xy_t *points = gx_rect(12, 12);
     gx_rot(M_PI / 4, points);
     gx_trans(x, y, points);
     gx_round(points);
-    vector_xy_t* pathpoints = call_rasterize(points);
+    vector_xy_t *pathpoints = call_rasterize(points);
     gx_fill(bmp, color, pathpoints);
 }
 
 void robot(bitmap_t *bmp, color_bgr_t color, double x, double y, double theta) {
-    vector_xy_t* points = gx_robot(21, 28);
+    vector_xy_t *points = gx_robot(21, 28);
     gx_rot(theta, points);
     gx_trans(x, y, points);
     gx_round(points);
-    vector_xy_t* pathpoints = call_rasterize(points);
+    vector_xy_t *pathpoints = call_rasterize(points);
     gx_fill(bmp, color, pathpoints);
 }
 
 void backdrop(bitmap_t *bmp, color_bgr_t color) {
-    vector_xy_t* points = gx_rect(600, 440);
+    vector_xy_t *points = gx_rect(600, 440);
     gx_trans(320, 240, points);
     gx_round(points);
-    vector_xy_t* pathpoints = call_rasterize(points);
+    vector_xy_t *pathpoints = call_rasterize(points);
     gx_draw(bmp, color, pathpoints);
 }
 
@@ -285,9 +286,10 @@ void activateMove(game_t *game) {
     double wheel_base = 80;
     double lamp_power = 100000;
     for (int i = 0; i < game->n_lamp; i++) {
-        double dist_sq = pow(game->lpos[i].x - game->rpos.x, 2) + pow(game->lpos[i].y - game->rpos.y, 2);
-        double dir_x = (game->lpos[i].x - game->rpos.x)/ sqrt(dist_sq);
-        double dir_y = (game->lpos[i].y - game->rpos.y)/ sqrt(dist_sq);
+        double dist_sq = pow(game->lpos[i].x - game->rpos.x, 2) +
+                             pow(game->lpos[i].y - game->rpos.y, 2);
+        double dir_x = (game->lpos[i].x - game->rpos.x) / sqrt(dist_sq);
+        double dir_y = (game->lpos[i].y - game->rpos.y) / sqrt(dist_sq);
         double eye_l_x = cos(game->rtheta + (M_PI / 3));
         double eye_l_y = -sin(game->rtheta + (M_PI / 3));
         double eye_r_x  = cos(game->rtheta - (M_PI / 3));
@@ -304,9 +306,9 @@ void activateMove(game_t *game) {
     game->rpos.x += xdist;
     game->rpos.y += ydist;
 }
-//Collision
+
 bool robot_collision(game_t *game, vector_xy_t *lamp) {
-    vector_xy_t* robot = gx_robot(21, 28);
+    vector_xy_t *robot = gx_robot(21, 28);
     gx_rot(game->rtheta, robot);
     gx_trans(game->rpos.x, game->rpos.y, robot);
     bool collides = pg_collision(robot, lamp);
@@ -329,11 +331,9 @@ void resolve_collision(game_t *game, double lamp_x, double lamp_y) {
 }
 
 int pg_collision(vector_xy_t *pg1, vector_xy_t *pg2) {
-    if (pg_intersection(pg1,pg2) == 1) {
-        return 1;
-    } else if (check4containment(pg2, pg1->data[0].x, pg1->data[0].y) == 1) { //check only one point of that polygon b/c either every point is contained or none
-        return 1;
-    } else if (check4containment(pg1, pg2->data[0].x, pg2->data[0].y) == 1) { //check only one point of that polygon b/c either every point is contained or none
+    if ((pg_intersection(pg1, pg2) == 1) ||
+        (check4containment(pg2, pg1->data[0].x, pg1->data[0].y) == 1) ||
+        (check4containment(pg1, pg2->data[0].x, pg2->data[0].y) == 1)) {
         return 1;
     }
     return 0;
@@ -347,7 +347,7 @@ bool pg_intersection(vector_xy_t *pg1, vector_xy_t *pg2) {
         double x1 = pg1->data[i2].x;
         double y1 = pg1->data[i2].y;
         for (int j = 0; j < pg2->size; j++) {
-            int j2 = (j + 1) % pg2-> size;
+            int j2 = (j + 1) % pg2->size;
             double x2 = pg2->data[j].x;
             double y2 = pg2->data[j].y;
             double x3 = pg2->data[j2].x;
@@ -361,7 +361,7 @@ bool pg_intersection(vector_xy_t *pg1, vector_xy_t *pg2) {
 }
 
 bool line_intersection(double x0, double y0, double x1, double y1,
-                        double x2, double y2, double x3, double y3) {
+                       double x2, double y2, double x3, double y3) {
     double cp0 = ((x3 - x2) * (y0 - y2)) - ((x0 - x2) * (y3 - y2)); //cp for p0
     double cp1 = ((x3 - x2) * (y1 - y2)) - ((x1 - x2) * (y3 - y2)); //cp for p1
     double check_cp01 = cp0 * cp1;
@@ -377,14 +377,14 @@ bool check4containment(vector_xy_t *pg, double x, double y) {
     int counter1 = 0;
     int counter2 = 0;
     for (int i = 0; i < pg->size; i++) {
-    int i2 = (i + 1) % pg->size;
-    double cp = ((y - pg->data[i].y) * (pg->data[i2].x - pg->data[i].x))
-                 - ((x - pg->data[i].x) * (pg->data[i2].y - pg->data[i].y));
-    if (cp > 0) {
-      counter1++;
-    } else if (cp < 0) {
-      counter2++;
-    }
+        int i2 = (i + 1) % pg->size;
+        double cp = ((y - pg->data[i].y) * (pg->data[i2].x - pg->data[i].x))
+                     - ((x - pg->data[i].x) * (pg->data[i2].y - pg->data[i].y));
+        if (cp > 0) {
+            counter1++;
+        } else if (cp < 0) {
+            counter2++;
+        }
     }
     return counter1 == 0 || counter2 == 0;
 }
