@@ -5,7 +5,6 @@
 
 #define WORD_MAX_LEN 256
 
-// ternary search tree node
 typedef struct tst_node {
     char c;
     // just in this structure definition we have to call the type
@@ -15,7 +14,6 @@ typedef struct tst_node {
     struct tst_node *high;
 } tst_node_t;
 
-// ternary search tree
 typedef struct tst {
     tst_node_t *node;
 } tst_t;
@@ -23,11 +21,18 @@ typedef struct tst {
 tst_node_t *tst_node_create(char c) {
     tst_node_t *node = calloc(1, sizeof(*node)); // calloc also zeros out the memory
     node->c = c;
+    node->low = NULL;
+    node->high = NULL;
     return node;
 }
 
 void tst_node_destroy(tst_node_t *node) {
-
+    if (node) {
+        tst_node_destroy(node->low);
+        tst_node_destroy(node->high);
+        tst_node_destroy(node->equal);
+        free(node);
+    }
 }
 
 tst_t *tst_create(void) {
@@ -35,24 +40,143 @@ tst_t *tst_create(void) {
 }
 
 void tst_destroy(tst_t *tst) {
-
+    tst_node_destroy(tst->node);
+    free(tst);
 }
 
+// void tst_add(tst_t *tst, const char *word) {
+//     if (!tst->node) {
+//         tst->node = tst_node_create(word[0]);
+//     }
+//     tst_node_t *node = tst->node;
+//     while(1) {
+//         char c = node->c;
+//         if (word[0] < c) {
+//             if (!node->low) {
+//                 node->low = tst_node_create(word[0]);
+//                 //node = node->low;
+//             } else {
+//                 node = node->low;
+//             }
+//             word++;
+//         } else if (word[0] > c) {
+//             if (!node->high) {
+//                 node->high = tst_node_create(word[0]);
+//                 //node = node->high;
+//             } else {
+//                 node = node->high;
+//             }
+//             word++;
+//         } else if (word[0] == c) {
+//             word++;
+//             if (!node->equal) {
+//                 node->equal = tst_node_create(word[0]);
+//             } else {
+//                 node = node->equal;
+//             }
+//             if (word[0] == '\0' && node->equal == NULL) {
+//                 break;
+//             }
+//         }
+//     }
+// }
+
 void tst_add(tst_t *tst, const char *word) {
-    make root node of tree if it doesn't exist
-    forever {
-        depending on word[0] {
-            * move to node->left, creating it if it doesn't exist
-            * move to node->right, creating it if it doesn't exist
-            * move to node->equal, returning if word[0] is '\0'
-                * advancing word (moving the pointer with word++) if word[0] is not '\0',
-                * creating node->equal if it doesn't exist
+    if (!tst->node) {
+        tst->node = tst_node_create(word[0]);
+    }
+    tst_node_t *node = tst->node;
+    while (1) {
+        char c = node->c;
+        if (word[0] < c) {
+            if (!node->low) {
+                node->low = tst_node_create(word[0]);
+                node = node->low;
+                if (word[0] == '\0') {
+                    break;
+                }
+            } else {
+                node = node->low;
+            }
+        } else if (word[0] > c) {
+            if (!node->high) {
+                node->high = tst_node_create(word[0]);
+                node = node->high;
+                if (word[0] == '\0') {
+                    break;
+                }
+            } else {
+                node = node->high;
+            }
+        } else if (word[0] == c) {
+            if(!node->equal) {
+                if (word[0] == '\0') {
+                    break;
+                } else {
+                    node->equal = tst_node_create(word[1]);
+                    node = node->equal;
+                    word++;
+                }
+            } else {
+                node = node->equal;
+                word++;
+            }
         }
     }
 }
 
-void tst_node_search(tst_node_t *node, char *word, char *suggestion, char *sugg_start, int errs) {
+void tst_node_search(tst_node_t *node, char *word, char *suggestion,
+                     char *sugg_start, int errs) {
+    // while (node) {
+    //     * what would happen if we skipped a character in word?
+    //         * (to fix insertion errors)
+    //         * recursive call to tst_node_search with errs = errs - 1
+    //         tst_node_search(node, word, suggestion, sugg_start, errs - 1);
+    //     * what would happen if we assumed word has the right character?
+    //         * (to fix deletion errors)
+    //         * recursive call to tst_node_search with errs = errs - 1
+    //         tst_node_search(node, word, suggestion, sugg_start, errs - 1);
+    //     * what would happen if we replaced the wrong character in word with the right one?
+    //         * (to fix replacement errors)
+    //         * recursive call to tst_node_search with errs = errs - 1
+    //         tst_node_search(node, word, suggestion, sugg_start, errs - 1);
+    //     * what would happen if we swapped the next two characters in word?
+    //         * (to fix transposition errors)
+    //         * recursive call to tst_node_search with errs = errs - 1
+    //         tst_node_search(node, word, suggestion, sugg_start, errs - 1);
+        //Actual search
+        char c = node->c;
+        if (word[0] < c) {
+            return tst_node_search(node->low, word, suggestion, sugg_start, 1);
+        } else if (word[0] > c) {
+            return tst_node_search(node->high, word, suggestion, sugg_start, 1);
+        } else {
+            if (word[0] == '\0') {
+                suggestion[0] = '\0';
+                printf("%s", sugg_start);
+                return;
+            }
+            suggestion[0] = c;
+            suggestion++;
+            word++;
+            return tst_node_search(node->equal, word, suggestion, sugg_start, 1);
+        }
+    }
 
+    // depending on word[0] {
+    //     * move to node->left
+    //         * what would happen if we went to node->right instead?
+    //             * recursive call to tst_node_search with same number of errs
+    //     * move to node->right
+    //         * what would happen if we went to node->left instead?
+    //             * recursive call to tst_node_search with same number of errs
+    //     * move to node->equal, advancing both word and suggestion after setting suggestion[0]
+    //         * and print out the full suggestion if we matched a null character
+    //         * and what if we had gone to node->left or node->right instead?
+    //             * recursive calls to tst_node_search with same number of errs
+    //             * perform these recursive calls first
+    // }
+}
 }
 
 void tst_search(tst_t *tst, char *word) {
@@ -83,22 +207,21 @@ int main(int argc, char **argv) {
         if (ret != 1) {
             break;
         }
-        tst_add(tst, str_buffer);
+        // tst_add(tst, str_buffer);
     }
     fclose(f);
 
-    // tst_add(tst, "the");
-    // tst_add(tst, "tea");
-    // tst_add(tst, "that");
-    // tst_add(tst, "thee");
-    // tst_add(tst, "hospital");
+    tst_add(tst, "the");
+    tst_add(tst, "tea");
+    tst_add(tst, "that");
+    tst_add(tst, "thee");
+    tst_add(tst, "hospital");
 
     for (int i = 1; i < argc; i++) {
         if (strlen(argv[i]) >= WORD_MAX_LEN) {
             fprintf(stderr, "word '%s' is too long!\n", argv[i]);
             continue;
         }
-
         tst_search(tst, argv[i]);
         printf("\n");
     }
