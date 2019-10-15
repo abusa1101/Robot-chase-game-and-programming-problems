@@ -149,6 +149,8 @@ int main(int argc, char **argv) {
 
     tst_t *tst = tst_create();
 
+    tst_add(tst, "hospital");
+    
     char str_buffer[WORD_MAX_LEN];
     while (1) {
         int ret = fscanf(f, "%255s", str_buffer);
@@ -163,7 +165,6 @@ int main(int argc, char **argv) {
     // tst_add(tst, "tea");
     // tst_add(tst, "that");
     // tst_add(tst, "thee");
-    tst_add(tst, "hospital");
     // tst_add(tst, "taker");
     // tst_add(tst, "tamer");
     // tst_add(tst, "tacer");
