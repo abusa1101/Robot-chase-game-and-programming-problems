@@ -72,7 +72,7 @@ void tst_add(tst_t *tst, const char *word) {
                 node = node->high;
             }
         } else if (word[0] == c) {
-            if(!node->equal) {
+            if (!node->equal) {
                 if (word[0] == '\0') {
                     break;
                 } else {
@@ -99,7 +99,7 @@ void tst_node_search(tst_node_t *node, char *word, char *suggestion, char *sugg_
             tst_node_search(node->equal, word, suggestion + 1, sugg_start, errs - 1);
             //Replacement case
             suggestion[0] = c;
-            tst_node_search (node->equal, word + 1, suggestion + 1, sugg_start, errs - 1);
+            tst_node_search(node->equal, word + 1, suggestion + 1, sugg_start, errs - 1);
             //Transposition case
             char tempchar = word[1];
             word[1] = word[0];
@@ -110,9 +110,9 @@ void tst_node_search(tst_node_t *node, char *word, char *suggestion, char *sugg_
         }
         //Actual search
         if (word[0] < c) {
-             return tst_node_search(node->low, word, suggestion, sugg_start, 1);
+            return tst_node_search(node->low, word, suggestion, sugg_start, 1);
         } else if (word[0] > c) {
-             return tst_node_search(node->high, word, suggestion, sugg_start, 1);
+            return tst_node_search(node->high, word, suggestion, sugg_start, 1);
         } else {
             if (word[0] == '\0') {
                 suggestion[0] = '\0';
