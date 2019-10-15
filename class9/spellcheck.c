@@ -91,38 +91,42 @@ void tst_add(tst_t *tst, const char *word) {
 void tst_node_search(tst_node_t *node, char *word, char *suggestion, char *sugg_start, int errs) {
     while (node) {
         char c = node->c;
-        if (errs == 1) {
-            //Insertion case
+        if (errs > 0) {
+            //Insertion Case
             tst_node_search(node, word + 1, suggestion, sugg_start, errs - 1);
-            //Deletion case
+            //Deletion Case
             suggestion[0] = c;
             tst_node_search(node->equal, word, suggestion + 1, sugg_start, errs - 1);
-            //Replacement case
+            //Replacement Case
             suggestion[0] = c;
             tst_node_search(node->equal, word + 1, suggestion + 1, sugg_start, errs - 1);
-            //Transposition case
-            char tempchar = word[1];
-            word[1] = word[0];
-            word[0] = tempchar;
-            tst_node_search(node, word, suggestion, sugg_start, errs - 1);
-            word[0] = word[1];
-            word[1] = tempchar;
-        }
-        //Actual search
-        if (word[0] < c) {
-            return tst_node_search(node->low, word, suggestion, sugg_start, 1);
-        } else if (word[0] > c) {
-            return tst_node_search(node->high, word, suggestion, sugg_start, 1);
-        } else {
-            if (word[0] == '\0') {
-                suggestion[0] = '\0';
-                printf("%s\n", sugg_start);
-                return;
+            //Transposition Case
+            if (strlen(word) >= 2) {
+                char *temp = malloc(strlen(word) + 1);
+                strcpy(temp, word);
+                temp[0] = word[1];
+                temp[1] = word[0];
+                temp[2] = word[2];
+                tst_node_search(node, temp, suggestion, sugg_start, errs - 1);
+                free(temp);
             }
+        }
+        if (word[0] < c) {
+            tst_node_search(node->high, word, suggestion, sugg_start, errs);
+            node = node->low;
+        } else if (word[0] > c) {
+            tst_node_search(node->low, word, suggestion, sugg_start, errs);
+            node = node->high;
+        } else {
+            tst_node_search(node->low, word, suggestion, sugg_start, errs);
+            tst_node_search(node->high, word, suggestion, sugg_start, errs);
             suggestion[0] = c;
-            suggestion++;
+            if (suggestion[0] == '\0') {
+                printf("%s\n", sugg_start);
+            }
             word++;
-            return tst_node_search(node->equal, word, suggestion, sugg_start, 1);
+            suggestion++;
+            node = node->equal;
         }
     }
 }
@@ -149,8 +153,8 @@ int main(int argc, char **argv) {
 
     tst_t *tst = tst_create();
 
-    tst_add(tst, "hospital");
-    
+
+
     char str_buffer[WORD_MAX_LEN];
     while (1) {
         int ret = fscanf(f, "%255s", str_buffer);
@@ -161,17 +165,18 @@ int main(int argc, char **argv) {
     }
     fclose(f);
 
-    // tst_add(tst, "the");
-    // tst_add(tst, "tea");
-    // tst_add(tst, "that");
-    // tst_add(tst, "thee");
-    // tst_add(tst, "taker");
-    // tst_add(tst, "tamer");
-    // tst_add(tst, "tacer");
-    // tst_add(tst, "taper");
-    // tst_add(tst, "taber");
-    // tst_add(tst, "taser");
-    // tst_add(tst, "taxer");
+    tst_add(tst, "hospital");
+    tst_add(tst, "the");
+    tst_add(tst, "tea");
+    tst_add(tst, "that");
+    tst_add(tst, "thee");
+    tst_add(tst, "taker");
+    tst_add(tst, "tamer");
+    tst_add(tst, "tacer");
+    tst_add(tst, "taper");
+    tst_add(tst, "taber");
+    tst_add(tst, "taser");
+    tst_add(tst, "taxer");
 
     for (int i = 1; i < argc; i++) {
         if (strlen(argv[i]) >= WORD_MAX_LEN) {
@@ -185,40 +190,3 @@ int main(int argc, char **argv) {
     tst_destroy(tst);
     return 0;
 }
-
-// void tst_add(tst_t *tst, const char *word) {
-//     if (!tst->node) {
-//         tst->node = tst_node_create(word[0]);
-//     }
-//     tst_node_t *node = tst->node;
-//     while(1) {
-//         char c = node->c;
-//         if (word[0] < c) {
-//             if (!node->low) {
-//                 node->low = tst_node_create(word[0]);
-//                 //node = node->low;
-//             } else {
-//                 node = node->low;
-//             }
-//             word++;
-//         } else if (word[0] > c) {
-//             if (!node->high) {
-//                 node->high = tst_node_create(word[0]);
-//                 //node = node->high;
-//             } else {
-//                 node = node->high;
-//             }
-//             word++;
-//         } else if (word[0] == c) {
-//             word++;
-//             if (!node->equal) {
-//                 node->equal = tst_node_create(word[0]);
-//             } else {
-//                 node = node->equal;
-//             }
-//             if (word[0] == '\0' && node->equal == NULL) {
-//                 break;
-//             }
-//         }
-//     }
-// }
