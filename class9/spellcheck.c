@@ -155,14 +155,14 @@ int main(int argc, char **argv) {
         if (ret != 1) {
             break;
         }
-        // tst_add(tst, str_buffer);
+        tst_add(tst, str_buffer);
     }
     fclose(f);
 
-    tst_add(tst, "the");
-    tst_add(tst, "tea");
-    tst_add(tst, "that");
-    tst_add(tst, "thee");
+    // tst_add(tst, "the");
+    // tst_add(tst, "tea");
+    // tst_add(tst, "that");
+    // tst_add(tst, "thee");
     tst_add(tst, "hospital");
     // tst_add(tst, "taker");
     // tst_add(tst, "tamer");
