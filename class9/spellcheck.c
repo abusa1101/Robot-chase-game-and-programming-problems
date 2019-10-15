@@ -153,8 +153,6 @@ int main(int argc, char **argv) {
 
     tst_t *tst = tst_create();
 
-
-
     char str_buffer[WORD_MAX_LEN];
     while (1) {
         int ret = fscanf(f, "%255s", str_buffer);
