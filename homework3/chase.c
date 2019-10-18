@@ -42,7 +42,7 @@ int main(int argc, char **argv) {
     bmp.data = calloc(bmp.width * bmp.height, sizeof(color_bgr_t));
     image_server_start("8000");
 
-    
+
 
     for (int t = 0; t < timesteps; t++) {
 
