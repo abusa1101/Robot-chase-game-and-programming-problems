@@ -58,7 +58,7 @@ char parse_token_num(char **str) {
 double digit(char **str) {
     char token = *str[0];
     double token_value = 0;
-    if (token >= '0' && token <= '9' ) {
+    if (token >= '0' && token <= '9') {
         //token_value = atoi(token);
         token_value = token - '0';
         // OR sscanf(token, "%lf", token_value);
@@ -73,7 +73,7 @@ double give_digits(char **str) {
     double value_right = 0;
     bool digits_exist = false;
     while (isdigit(peek_num(str))) { //peek or peek_num? skip white spaces?
-        printf("in give_digits while loop\n");
+        //printf("in give_digits while loop\n");
         value_left = value_left * 10 + digit(str);
         (*str)++; //moves pointer to next digit
         digits_exist = true;
@@ -120,7 +120,6 @@ double parenthetical(char **str) {
             fprintf(stderr, "Parsing Error: Expected ')' but received '%c' instead.\n", error_char);
             exit(1);
         }
-        
     } else {
         value = number_literal(str);
     }
