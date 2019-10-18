@@ -3,7 +3,7 @@
 #include <time.h>
 #include "image_server.h"
 #include "bmp.h"
-#include "all_functions.h"
+#include "chase_functions.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -42,41 +42,40 @@ int main(int argc, char **argv) {
     bmp.data = calloc(bmp.width * bmp.height, sizeof(color_bgr_t));
     image_server_start("8000");
 
-
-
-    for (int t = 0; t < timesteps; t++) {
-
-        //activateMove(&game);
-        // for (int i = 0; i < game.n_lamp; i++) {
-        //     resolve_collision(&game, game.lpos[i].x, game.lpos[i].y);
-        // }
-        if (speed == 0) {
-            //gx_update(&bmp, &game, color_back, color_lamp, color_robot);
-            size_t bmp_size = bmp_calculate_size(&bmp);
-            uint8_t *serialized_bmp = malloc(bmp_size);
-            bmp_serialize(&bmp, serialized_bmp);
-            image_server_set_data(bmp_size, serialized_bmp);
-            free(serialized_bmp);
-            int seconds = 0;
-            long nanoseconds = 40 * 1000 * 1000;
-            struct timespec interval = {seconds, nanoseconds};
-            nanosleep(&interval, NULL);
-        }
-    }
-
-
-    //gx_update(&bmp, &game, color_back, color_lamp, color_robot);
+    gx_draw_game(&bmp);
+    // for (int t = 0; t < timesteps; t++) {
+    //
+    //     //activateMove(&game);
+    //     // for (int i = 0; i < game.n_lamp; i++) {
+    //     //     resolve_collision(&game, game.lpos[i].x, game.lpos[i].y);
+    //     // }
+    //     if (speed == 0) {
+    //         //gx_update(&bmp, &game, color_back, color_lamp, color_robot);
+    //         size_t bmp_size = bmp_calculate_size(&bmp);
+    //         uint8_t *serialized_bmp = malloc(bmp_size);
+    //         bmp_serialize(&bmp, serialized_bmp);
+    //         image_server_set_data(bmp_size, serialized_bmp);
+    //         free(serialized_bmp);
+    //         int seconds = 0;
+    //         long nanoseconds = 40 * 1000 * 1000;
+    //         struct timespec interval = {seconds, nanoseconds};
+    //         nanosleep(&interval, NULL);
+    //     }
+    // }
+    //
+    //
+    // //gx_update(&bmp, &game, color_back, color_lamp, color_robot);
     size_t bmp_size = bmp_calculate_size(&bmp);
     uint8_t *serialized_bmp = malloc(bmp_size);
     bmp_serialize(&bmp, serialized_bmp);
     image_server_set_data(bmp_size, serialized_bmp);
     free(serialized_bmp);
     sleep(1);
-
-    vector_free(lamp1);
-    vector_free(lamp2);
-    vector_free(lamp3);
-    vector_free(robot);
+    //
+    // vector_free(lamp1);
+    // vector_free(lamp2);
+    // vector_free(lamp3);
+    // vector_free(robot);
     free(bmp.data);
     return 0;
 }

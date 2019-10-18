@@ -142,8 +142,7 @@ void gx_fill(bitmap_t *bmp, color_bgr_t color, vector_xy_t *pathpoints) {
 
 vector_xy_t *gx_rect(double width, double height) {
     vector_xy_t *points = vector_create();
-    double xc = 0;
-    double yc = 0;
+
     double p1x = xc + width / 2.0;
     double p1y = yc + height / 2.0;
     double p2x = xc + width / 2.0;
