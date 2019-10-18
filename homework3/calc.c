@@ -10,14 +10,17 @@ double additive(char **str);
 int main(int argc, char **argv) {
     if (argc != 2) {
         fprintf(stderr, "Error: Wrong number of arguments\n");
+        return 1;
+    }
+    double solution = additive(&argv[1]);
+    if (argv[1][0] != '\0') {
+        fprintf(stderr, "Parsing error: Unexpected junk at end. Got '%c'\n", argv[1][0]);
         exit(1);
     }
-
-    double solution = additive(&argv[1]);
     printf("%lf\n", solution);
 }
 
-//All functions
+//All Functions
 void skip_whitespace(char **str) {
     while (isspace(*str[0])) {
         (*str)++;
@@ -59,9 +62,7 @@ double digit(char **str) {
     char token = *str[0];
     double token_value = 0;
     if (token >= '0' && token <= '9') {
-        //token_value = atoi(token);
         token_value = token - '0';
-        // OR sscanf(token, "%lf", token_value);
     } else {
         printf("Invalid chracter: Expected a digit [0-9]"); //for debugging
     }
@@ -72,13 +73,11 @@ double give_digits(char **str) {
     double value_left = 0;
     double value_right = 0;
     bool digits_exist = false;
-    while (isdigit(peek_num(str))) { //peek or peek_num? skip white spaces?
-        //printf("in give_digits while loop\n");
+    while (isdigit(peek_num(str))) {
         value_left = value_left * 10 + digit(str);
         (*str)++; //moves pointer to next digit
         digits_exist = true;
     } //exits loop if no digits- i.e., it should hit a decimal point
-
     if (peek_num(str) == '.') {
         parse_token(str);
         double divisor = 0.1;
@@ -93,6 +92,10 @@ double give_digits(char **str) {
         fprintf(stderr, "Error: Expected digits, got '%c' instead\n", parse_token_num(str));
         exit(1);
     }
+    // if (dec_point &&  ) {
+    //     fprintf(stderr, "Error: Expected digits, got '%c' instead\n");
+    //     exit(1);
+    // }
     return value_left + value_right;
 }
 
@@ -113,8 +116,8 @@ double number_literal(char **str) {
 double parenthetical(char **str) {
     double value = 0;
     if (peek(str) == '(') {
-        parse_token(str); //or can i just do skip_whitespace(str) and (*str)++?
-        value = additive(str); //is this = or += because multiple operations???
+        parse_token(str);
+        value = additive(str);
         char error_char = parse_token(str);
         if (error_char != ')') {
             fprintf(stderr, "Parsing Error: Expected ')' but received '%c' instead.\n", error_char);
