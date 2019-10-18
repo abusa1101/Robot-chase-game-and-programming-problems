@@ -10,7 +10,7 @@ double additive(char **str);
 int main(int argc, char **argv) {
     if (argc != 2) {
         fprintf(stderr, "Error: Wrong number of arguments\n");
-        return 1;
+        exit(1);
     }
 
     double solution = additive(&argv[1]);
