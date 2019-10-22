@@ -1,4 +1,4 @@
-#define _GNU_SOURCE // this must come before all the #include's in order to work
+#define _GNU_SOURCE
 #include <unistd.h>
 #include <time.h>
 #include "image_server.h"
@@ -37,20 +37,20 @@ int main(int argc, char **argv) {
     int speed = atoi(argv[2]);
     int run_index = atoi(argv[3]);
     bitmap_t bmp = {0};
+    state_t state = {0};
     bmp.width = 640;
     bmp.height = 480;
     bmp.data = calloc(bmp.width * bmp.height, sizeof(color_bgr_t));
     image_server_start("8000");
 
-    gx_draw_game(&bmp);
+    init_values(&state);
+    gx_draw_game(&bmp, &state, run_index);
+
     // for (int t = 0; t < timesteps; t++) {
-    //
-    //     //activateMove(&game);
     //     // for (int i = 0; i < game.n_lamp; i++) {
     //     //     resolve_collision(&game, game.lpos[i].x, game.lpos[i].y);
     //     // }
     //     if (speed == 0) {
-    //         //gx_update(&bmp, &game, color_back, color_lamp, color_robot);
     //         size_t bmp_size = bmp_calculate_size(&bmp);
     //         uint8_t *serialized_bmp = malloc(bmp_size);
     //         bmp_serialize(&bmp, serialized_bmp);
@@ -62,20 +62,13 @@ int main(int argc, char **argv) {
     //         nanosleep(&interval, NULL);
     //     }
     // }
-    //
-    //
-    // //gx_update(&bmp, &game, color_back, color_lamp, color_robot);
+
     size_t bmp_size = bmp_calculate_size(&bmp);
     uint8_t *serialized_bmp = malloc(bmp_size);
     bmp_serialize(&bmp, serialized_bmp);
     image_server_set_data(bmp_size, serialized_bmp);
     free(serialized_bmp);
     sleep(1);
-    //
-    // vector_free(lamp1);
-    // vector_free(lamp2);
-    // vector_free(lamp3);
-    // vector_free(robot);
     free(bmp.data);
     return 0;
 }
