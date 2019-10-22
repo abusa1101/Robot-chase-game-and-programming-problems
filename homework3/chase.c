@@ -46,22 +46,22 @@ int main(int argc, char **argv) {
     init_values(&state);
     gx_draw_game(&bmp, &state, run_index);
 
-    // for (int t = 0; t < timesteps; t++) {
-    //     // for (int i = 0; i < game.n_lamp; i++) {
-    //     //     resolve_collision(&game, game.lpos[i].x, game.lpos[i].y);
-    //     // }
-    //     if (speed == 0) {
-    //         size_t bmp_size = bmp_calculate_size(&bmp);
-    //         uint8_t *serialized_bmp = malloc(bmp_size);
-    //         bmp_serialize(&bmp, serialized_bmp);
-    //         image_server_set_data(bmp_size, serialized_bmp);
-    //         free(serialized_bmp);
-    //         int seconds = 0;
-    //         long nanoseconds = 40 * 1000 * 1000;
-    //         struct timespec interval = {seconds, nanoseconds};
-    //         nanosleep(&interval, NULL);
-    //     }
-    // }
+    for (int t = 0; t < timesteps; t++) {
+        robot_action(&state.chaser);
+        robot_action(&state.runner);
+        gx_draw_game(&bmp, &state, -1);
+        // if (speed == 0) {
+        //     size_t bmp_size = bmp_calculate_size(&bmp);
+        //     uint8_t *serialized_bmp = malloc(bmp_size);
+        //     bmp_serialize(&bmp, serialized_bmp);
+        //     image_server_set_data(bmp_size, serialized_bmp);
+        //     free(serialized_bmp);
+        //     int seconds = 0;
+        //     long nanoseconds = 40 * 1000 * 1000;
+        //     struct timespec interval = {seconds, nanoseconds};
+        //     nanosleep(&interval, NULL);
+        // }
+    }
 
     size_t bmp_size = bmp_calculate_size(&bmp);
     uint8_t *serialized_bmp = malloc(bmp_size);

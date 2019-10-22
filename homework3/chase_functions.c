@@ -23,6 +23,8 @@
             "XXXXXXXXXXXXXXXX"
 #define MAP_W (WIDTH / BLOCK_SIZE)
 #define MAP_H (HEIGHT / BLOCK_SIZE)
+#define max_vel 12
+
 
 // Vector Operations
 vector_xy_t *vector_create(void) {
@@ -47,6 +49,7 @@ void vector_free(vector_xy_t *v) {
     free(v->data);
     free(v);
 }
+
 
 //GX Functions
 vector_xy_t *gx_rect(double width, double height) {
@@ -276,7 +279,9 @@ void give_runner_pos(state_t *state, int run_index) {
 }
 
 void gx_draw_runner(bitmap_t *bmp, state_t *state, int run_index) {
-    give_runner_pos(state, run_index);
+    if (run_index != -1) {
+        give_runner_pos(state, run_index);
+    }
     color_bgr_t color_runner = {0, 255, 0};
     vector_xy_t *points = gx_robot(21, 28);
     gx_rot(state->runner.theta, points);
@@ -300,79 +305,169 @@ void gx_draw_game(bitmap_t *bmp, state_t *state, int run_index) {
     gx_draw_runner(bmp, state, run_index);
 }
 
+// void gx_update(bitmap_t *bmp, state_t *state) {
+//     gx_clear(bmp);
+//     backdrop(bmp, color_back);
+//     lamp(bmp, color_lamp, game->lpos[0].x, game->lpos[0].y);
+//     lamp(bmp, color_lamp, game->lpos[1].x, game->lpos[1].y);
+//     lamp(bmp, color_lamp, game->lpos[2].x, game->lpos[2].y);
+//     robot(bmp, color_robot, game->rpos.x, game->rpos.y, game->rtheta);
+// }
+
 //Movement
 void init_values(state_t *state) {
     state->runner.theta = 0;
     state->runner.x = 0;
     state->runner.y = 0;
+    state->runner.is_runner = true;
     state->chaser.theta = 0;
     state->chaser.x = 320;
     state->chaser.y = 240;
+    state->chaser.is_runner = false;
 }
 
-double dotP(double x0, double y0, double x1, double y1) {
-    double product = x0 * x1;
-    product = product + y0 * y1;
-    return product;
+void move(robot_t *robot) {
+    double fwd_vel = fmin(max_vel, robot->fwd_vel);
+    double xdist = fwd_vel * cos(robot->theta);
+    double ydist = fwd_vel * -sin(robot->theta);
+    robot->x += xdist;
+    robot->y += ydist;
 }
 
-// void activateMove(game_t *game) {
-//     double move_l = 0;
-//     double move_r = 0;
-//     double max_movement = 12;
-//     double wheel_base = 80;
-//     double lamp_power = 100000;
-//     for (int i = 0; i < game->n_lamp; i++) {
-//         double dist_sq = pow(game->lpos[i].x - game->rpos.x, 2) +
-//                          pow(game->lpos[i].y - game->rpos.y, 2);
-//         double dir_x = (game->lpos[i].x - game->rpos.x) / sqrt(dist_sq);
-//         double dir_y = (game->lpos[i].y - game->rpos.y) / sqrt(dist_sq);
-//         double eye_l_x = cos(game->rtheta + (M_PI / 3));
-//         double eye_l_y = -sin(game->rtheta + (M_PI / 3));
-//         double eye_r_x = cos(game->rtheta - (M_PI / 3));
-//         double eye_r_y = -sin(game->rtheta - (M_PI / 3));
-//         move_l += fmax(0.0, dotP(dir_x, dir_y, eye_r_x, eye_r_y)) * lamp_power / (dist_sq);
-//         move_r += fmax(0.0, dotP(dir_x, dir_y, eye_l_x, eye_l_y)) * lamp_power / (dist_sq);
+void robot_action(robot_t *robot) {
+    if (robot->is_runner) { //Runner
+        int num_chosen = rand() % (19 + 1 - 0) + 0; //[max = 19, min = 0]
+        if (num_chosen == 2) {
+            robot->fwd_vel += 2;
+        } else if (num_chosen == 3) {
+            robot->ang_vel += (M_PI / 16);
+        }
+    } else { //Chaser
+        //chaser_strategy();
+    }
+    robot->theta += robot->ang_vel;
+    robot->ang_vel *= 0.8;
+    move(robot);
+    // resolve_collision(runner/state);
+    // if (do_robot_wall_collide(runner/state) {
+    //     robot->fwd_vel *= 0.25
+    // }
+}
+
+//Collision
+bool do_robots_collide(state_t *state) {
+    vector_xy_t *chaser = gx_robot(21, 28);
+    vector_xy_t *runner = gx_robot(21, 28);
+    gx_rot(state->chaser.theta, chaser);
+    gx_rot(state->runner.theta, runner);
+    gx_trans(state->chaser.x, state->chaser.y, chaser);
+    gx_trans(state->runner.x, state->runner.y, runner);
+    bool collides = pg_collision(chaser, runner);
+    vector_free(runner);
+    vector_free(chaser);
+    return collides;
+}
+
+bool do_robot_wall_collide(robot_t *robot, point_t *tile) {
+    vector_xy_t *robot = gx_robot(21, 28);
+    gx_rot(robot->theta, robot);
+    gx_trans(robot->x, robot->y, robot);
+    bool collides = pg_collision(robot, tile);
+    vector_free(robot);
+    return collides;
+}
+
+void resolve_collision(robot_t *robot, point_t *tile) {
+    //check for robots_collision
+    while (iscollision) {
+        //check for robots_collision
+        if (do_robot_wall_collide(robot, tile)) {
+
+            double dx = robot->x - tile_x;
+            double dy = robot->y - tile_y;
+            double dist = sqrt(pow(dx, 2) + pow(dy, 2));
+            robot->x += 0.5 * dx / dist;
+            robot->y += 0.5 * dy / dist;
+        }
+    }
+}
+
+int pg_collision(vector_xy_t *pg1, vector_xy_t *pg2) {
+    if ((pg_intersection(pg1, pg2) == 1) ||
+        (check4containment(pg2, pg1->data[0].x, pg1->data[0].y) == 1) ||
+        (check4containment(pg1, pg2->data[0].x, pg2->data[0].y) == 1)) {
+        return 1;
+    }
+    return 0;
+}
+
+bool pg_intersection(vector_xy_t *pg1, vector_xy_t *pg2) {
+    for (int i = 0; i < pg1->size; i++) {
+        int i2 = (i + 1) % pg1->size;
+        double x0 = pg1->data[i].x;
+        double y0 = pg1->data[i].y;
+        double x1 = pg1->data[i2].x;
+        double y1 = pg1->data[i2].y;
+        for (int j = 0; j < pg2->size; j++) {
+            int j2 = (j + 1) % pg2->size;
+            double x2 = pg2->data[j].x;
+            double y2 = pg2->data[j].y;
+            double x3 = pg2->data[j2].x;
+            double y3 = pg2->data[j2].y;
+            if (line_intersection(x0, y0, x1, y1, x2, y2, x3, y3)) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+bool line_intersection(double x0, double y0, double x1, double y1,
+                       double x2, double y2, double x3, double y3) {
+    double cp0 = ((x3 - x2) * (y0 - y2)) - ((x0 - x2) * (y3 - y2)); //cp for p0
+    double cp1 = ((x3 - x2) * (y1 - y2)) - ((x1 - x2) * (y3 - y2)); //cp for p1
+    double check_cp01 = cp0 * cp1;
+
+    double cp2 = ((x1 - x0) * (y2 - y0)) - ((x2 - x0) * (y1 - y0)); //cp for p2
+    double cp3 = ((x1 - x0) * (y3 - y0)) - ((x3 - x0) * (y1 - y0)); //cp for p3
+    double check_cp23 = cp2 * cp3;
+
+    return check_cp01 <= 0 && check_cp23 <= 0 && (check_cp01 != 0 || check_cp23 != 0);
+}
+
+bool check4containment(vector_xy_t *pg, double x, double y) {
+    int counter1 = 0;
+    int counter2 = 0;
+    for (int i = 0; i < pg->size; i++) {
+        int i2 = (i + 1) % pg->size;
+        double cp = ((y - pg->data[i].y) * (pg->data[i2].x - pg->data[i].x)) -
+                    ((x - pg->data[i].x) * (pg->data[i2].y - pg->data[i].y));
+        if (cp > 0) {
+            counter1++;
+        } else if (cp < 0) {
+            counter2++;
+        }
+    }
+    return counter1 == 0 || counter2 == 0;
+}
+
+//Tree Search
+// search_actions() {
+//     if chaser collides with runner {
+//         return a score of 0
 //     }
-//     move_l = fmin(max_movement, move_l);
-//     move_r = fmin(max_movement, move_r);
-//     game->rtheta += (move_r - move_l) / (wheel_base);
-//     double fwd_dist = (move_r + move_l) / 2;
-//     double xdist = fwd_dist * cos(game->rtheta);
-//     double ydist = fwd_dist * -sin(game->rtheta);
-//     game->rpos.x += xdist;
-//     game->rpos.y += ydist;
+//     if depth >= max depth {
+//         return a score of distance-between-chaser-and-runner
+//     }
+//     for each chaser action {
+//         make a new copy of the search state to modify
+//         simulate this action forward (movement and collisions)
+//         as long as the chaser and runner aren't colliding,
+//             simulate 3 more "do nothings" forward (movement and collisions)
+//         score = search_actions(new search state, with depth + 1)
+//         score += 200 / min(2, chaser velocity)
+//     }
+//     return the best/lowest score of any action, and which action that was
 // }
 
-void robot_action(state_t *state) {
-//RUNNER
-    //apply action
-    state->runner.theta += state->runner.ang_vel;
-    state->runner.ang_vel *= 0.8;
-    //move robot by velocity in the theta direction
-    //resolve collisions
-    if robot had any collision with a wall {
-        state->runner.fwd_vel *= 0.25;
-    }
-//CHASER
-    //apply action
-    state->chaser.theta += state->chaser.ang_vel;
-    state->chaser.ang_vel *= 0.8;
-    //move robot by velocity in the theta direction
-    //resolve collisions
-    if robot had any collision with a wall {
-        state->chaser.fwd_vel *= 0.25;
-    }
-}
-
-void robot_action() {
-//RUNNER
-    //Do nothing
-    //Increase velocity by 2
-    //Increase angular velocity by PI / 16
-    And for the chaser only, decrease angular velocity by PI / 16
-//angular velocity decays by a factor of 0.8 on each step,
-//forward velocity is cut in four if the robot has a collision.
-//CHASER
-
-}
+// void chaser_strategy(robot_t *chaser)

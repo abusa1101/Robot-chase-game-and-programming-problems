@@ -56,7 +56,7 @@ typedef struct state {
     robot_t chaser;
 } state_t;
 
-// Vector Operations
+//Vector Operations
 vector_xy_t *vector_create(void);
 void vector_append(vector_xy_t *v, double xvalue, double yvalue);
 void vector_free(vector_xy_t *v);
@@ -80,3 +80,16 @@ void gx_draw_runner(bitmap_t *bmp, state_t *state, int run_index);
 
 //Movement
 void init_values(state_t *state);
+void init_values(state_t *state);
+void move(robot_t *robot);
+// void chaser_strategy(robot_t *chaser);
+void robot_action(robot_t *robot);
+
+//Collision
+bool robot_collision(game_t *game, vector_xy_t *lamp);
+void resolve_collision(game_t *game, double lamp_x, double lamp_y);
+int pg_collision(vector_xy_t *pg1, vector_xy_t *pg2);
+bool pg_intersection(vector_xy_t *pg1, vector_xy_t *pg2);
+bool line_intersection(double x0, double y0, double x1, double y1,
+                       double x2, double y2, double x3, double y3);
+bool check4containment(vector_xy_t *pg, double x, double y);
