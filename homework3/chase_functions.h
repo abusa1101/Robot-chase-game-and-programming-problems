@@ -7,7 +7,8 @@
 #define M_PI 3.14159265358979323846
 #define WIDTH 640
 #define HEIGHT 480
-
+#define ROB_W 20
+#define ROB_L 26.67
 #define BLOCK_SIZE 40
 #define MAP "XXXXXXXXXXXXXXXX" \
             "X              X" \

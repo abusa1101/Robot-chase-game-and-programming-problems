@@ -243,7 +243,6 @@ void gx_set_backgound(bitmap_t *bmp) {
 
 void wall (bitmap_t *bmp, color_bgr_t color_sq, double x, double y) {
     vector_xy_t *points = gx_rect(BLOCK_SIZE, BLOCK_SIZE);
-    gx_rot(0, points);
     gx_trans(x, y, points);
     gx_round(points);
     vector_xy_t *pathpoints = call_rasterize(points);
@@ -251,8 +250,15 @@ void wall (bitmap_t *bmp, color_bgr_t color_sq, double x, double y) {
     gx_fill(bmp, color_sq, pathpoints);
 }
 
+// void wall2 (double x, double y) {
+//     vector_xy_t *points = gx_rect(BLOCK_SIZE, BLOCK_SIZE);
+//     gx_trans(x, y, points);
+//     gx_round(points);
+//
+// }
+
 void robot(bitmap_t *bmp, color_bgr_t color, double x, double y, double theta) {
-    vector_xy_t *points = gx_robot(21, 28);
+    vector_xy_t *points = gx_robot(ROB_W, ROB_L);
     gx_rot(theta, points);
     gx_trans(x, y, points);
     gx_round(points);
@@ -262,7 +268,7 @@ void robot(bitmap_t *bmp, color_bgr_t color, double x, double y, double theta) {
 
 void gx_draw_chaser(bitmap_t *bmp,  state_t *state) {
     color_bgr_t color_chaser = {0, 0, 255};
-    vector_xy_t *points = gx_robot(21, 28);
+    vector_xy_t *points = gx_robot(ROB_W, ROB_L);
     gx_rot(state->chaser.theta, points);
     gx_trans(state->chaser.x, state->chaser.y, points); //starts at center of image
     gx_round(points);
@@ -283,7 +289,7 @@ void gx_draw_runner(bitmap_t *bmp, state_t *state, int run_index) {
         give_runner_pos(state, run_index);
     }
     color_bgr_t color_runner = {0, 255, 0};
-    vector_xy_t *points = gx_robot(21, 28);
+    vector_xy_t *points = gx_robot(ROB_W, ROB_L);
     gx_rot(state->runner.theta, points);
     gx_trans(state->runner.x, state->runner.y, points); //starts at center of map loc
     gx_round(points);
@@ -305,14 +311,15 @@ void gx_draw_game(bitmap_t *bmp, state_t *state, int run_index) {
     gx_draw_runner(bmp, state, run_index);
 }
 
-// void gx_update(bitmap_t *bmp, state_t *state) {
-//     gx_clear(bmp);
-//     backdrop(bmp, color_back);
-//     lamp(bmp, color_lamp, game->lpos[0].x, game->lpos[0].y);
-//     lamp(bmp, color_lamp, game->lpos[1].x, game->lpos[1].y);
-//     lamp(bmp, color_lamp, game->lpos[2].x, game->lpos[2].y);
-//     robot(bmp, color_robot, game->rpos.x, game->rpos.y, game->rtheta);
-// }
+vector_xy_t *map_vector(void) {
+    vector_xy_t *map_vec = vector_create();
+    for (int i = 0; i < MAP_H * MAP_W; i++) {
+        if (MAP[i] == 'X') {
+            //printf("index %d: %d, %d\n", i, (i % MAP_W) * 40, (int) (i/ MAP_W) * 40);
+            wall (bmp, color_sq, (i % MAP_W) * 40, (int) (i / MAP_W) * 40);
+        }
+    }
+}
 
 //Movement
 void init_values(state_t *state) {
@@ -355,43 +362,6 @@ void robot_action(robot_t *robot) {
 }
 
 //Collision
-bool do_robots_collide(state_t *state) {
-    vector_xy_t *chaser = gx_robot(21, 28);
-    vector_xy_t *runner = gx_robot(21, 28);
-    gx_rot(state->chaser.theta, chaser);
-    gx_rot(state->runner.theta, runner);
-    gx_trans(state->chaser.x, state->chaser.y, chaser);
-    gx_trans(state->runner.x, state->runner.y, runner);
-    bool collides = pg_collision(chaser, runner);
-    vector_free(runner);
-    vector_free(chaser);
-    return collides;
-}
-
-bool do_robot_wall_collide(robot_t *robot, point_t *tile) {
-    vector_xy_t *robot = gx_robot(21, 28);
-    gx_rot(robot->theta, robot);
-    gx_trans(robot->x, robot->y, robot);
-    bool collides = pg_collision(robot, tile);
-    vector_free(robot);
-    return collides;
-}
-
-void resolve_collision(robot_t *robot, point_t *tile) {
-    //check for robots_collision
-    while (iscollision) {
-        //check for robots_collision
-        if (do_robot_wall_collide(robot, tile)) {
-
-            double dx = robot->x - tile_x;
-            double dy = robot->y - tile_y;
-            double dist = sqrt(pow(dx, 2) + pow(dy, 2));
-            robot->x += 0.5 * dx / dist;
-            robot->y += 0.5 * dy / dist;
-        }
-    }
-}
-
 int pg_collision(vector_xy_t *pg1, vector_xy_t *pg2) {
     if ((pg_intersection(pg1, pg2) == 1) ||
         (check4containment(pg2, pg1->data[0].x, pg1->data[0].y) == 1) ||
@@ -450,6 +420,73 @@ bool check4containment(vector_xy_t *pg, double x, double y) {
     }
     return counter1 == 0 || counter2 == 0;
 }
+
+vector_xy_t robot2(robot_t *robot) {
+    vector_xy_t *robot_vec = gx_robot(ROB_W, ROB_L);
+    gx_rot(robot->theta, robot_vec);
+    gx_trans(robot->x, robot->y, robot_vec);
+    return robot_vec;
+}
+
+bool robots_collision(robot_t *chaser, robot_t *runner) {
+    vector_xy_t *chaser_vec = robot2(chaser);
+    vector_xy_t *runner_vec = robot2(runner);
+    bool collides = pg_collision(chaser_vec, runner_vec);
+    vector_free(runner_vec);
+    vector_free(chaser_vec);
+    return collides;
+}
+
+bool tile_collision(robot_t *robot, point_t *tile) {
+    vector_xy_t *robot_vec = robot2(robot);
+    bool collides = pg_collision(robot, tile);
+    vector_free(robot);
+    return collides;
+}
+
+bool resolve_tile_collision(robot_t *robot, double tile_x, double tile_y) {
+    vector_xy_t *tile = gx_rect(BLOCK_SIZE, BLOCK_SIZE);
+    gx_trans(tile_x, tile_y, tile);
+    bool collision_status = false;
+    if (tile_collision(robot, tile)) {
+        collision_status = true;
+        double dx = robot->x - tile_x; //change this
+        double dy = robot->y - tile_y;
+        double dist = sqrt(pow(dx, 2) + pow(dy, 2));
+        robot->x += 0.5 * dx / dist;
+        robot->y += 0.5 * dy / dist;
+    }
+    vector_free(tile);
+    return collision_status;
+}
+
+void resolve_collision(robot_t *robot) {
+    double rob_x = robot->x;
+    double rob_y = robot->y;
+    double x = rob_x - 60; //Tile 1 topleft x
+    double y = rob_y + 60; //Tile 1 topleft y
+    bool iscollide = false;
+    while (1) {
+        if (iscollide == true) {
+
+        }
+        for (int i = 0; i < 9; i++) {
+            bool collision_status = resolve_tile_collision(robot, x, y);
+            if (collision_status == true) {
+                iscollide = true;
+            }
+            x += 40;
+            y += -40;
+            if (i == 2 || i == 5) {
+                x += -120;
+                y += 120;
+            }
+        }
+    }
+
+}
+
+
 
 //Tree Search
 // search_actions() {
