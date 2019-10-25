@@ -7,8 +7,6 @@
 #define M_PI 3.14159265358979323846
 #define WIDTH 640
 #define HEIGHT 480
-#define ROB_W 20
-#define ROB_L 26.67
 #define BLOCK_SIZE 40
 #define MAP "XXXXXXXXXXXXXXXX" \
             "X              X" \
@@ -24,6 +22,9 @@
             "XXXXXXXXXXXXXXXX"
 #define MAP_W (WIDTH / BLOCK_SIZE)
 #define MAP_H (HEIGHT / BLOCK_SIZE)
+#define MAX_VEL 12
+#define ROB_W 20
+#define ROB_L 26.67
 
 typedef struct points {
     double x;
@@ -81,16 +82,16 @@ void gx_draw_runner(bitmap_t *bmp, state_t *state, int run_index);
 
 //Movement
 void init_values(state_t *state);
-void init_values(state_t *state);
 void move(robot_t *robot);
-// void chaser_strategy(robot_t *chaser);
 void robot_action(robot_t *robot);
 
-//Collision
-bool robot_collision(game_t *game, vector_xy_t *lamp);
-void resolve_collision(game_t *game, double lamp_x, double lamp_y);
+//Collision & Polygons
 int pg_collision(vector_xy_t *pg1, vector_xy_t *pg2);
 bool pg_intersection(vector_xy_t *pg1, vector_xy_t *pg2);
 bool line_intersection(double x0, double y0, double x1, double y1,
                        double x2, double y2, double x3, double y3);
 bool check4containment(vector_xy_t *pg, double x, double y);
+vector_xy_t *robot2(robot_t *robot);
+bool robots_collision(robot_t *chaser, robot_t *runner);
+bool tile_collision(robot_t *robot, double tile_x, double tile_y);
+void resolve_tile_collision(robot_t *robot);

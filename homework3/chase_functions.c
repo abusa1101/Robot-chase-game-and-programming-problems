@@ -23,7 +23,9 @@
             "XXXXXXXXXXXXXXXX"
 #define MAP_W (WIDTH / BLOCK_SIZE)
 #define MAP_H (HEIGHT / BLOCK_SIZE)
-#define max_vel 12
+#define MAX_VEL 12
+#define ROB_W 20
+#define ROB_L 26.67
 
 
 // Vector Operations
@@ -250,13 +252,6 @@ void wall (bitmap_t *bmp, color_bgr_t color_sq, double x, double y) {
     gx_fill(bmp, color_sq, pathpoints);
 }
 
-// void wall2 (double x, double y) {
-//     vector_xy_t *points = gx_rect(BLOCK_SIZE, BLOCK_SIZE);
-//     gx_trans(x, y, points);
-//     gx_round(points);
-//
-// }
-
 void robot(bitmap_t *bmp, color_bgr_t color, double x, double y, double theta) {
     vector_xy_t *points = gx_robot(ROB_W, ROB_L);
     gx_rot(theta, points);
@@ -304,22 +299,13 @@ void gx_draw_game(bitmap_t *bmp, state_t *state, int run_index) {
     for (int i = 0; i < MAP_H * MAP_W; i++) {
         if (MAP[i] == 'X') {
             //printf("index %d: %d, %d\n", i, (i % MAP_W) * 40, (int) (i/ MAP_W) * 40);
-            wall (bmp, color_sq, (i % MAP_W) * 40, (int) (i / MAP_W) * 40);
+            wall (bmp, color_sq, (i % MAP_W) * BLOCK_SIZE, (int) (i / MAP_W) * BLOCK_SIZE);
         }
     }
     gx_draw_chaser(bmp, state);
     gx_draw_runner(bmp, state, run_index);
 }
 
-vector_xy_t *map_vector(void) {
-    vector_xy_t *map_vec = vector_create();
-    for (int i = 0; i < MAP_H * MAP_W; i++) {
-        if (MAP[i] == 'X') {
-            //printf("index %d: %d, %d\n", i, (i % MAP_W) * 40, (int) (i/ MAP_W) * 40);
-            wall (bmp, color_sq, (i % MAP_W) * 40, (int) (i / MAP_W) * 40);
-        }
-    }
-}
 
 //Movement
 void init_values(state_t *state) {
@@ -334,7 +320,7 @@ void init_values(state_t *state) {
 }
 
 void move(robot_t *robot) {
-    double fwd_vel = fmin(max_vel, robot->fwd_vel);
+    double fwd_vel = fmin(MAX_VEL, robot->fwd_vel);
     double xdist = fwd_vel * cos(robot->theta);
     double ydist = fwd_vel * -sin(robot->theta);
     robot->x += xdist;
@@ -355,13 +341,11 @@ void robot_action(robot_t *robot) {
     robot->theta += robot->ang_vel;
     robot->ang_vel *= 0.8;
     move(robot);
-    // resolve_collision(runner/state);
-    // if (do_robot_wall_collide(runner/state) {
-    //     robot->fwd_vel *= 0.25
-    // }
+    resolve_tile_collision(robot);
 }
 
-//Collision
+
+//Collision & Polygons
 int pg_collision(vector_xy_t *pg1, vector_xy_t *pg2) {
     if ((pg_intersection(pg1, pg2) == 1) ||
         (check4containment(pg2, pg1->data[0].x, pg1->data[0].y) == 1) ||
@@ -421,7 +405,7 @@ bool check4containment(vector_xy_t *pg, double x, double y) {
     return counter1 == 0 || counter2 == 0;
 }
 
-vector_xy_t robot2(robot_t *robot) {
+vector_xy_t *robot2(robot_t *robot) {
     vector_xy_t *robot_vec = gx_robot(ROB_W, ROB_L);
     gx_rot(robot->theta, robot_vec);
     gx_trans(robot->x, robot->y, robot_vec);
@@ -437,74 +421,48 @@ bool robots_collision(robot_t *chaser, robot_t *runner) {
     return collides;
 }
 
-bool tile_collision(robot_t *robot, point_t *tile) {
+bool tile_collision(robot_t *robot, double tile_x, double tile_y) {
     vector_xy_t *robot_vec = robot2(robot);
-    bool collides = pg_collision(robot, tile);
-    vector_free(robot);
+    vector_xy_t *tile_vec = gx_rect(BLOCK_SIZE, BLOCK_SIZE);
+    gx_trans(tile_x, tile_y, tile_vec);
+    bool collides = pg_collision(robot_vec, tile_vec);
+    vector_free(tile_vec);
+    vector_free(robot_vec);
     return collides;
 }
 
-bool resolve_tile_collision(robot_t *robot, double tile_x, double tile_y) {
-    vector_xy_t *tile = gx_rect(BLOCK_SIZE, BLOCK_SIZE);
-    gx_trans(tile_x, tile_y, tile);
-    bool collision_status = false;
-    if (tile_collision(robot, tile)) {
-        collision_status = true;
-        double dx = robot->x - tile_x; //change this
-        double dy = robot->y - tile_y;
-        double dist = sqrt(pow(dx, 2) + pow(dy, 2));
-        robot->x += 0.5 * dx / dist;
-        robot->y += 0.5 * dy / dist;
-    }
-    vector_free(tile);
-    return collision_status;
-}
-
-void resolve_collision(robot_t *robot) {
-    double rob_x = robot->x;
-    double rob_y = robot->y;
-    double x = rob_x - 60; //Tile 1 topleft x
-    double y = rob_y + 60; //Tile 1 topleft y
-    bool iscollide = false;
-    while (1) {
-        if (iscollide == true) {
-
-        }
-        for (int i = 0; i < 9; i++) {
-            bool collision_status = resolve_tile_collision(robot, x, y);
-            if (collision_status == true) {
-                iscollide = true;
-            }
-            x += 40;
-            y += -40;
-            if (i == 2 || i == 5) {
-                x += -120;
-                y += 120;
+void resolve_tile_collision(robot_t *robot) {
+    int map_x = (int)(robot->x * MAP_W / WIDTH);
+    int map_y = (int)(robot->y * MAP_H / HEIGHT);
+    for (int y = (int)fmax(map_y - 1, 0); y <= map_y + 1; y++) {
+        for (int x = (int)fmax(map_x - 1, 0); x <= map_x + 1; x++) {
+            if (MAP[y * 16 + x] == 'X') {
+                if (tile_collision(robot, x, y)) {
+                    printf("%d,%d\n", x, y);
+                    double dist = sqrt(pow(x * BLOCK_SIZE + 20 - robot->x, 2) + pow(y * BLOCK_SIZE + 20 - robot->y, 2));
+                    double dir_x = (x * BLOCK_SIZE + 20 - robot->x) / dist;
+                    double dir_y = (y * BLOCK_SIZE + 20 - robot->y) / dist;
+                    robot->x -= 0.5 * dir_x;
+                    robot->y -= 0.5 * dir_y;
+                    if (!tile_collision(robot, x, y)) {
+                        robot->fwd_vel *= 0.25;
+                    }
+                }
             }
         }
     }
-
 }
 
 
-
-//Tree Search
-// search_actions() {
-//     if chaser collides with runner {
-//         return a score of 0
+// int map_idx_x = (state->runner.x / BLOCK_SIZE ) - 0.5;
+// int map_idx_y = (state->runner.y / BLOCK_SIZE ) - 0.5;
+// printf("Map: x, y: %d, %d\n", map_idx_x, map_idx_y);
+// for (int y = map_idx_y - 1; y < map_idx_y + 1; y++) {
+//     for (int x = map_idx_x - 1; x < map_idx_x + 1; x++) {
+//         //printf("Map: '%c'\n", MAP[x]);
+//         if (MAP[y * 16 + x] == 'X') {
+//             printf("x, y: %d, %d\n", x, y);
+//             //printf("Map- x, y: %d, %d\n",(i % MAP_W) * BLOCK_SIZE, (int) (i / MAP_W) * BLOCK_SIZE);
+//         }
 //     }
-//     if depth >= max depth {
-//         return a score of distance-between-chaser-and-runner
-//     }
-//     for each chaser action {
-//         make a new copy of the search state to modify
-//         simulate this action forward (movement and collisions)
-//         as long as the chaser and runner aren't colliding,
-//             simulate 3 more "do nothings" forward (movement and collisions)
-//         score = search_actions(new search state, with depth + 1)
-//         score += 200 / min(2, chaser velocity)
-//     }
-//     return the best/lowest score of any action, and which action that was
 // }
-
-// void chaser_strategy(robot_t *chaser)

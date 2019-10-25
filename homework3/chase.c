@@ -27,6 +27,9 @@
             "XXXXXXXXXXXXXXXX"
 #define MAP_W (WIDTH / BLOCK_SIZE)
 #define MAP_H (HEIGHT / BLOCK_SIZE)
+#define MAX_VEL 12
+#define ROB_W 20
+#define ROB_L 26.67
 
 int main(int argc, char **argv) {
     if (argc != 4) {
@@ -50,6 +53,8 @@ int main(int argc, char **argv) {
         robot_action(&state.chaser);
         robot_action(&state.runner);
         gx_draw_game(&bmp, &state, -1);
+        printf("R: x, y, theta: %f, %f, %f\n", state.runner.x, state.runner.y, state.runner.theta);
+        printf("C: x, y, theta: %f, %f, %f\n", state.chaser.x, state.chaser.y, state.chaser.theta);
         // if (speed == 0) {
         //     size_t bmp_size = bmp_calculate_size(&bmp);
         //     uint8_t *serialized_bmp = malloc(bmp_size);
