@@ -2,7 +2,7 @@ CFLAGS = -ggdb3 -std=c11 -Wall -Wunused-parameter -Wstrict-prototypes -Werror -W
 CFLAGS += -Wno-sign-compare -Wno-unused-parameter -Wno-unused-variable
 CFLAGS += -fsanitize=address -fsanitize=undefined
 
-calc: calc.c
+calc: calc.c rough2.c rough3.c
 	gcc -o $@ $^ $(CFLAGS) -lpthread -lm
 
 chase: chase.c bmp.c image_server.c chase_functions.c
