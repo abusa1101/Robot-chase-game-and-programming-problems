@@ -283,7 +283,7 @@ void robot(bitmap_t *bmp, color_bgr_t color, double x, double y, double theta) {
     gx_fill(bmp, color, pathpoints);
 }
 
-void gx_draw_chaser(bitmap_t *bmp,  state_t *state) {
+void gx_draw_chaser(bitmap_t *bmp, state_t *state) {
     color_bgr_t color_chaser = {0, 0, 255};
     vector_xy_t *points = gx_robot(ROB_W, ROB_L);
     gx_rot(state->chaser.theta, points);
@@ -557,5 +557,4 @@ void play_game(state_t *state) {
     printf("%d\n", action);
 
     chaser_searches(&state->chaser, action);
-
 }
