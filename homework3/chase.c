@@ -14,17 +14,17 @@
 #define HEIGHT 480
 #define BLOCK_SIZE 40
 #define MAP "XXXXXXXXXXXXXXXX" \
-            "X              X" \
-            "X  XXXX   XXX  X" \
-            "X   XX      X  X" \
-            "X       XXX    X" \
-            "XXXXXX         X" \
-            "X         XXXXXX" \
-            "X    XXX       X" \
-            "X  XX     XX   X" \
-            "X   X    XX    X" \
-            "X      XXX     X" \
-            "XXXXXXXXXXXXXXXX"
+"X              X" \
+"X  XXXX   XXX  X" \
+"X   XX      X  X" \
+"X       XXX    X" \
+"XXXXXX         X" \
+"X         XXXXXX" \
+"X    XXX       X" \
+"X  XX     XX   X" \
+"X   X    XX    X" \
+"X      XXX     X" \
+"XXXXXXXXXXXXXXXX"
 #define MAP_W (WIDTH / BLOCK_SIZE)
 #define MAP_H (HEIGHT / BLOCK_SIZE)
 #define MAX_VEL 12
@@ -77,7 +77,7 @@ int main(int argc, char **argv) {
         } else if (speed == 2) {
             play_game(&state);
         }
-        
+
         if (robots_collision(&state.chaser, &state.runner)) {
             break;
         }
