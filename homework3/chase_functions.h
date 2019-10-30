@@ -24,7 +24,7 @@
 #define MAP_H (HEIGHT / BLOCK_SIZE)
 #define MAX_VEL 12
 #define ROB_W 20
-#define ROB_L 26.67
+#define ROB_L (ROB_W * 4 / 3)
 
 typedef struct points {
     double x;
