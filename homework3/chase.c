@@ -51,7 +51,7 @@ int main(int argc, char **argv) {
 
     for (int t = 0; t < timesteps; t++) {
         if (t == 22) {
-            printf("here!\n");
+            //printf("here!\n");
         }
         robot_action(&state.chaser);
         robot_action(&state.runner);

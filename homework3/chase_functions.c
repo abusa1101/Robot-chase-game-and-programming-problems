@@ -26,6 +26,7 @@
 #define MAX_VEL 12
 #define ROB_W 20
 #define ROB_L 26.67
+#define MAX_DEPTH
 
 
 // Vector Operations
@@ -52,6 +53,25 @@ void vector_free(vector_xy_t *v) {
     free(v);
 }
 
+double max(double a, double b) {
+    double c;
+    if (a >= b) {
+        c = a;
+    } else {
+        c = b;
+    }
+    return c;
+}
+
+double min(double a, double b) {
+    double c;
+    if (a <= b) {
+        c = a;
+    } else {
+        c = b;
+    }
+    return c;
+}
 
 //GX Functions
 vector_xy_t *gx_rect(double width, double height) {
@@ -330,21 +350,40 @@ void move(robot_t *robot) {
     robot->y += ydist;
 }
 
-void robot_action(robot_t *robot) {
-    if (robot->is_runner) { //Runner
-        int num_chosen = rand() % 20; //[max = 19, min = 0]
-        if (num_chosen == 1) {
-            robot->fwd_vel += 2;
-        } else if (num_chosen == 2) {
-            robot->ang_vel += (M_PI / 16);
-        }
-    } else { //Chaser
-        //chaser_strategy();
+void runner_walks(robot_t *runner) {
+    int num_chosen = rand() % 20; //[max = 19, min = 0]
+    if (num_chosen == 1) {
+        runner->fwd_vel += 2;
+    } else if (num_chosen == 2) {
+        runner->ang_vel += (M_PI / 16);
     }
-    robot->theta += robot->ang_vel;
-    robot->ang_vel *= 0.8;
-    move(robot);
-    resolve_tile_collision(robot);
+    runner->theta += runner->ang_vel;
+    runner->ang_vel *= 0.8;
+    move(runner);
+    resolve_tile_collision(runner);
+}
+
+int choose_action(robot_t *chaser, robot_t *runner, search_node_t node) {
+    int action = 1;
+    int *chosen_action = &action;
+    double score = search_actions(chaser, runner, node, chosen_action);
+    return *chosen_action;
+}
+
+void chaser_searches(robot_t *chaser) {
+    int action = choose_action(state, world, *node);
+    //
+    chaser->theta += chaser->ang_vel;
+    chaser->ang_vel *= 0.8;
+    move(chaser);
+    resolve_tile_collision(chaser);
+}
+
+void simulate(search_node_t node, int action) {
+    runner_walks(node.runner);
+    int action = choose_action(node.chaser, node.runner, node)
+    chaser_searches(node.chaser);
+
 }
 
 
@@ -449,10 +488,10 @@ void resolve_tile_collision(robot_t *robot) {
         for (int y = (int)fmax(map_y - 1, 0); y <= map_y + 1; y++) {
             for (int x = (int)fmax(map_x - 1, 0); x <= map_x + 1; x++) {
                 if (MAP[y * MAP_W + x] == 'X') {
-                    //printf("%d, %d\n", x, y);
+                    notincollision = true;
                     if (tile_collision(robot, x, y)) {
                         notincollision = false;
-                        printf("%d, %d\n", x, y);
+                        //printf("%d, %d\n", x, y);
                         double dx = (x + 0.5) * BLOCK_SIZE - robot->x;
                         double dy = (y + 0.5) * BLOCK_SIZE - robot->y;
                         double dist = sqrt(pow(dx, 2) + pow(dy, 2));
@@ -465,23 +504,37 @@ void resolve_tile_collision(robot_t *robot) {
                 }
             }
         }
-        if (!notincollision) {
+        if (notincollision) {
             collision_check = true;
-            break;
         }
     }
 }
 
+double search_actions(robot_t *chaser, robot_t *runner, search_node_t node, int *chosen_action) {
+    double best_score = 100;
+    double score = 0;
+    int act_chosen = -1;
 
-// int map_idx_x = (state->runner.x / BLOCK_SIZE ) - 0.5;
-// int map_idx_y = (state->runner.y / BLOCK_SIZE ) - 0.5;
-// printf("Map: x, y: %d, %d\n", map_idx_x, map_idx_y);
-// for (int y = map_idx_y - 1; y < map_idx_y + 1; y++) {
-//     for (int x = map_idx_x - 1; x < map_idx_x + 1; x++) {
-//         //printf("Map: '%c'\n", MAP[x]);
-//         if (MAP[y * 16 + x] == 'X') {
-//             printf("x, y: %d, %d\n", x, y);
-//             //printf("Map- x, y: %d, %d\n",(i % MAP_W) * BLOCK_SIZE, (int) (i / MAP_W) * BLOCK_SIZE);
-//         }
-//     }
-// }
+    if (robot_collision(chaser, runner)) {
+        return 0;
+    }
+    if (node.depth >= MAX_DEPTH) {
+        double x_dist = pow(chaser->x - runner->x, 2);
+        double y_dist = pow(chaser->y - runner->y, 2);
+        double dist = sqrt(x_dist + y_dist);
+        return dist;
+    }
+
+    for (int i = 1; i <= 4; i++) {
+        search_node_t search_state = node;
+        simulate(search_state.chaser, search_state.runner, node);
+        while (!robot_collision(search_state.chaser, search_state.runner, action)) {//as long as the chaser and runner aren't colliding,
+            simulate(search_state, action); //simulate 3 more "do nothings" forward (movement and collisions)
+        }
+        search_state.depth += 1;
+        score = search_actions(chaser, runner, search_state node, chosen_action);
+        score += 200 / min(2, search_state.chaser.fwd_vel);
+    }
+    *chosen_action = action;
+    return best_score;
+}
