@@ -26,10 +26,10 @@
 #define MAX_VEL 12
 #define ROB_W 20
 #define ROB_L 26.67
-#define MAX_DEPTH
+#define MAX_DEPTH 4
 
 
-// Vector Operations
+// Vector/low-level Operations
 vector_xy_t *vector_create(void) {
     vector_xy_t *v = malloc(sizeof(vector_xy_t));
     v->capacity = 8;
@@ -72,6 +72,7 @@ double min(double a, double b) {
     }
     return c;
 }
+
 
 //GX Functions
 vector_xy_t *gx_rect(double width, double height) {
@@ -329,6 +330,13 @@ void gx_draw_game(bitmap_t *bmp, state_t *state, int run_index) {
     gx_draw_runner(bmp, state, run_index);
 }
 
+vector_xy_t *robot2(robot_t *robot) {
+    vector_xy_t *robot_vec = gx_robot(ROB_W, ROB_L);
+    gx_rot(robot->theta, robot_vec);
+    gx_trans(robot->x, robot->y, robot_vec);
+    return robot_vec;
+}
+
 
 //Movement
 void init_values(state_t *state) {
@@ -343,7 +351,7 @@ void init_values(state_t *state) {
 }
 
 void move(robot_t *robot) {
-    double fwd_vel = fmin(MAX_VEL, robot->fwd_vel);
+    double fwd_vel = min(MAX_VEL, robot->fwd_vel);
     double xdist = fwd_vel * cos(robot->theta);
     double ydist = fwd_vel * -sin(robot->theta);
     robot->x += xdist;
@@ -354,8 +362,12 @@ void runner_walks(robot_t *runner) {
     int num_chosen = rand() % 20; //[max = 19, min = 0]
     if (num_chosen == 1) {
         runner->fwd_vel += 2;
+        printf("%d ", num_chosen);
     } else if (num_chosen == 2) {
         runner->ang_vel += (M_PI / 16);
+        printf("%d ", num_chosen);
+    } else {
+        printf("%d ", 0);
     }
     runner->theta += runner->ang_vel;
     runner->ang_vel *= 0.8;
@@ -363,29 +375,28 @@ void runner_walks(robot_t *runner) {
     resolve_tile_collision(runner);
 }
 
-int choose_action(robot_t *chaser, robot_t *runner, search_node_t node) {
-    int action = 1;
-    int *chosen_action = &action;
-    double score = search_actions(chaser, runner, node, chosen_action);
-    return *chosen_action;
-}
-
-void chaser_searches(robot_t *chaser) {
-    int action = choose_action(state, world, *node);
-    //
+void chaser_searches(robot_t *chaser, int action) {
+    switch (action) {
+    case 1:
+        chaser->fwd_vel += 2;
+        if (chaser->fwd_vel > MAX_VEL) {
+            chaser->fwd_vel = MAX_VEL;
+        }
+        break;
+    case 2:
+        chaser->ang_vel += M_PI / 16;
+        break;
+    case 3:
+        chaser->ang_vel -= M_PI / 16;
+        break;
+    default:
+        break;
+    }
     chaser->theta += chaser->ang_vel;
     chaser->ang_vel *= 0.8;
     move(chaser);
     resolve_tile_collision(chaser);
 }
-
-void simulate(search_node_t node, int action) {
-    runner_walks(node.runner);
-    int action = choose_action(node.chaser, node.runner, node)
-    chaser_searches(node.chaser);
-
-}
-
 
 
 //Collision & Polygons
@@ -448,13 +459,6 @@ bool check4containment(vector_xy_t *pg, double x, double y) {
     return counter1 == 0 || counter2 == 0;
 }
 
-vector_xy_t *robot2(robot_t *robot) {
-    vector_xy_t *robot_vec = gx_robot(ROB_W, ROB_L);
-    gx_rot(robot->theta, robot_vec);
-    gx_trans(robot->x, robot->y, robot_vec);
-    return robot_vec;
-}
-
 bool robots_collision(robot_t *chaser, robot_t *runner) {
     vector_xy_t *chaser_vec = robot2(chaser);
     vector_xy_t *runner_vec = robot2(runner);
@@ -465,11 +469,6 @@ bool robots_collision(robot_t *chaser, robot_t *runner) {
 }
 
 bool tile_collision(robot_t *robot, double tile_x, double tile_y) {
-    //printf("In tile collision\n");
-    //printf("T1: %f, %f\n", tile_x, tile_y);
-    // tile_x = (tile_x + 0.5) * BLOCK_SIZE;
-    // tile_y = (tile_y + 0.5) * BLOCK_SIZE;
-    //printf("T2: %f, %f\n", tile_x, tile_y);
     vector_xy_t *robot_vec = robot2(robot);
     vector_xy_t *tile_vec = gx_rect(BLOCK_SIZE, BLOCK_SIZE);
     gx_trans(tile_x * BLOCK_SIZE, tile_y * BLOCK_SIZE, tile_vec);
@@ -483,10 +482,10 @@ void resolve_tile_collision(robot_t *robot) {
     int map_x = (robot->x * MAP_W / WIDTH);
     int map_y = (robot->y * MAP_H / HEIGHT);
     bool notincollision = true;
-    bool collision_check = false;
-    while (!collision_check) {
-        for (int y = (int)fmax(map_y - 1, 0); y <= map_y + 1; y++) {
-            for (int x = (int)fmax(map_x - 1, 0); x <= map_x + 1; x++) {
+    bool collision_status = false;
+    while (!collision_status) {
+        for (int y = (int)max(map_y - 1, 0); y <= map_y + 1; y++) {
+            for (int x = (int)max(map_x - 1, 0); x <= map_x + 1; x++) {
                 if (MAP[y * MAP_W + x] == 'X') {
                     notincollision = true;
                     if (tile_collision(robot, x, y)) {
@@ -505,36 +504,64 @@ void resolve_tile_collision(robot_t *robot) {
             }
         }
         if (notincollision) {
-            collision_check = true;
+            collision_status = true;
         }
     }
 }
 
-double search_actions(robot_t *chaser, robot_t *runner, search_node_t node, int *chosen_action) {
-    double best_score = 100;
-    double score = 0;
+
+//Intelligent Movement
+double search_actions(state_t state, int *chosen_action) {
+    double best_score = 1000;
+    double score[4] = {0}; //4 chaser actions
     int act_chosen = -1;
 
-    if (robot_collision(chaser, runner)) {
+    if (robots_collision(&state.chaser, &state.runner)) {
         return 0;
     }
-    if (node.depth >= MAX_DEPTH) {
-        double x_dist = pow(chaser->x - runner->x, 2);
-        double y_dist = pow(chaser->y - runner->y, 2);
+    if (state.depth >= MAX_DEPTH) {
+        double x_dist = pow(state.chaser.x - state.runner.x, 2);
+        double y_dist = pow(state.chaser.y - state.runner.y, 2);
         double dist = sqrt(x_dist + y_dist);
         return dist;
     }
 
-    for (int i = 1; i <= 4; i++) {
-        search_node_t search_state = node;
-        simulate(search_state.chaser, search_state.runner, node);
-        while (!robot_collision(search_state.chaser, search_state.runner, action)) {//as long as the chaser and runner aren't colliding,
-            simulate(search_state, action); //simulate 3 more "do nothings" forward (movement and collisions)
+    for (int i = 0; i < 4; i++) {
+        state_t search_state = state;
+        vector_xy_t *sim_chaser = robot2(&search_state.chaser);
+        vector_xy_t *sim_runner = robot2(&search_state.runner);
+
+        chaser_searches(&search_state.chaser, i);
+        for (int wait_steps = 0; wait_steps < 3; wait_steps++) {
+            if (!pg_collision(sim_chaser, sim_runner)) {
+                chaser_searches(&search_state.chaser, 0);
+            }
         }
-        search_state.depth += 1;
-        score = search_actions(chaser, runner, search_state node, chosen_action);
-        score += 200 / min(2, search_state.chaser.fwd_vel);
+        search_state.depth++;
+        score[i] = search_actions(search_state, chosen_action);
+        score[i] += 200 / min(2, search_state.chaser.fwd_vel);
+        vector_free(sim_runner);
+        vector_free(sim_chaser);
     }
-    *chosen_action = action;
+
+    for (int action_num = 0; action_num < 4; action_num++) {
+        if (score[action_num] < best_score) {
+            best_score = score[action_num];
+            *chosen_action = action_num;
+        }
+    }
     return best_score;
+}
+
+void play_game(state_t *state) {
+    runner_walks(&state->runner);
+
+    int action = 0;
+    state_t sim_state = *state;
+    sim_state.depth = 0;
+    search_actions(sim_state, &action);
+    printf("%d\n", action);
+
+    chaser_searches(&state->chaser, action);
+
 }

@@ -53,15 +53,18 @@ typedef struct search_node {
 } search_node_t;
 
 typedef struct state {
+    int depth;
     bool is_runner_caught;
     robot_t runner;
     robot_t chaser;
 } state_t;
 
-//Vector Operations
+//Vector/low-level Operations
 vector_xy_t *vector_create(void);
 void vector_append(vector_xy_t *v, double xvalue, double yvalue);
 void vector_free(vector_xy_t *v);
+double max(double a, double b);
+double min(double a, double b);
 
 //GX Functions
 vector_xy_t *gx_rect(double width, double height);
@@ -75,15 +78,17 @@ void gx_fill(bitmap_t *bmp, color_bgr_t color, vector_xy_t *pathpoints);
 void gx_set_backgound(bitmap_t *bmp);
 void wall (bitmap_t *bmp, color_bgr_t color_sq, double x, double y);
 void robot(bitmap_t *bmp, color_bgr_t color, double x, double y, double theta);
-void gx_draw_game(bitmap_t *bmp, state_t *state, int run_index);
 void gx_draw_chaser(bitmap_t *bmp,  state_t *state);
 void give_runner_pos(state_t *state, int run_index);
 void gx_draw_runner(bitmap_t *bmp, state_t *state, int run_index);
+void gx_draw_game(bitmap_t *bmp, state_t *state, int run_index);
+vector_xy_t *robot2(robot_t *robot);
 
 //Movement
 void init_values(state_t *state);
 void move(robot_t *robot);
-void robot_action(robot_t *robot);
+void runner_walks(robot_t *runner);
+void chaser_searches(robot_t *chaser, int action);
 
 //Collision & Polygons
 int pg_collision(vector_xy_t *pg1, vector_xy_t *pg2);
@@ -91,7 +96,11 @@ bool pg_intersection(vector_xy_t *pg1, vector_xy_t *pg2);
 bool line_intersection(double x0, double y0, double x1, double y1,
                        double x2, double y2, double x3, double y3);
 bool check4containment(vector_xy_t *pg, double x, double y);
-vector_xy_t *robot2(robot_t *robot);
+
 bool robots_collision(robot_t *chaser, robot_t *runner);
 bool tile_collision(robot_t *robot, double tile_x, double tile_y);
 void resolve_tile_collision(robot_t *robot);
+
+//Intelligent Movement
+double search_actions(state_t state, int *chosen_action);
+void play_game(state_t *state);

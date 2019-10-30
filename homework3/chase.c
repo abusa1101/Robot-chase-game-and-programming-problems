@@ -44,21 +44,18 @@ int main(int argc, char **argv) {
     bmp.width = 640;
     bmp.height = 480;
     bmp.data = calloc(bmp.width * bmp.height, sizeof(color_bgr_t));
-    image_server_start("8000");
+    if (speed != 2) {
+        image_server_start("8000");
+    }
 
     init_values(&state);
     gx_draw_game(&bmp, &state, run_index);
 
     for (int t = 0; t < timesteps; t++) {
-        if (t == 22) {
-            //printf("here!\n");
-        }
-        robot_action(&state.chaser);
-        robot_action(&state.runner);
-        gx_draw_game(&bmp, &state, -1);
-        //printf("R: x, y, theta: %f, %f, %f\n", state.runner.x, state.runner.y, state.runner.theta);
-        //printf("C: x, y, theta: %f, %f, %f\n", state.chaser.x, state.chaser.y, state.chaser.theta);
         if (speed == 0) {
+            play_game(&state);
+            gx_draw_game(&bmp, &state, -1);
+
             size_t bmp_size = bmp_calculate_size(&bmp);
             uint8_t *serialized_bmp = malloc(bmp_size);
             bmp_serialize(&bmp, serialized_bmp);
@@ -68,16 +65,22 @@ int main(int argc, char **argv) {
             long nanoseconds = 40 * 1000 * 1000;
             struct timespec interval = {seconds, nanoseconds};
             nanosleep(&interval, NULL);
-        }
-    }
+        } else if (speed == 1) {
+            play_game(&state);
 
-    if (speed == 1) {
-        size_t bmp_size = bmp_calculate_size(&bmp);
-        uint8_t *serialized_bmp = malloc(bmp_size);
-        bmp_serialize(&bmp, serialized_bmp);
-        image_server_set_data(bmp_size, serialized_bmp);
-        free(serialized_bmp);
-        sleep(1);
+            size_t bmp_size = bmp_calculate_size(&bmp);
+            uint8_t *serialized_bmp = malloc(bmp_size);
+            bmp_serialize(&bmp, serialized_bmp);
+            image_server_set_data(bmp_size, serialized_bmp);
+            free(serialized_bmp);
+            sleep(1);
+        } else if (speed == 2) {
+            play_game(&state);
+        }
+        
+        if (robots_collision(&state.chaser, &state.runner)) {
+            break;
+        }
     }
 
     free(bmp.data);
