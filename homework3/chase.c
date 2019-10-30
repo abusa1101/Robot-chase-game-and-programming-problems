@@ -50,30 +50,36 @@ int main(int argc, char **argv) {
     gx_draw_game(&bmp, &state, run_index);
 
     for (int t = 0; t < timesteps; t++) {
+        if (t == 22) {
+            printf("here!\n");
+        }
         robot_action(&state.chaser);
         robot_action(&state.runner);
         gx_draw_game(&bmp, &state, -1);
-        printf("R: x, y, theta: %f, %f, %f\n", state.runner.x, state.runner.y, state.runner.theta);
-        printf("C: x, y, theta: %f, %f, %f\n", state.chaser.x, state.chaser.y, state.chaser.theta);
-        // if (speed == 0) {
-        //     size_t bmp_size = bmp_calculate_size(&bmp);
-        //     uint8_t *serialized_bmp = malloc(bmp_size);
-        //     bmp_serialize(&bmp, serialized_bmp);
-        //     image_server_set_data(bmp_size, serialized_bmp);
-        //     free(serialized_bmp);
-        //     int seconds = 0;
-        //     long nanoseconds = 40 * 1000 * 1000;
-        //     struct timespec interval = {seconds, nanoseconds};
-        //     nanosleep(&interval, NULL);
-        // }
+        //printf("R: x, y, theta: %f, %f, %f\n", state.runner.x, state.runner.y, state.runner.theta);
+        //printf("C: x, y, theta: %f, %f, %f\n", state.chaser.x, state.chaser.y, state.chaser.theta);
+        if (speed == 0) {
+            size_t bmp_size = bmp_calculate_size(&bmp);
+            uint8_t *serialized_bmp = malloc(bmp_size);
+            bmp_serialize(&bmp, serialized_bmp);
+            image_server_set_data(bmp_size, serialized_bmp);
+            free(serialized_bmp);
+            int seconds = 0;
+            long nanoseconds = 40 * 1000 * 1000;
+            struct timespec interval = {seconds, nanoseconds};
+            nanosleep(&interval, NULL);
+        }
     }
 
-    size_t bmp_size = bmp_calculate_size(&bmp);
-    uint8_t *serialized_bmp = malloc(bmp_size);
-    bmp_serialize(&bmp, serialized_bmp);
-    image_server_set_data(bmp_size, serialized_bmp);
-    free(serialized_bmp);
-    sleep(1);
+    if (speed == 1) {
+        size_t bmp_size = bmp_calculate_size(&bmp);
+        uint8_t *serialized_bmp = malloc(bmp_size);
+        bmp_serialize(&bmp, serialized_bmp);
+        image_server_set_data(bmp_size, serialized_bmp);
+        free(serialized_bmp);
+        sleep(1);
+    }
+
     free(bmp.data);
     return 0;
 }

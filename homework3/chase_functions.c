@@ -207,6 +207,9 @@ void gx_draw_line(bitmap_t *bmp, color_bgr_t color, int x0, int y0, int x1, int 
     int sy = y0 < y1 ? 1 : -1;
     int err = dx + dy;
     while (1) {
+        if (x0 < 0 || x0 >= WIDTH || y0 < 0 || y0 >= HEIGHT) {
+            break;
+        }
         bmp->data[y0 * bmp->width + x0] = color;
         if (x0 == x1 && y0 == y1) {
             break;
@@ -329,10 +332,10 @@ void move(robot_t *robot) {
 
 void robot_action(robot_t *robot) {
     if (robot->is_runner) { //Runner
-        int num_chosen = rand() % (19 + 1 - 0) + 0; //[max = 19, min = 0]
-        if (num_chosen == 2) {
+        int num_chosen = rand() % 20; //[max = 19, min = 0]
+        if (num_chosen == 1) {
             robot->fwd_vel += 2;
-        } else if (num_chosen == 3) {
+        } else if (num_chosen == 2) {
             robot->ang_vel += (M_PI / 16);
         }
     } else { //Chaser
@@ -343,6 +346,7 @@ void robot_action(robot_t *robot) {
     move(robot);
     resolve_tile_collision(robot);
 }
+
 
 
 //Collision & Polygons
@@ -422,9 +426,14 @@ bool robots_collision(robot_t *chaser, robot_t *runner) {
 }
 
 bool tile_collision(robot_t *robot, double tile_x, double tile_y) {
+    //printf("In tile collision\n");
+    //printf("T1: %f, %f\n", tile_x, tile_y);
+    // tile_x = (tile_x + 0.5) * BLOCK_SIZE;
+    // tile_y = (tile_y + 0.5) * BLOCK_SIZE;
+    //printf("T2: %f, %f\n", tile_x, tile_y);
     vector_xy_t *robot_vec = robot2(robot);
     vector_xy_t *tile_vec = gx_rect(BLOCK_SIZE, BLOCK_SIZE);
-    gx_trans(tile_x, tile_y, tile_vec);
+    gx_trans(tile_x * BLOCK_SIZE, tile_y * BLOCK_SIZE, tile_vec);
     bool collides = pg_collision(robot_vec, tile_vec);
     vector_free(tile_vec);
     vector_free(robot_vec);
@@ -432,23 +441,33 @@ bool tile_collision(robot_t *robot, double tile_x, double tile_y) {
 }
 
 void resolve_tile_collision(robot_t *robot) {
-    int map_x = (int)(robot->x * MAP_W / WIDTH);
-    int map_y = (int)(robot->y * MAP_H / HEIGHT);
-    for (int y = (int)fmax(map_y - 1, 0); y <= map_y + 1; y++) {
-        for (int x = (int)fmax(map_x - 1, 0); x <= map_x + 1; x++) {
-            if (MAP[y * 16 + x] == 'X') {
-                if (tile_collision(robot, x, y)) {
-                    printf("%d,%d\n", x, y);
-                    double dist = sqrt(pow(x * BLOCK_SIZE + 20 - robot->x, 2) + pow(y * BLOCK_SIZE + 20 - robot->y, 2));
-                    double dir_x = (x * BLOCK_SIZE + 20 - robot->x) / dist;
-                    double dir_y = (y * BLOCK_SIZE + 20 - robot->y) / dist;
-                    robot->x -= 0.5 * dir_x;
-                    robot->y -= 0.5 * dir_y;
-                    if (!tile_collision(robot, x, y)) {
+    int map_x = (robot->x * MAP_W / WIDTH);
+    int map_y = (robot->y * MAP_H / HEIGHT);
+    bool notincollision = true;
+    bool collision_check = false;
+    while (!collision_check) {
+        for (int y = (int)fmax(map_y - 1, 0); y <= map_y + 1; y++) {
+            for (int x = (int)fmax(map_x - 1, 0); x <= map_x + 1; x++) {
+                if (MAP[y * MAP_W + x] == 'X') {
+                    //printf("%d, %d\n", x, y);
+                    if (tile_collision(robot, x, y)) {
+                        notincollision = false;
+                        printf("%d, %d\n", x, y);
+                        double dx = (x + 0.5) * BLOCK_SIZE - robot->x;
+                        double dy = (y + 0.5) * BLOCK_SIZE - robot->y;
+                        double dist = sqrt(pow(dx, 2) + pow(dy, 2));
+                        double dir_x = dx / dist;
+                        double dir_y = dy / dist;
+                        robot->x -= 0.5 * dir_x;
+                        robot->y -= 0.5 * dir_y;
                         robot->fwd_vel *= 0.25;
                     }
                 }
             }
+        }
+        if (!notincollision) {
+            collision_check = true;
+            break;
         }
     }
 }
