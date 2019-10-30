@@ -26,7 +26,7 @@
 #define MAX_VEL 12
 #define ROB_W 20
 #define ROB_L 26.67
-#define MAX_DEPTH 4
+#define MAX_DEPTH 3
 
 // Vector/low-level Operations
 vector_xy_t *vector_create(void) {
@@ -219,7 +219,7 @@ void gx_fill(bitmap_t *bmp, color_bgr_t color, vector_xy_t *pathpoints) {
     }
 }
 
-void gx_draw_line(bitmap_t *bmp, color_bgr_t color, int x0, int y0, int x1, int y1) {
+void gx_draw_line(bitmap_t *bmp, color_bgr_t color, (int) double x0, (int) int y0, (int) int x1, (int) int y1) {
     int dx = abs(x1 - x0);
     int sx = x0 < x1 ? 1 : -1;
     int dy = -abs(y1 - y0);
