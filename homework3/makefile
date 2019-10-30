@@ -7,6 +7,3 @@ calc: calc.c
 
 chase: chase.c bmp.c image_server.c chase_functions.c
 	gcc -o $@ $^ $(CFLAGS) -lpthread -lm
-
-rough: rough.c
-	gcc -o $@ $^ $(CFLAGS) -lpthread -lm

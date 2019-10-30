@@ -28,7 +28,6 @@
 #define ROB_L 26.67
 #define MAX_DEPTH 4
 
-
 // Vector/low-level Operations
 vector_xy_t *vector_create(void) {
     vector_xy_t *v = malloc(sizeof(vector_xy_t));
@@ -72,7 +71,6 @@ double min(double a, double b) {
     }
     return c;
 }
-
 
 //GX Functions
 vector_xy_t *gx_rect(double width, double height) {
@@ -267,7 +265,7 @@ void gx_set_backgound(bitmap_t *bmp) {
     }
 }
 
-void wall (bitmap_t *bmp, color_bgr_t color_sq, double x, double y) {
+void wall(bitmap_t *bmp, color_bgr_t color_sq, double x, double y) {
     vector_xy_t *points = gx_rect(BLOCK_SIZE, BLOCK_SIZE);
     gx_trans(x, y, points);
     gx_round(points);
@@ -323,7 +321,7 @@ void gx_draw_game(bitmap_t *bmp, state_t *state, int run_index) {
     for (int i = 0; i < MAP_H * MAP_W; i++) {
         if (MAP[i] == 'X') {
             //printf("index %d: %d, %d\n", i, (i % MAP_W) * 40, (int) (i/ MAP_W) * 40);
-            wall (bmp, color_sq, (i % MAP_W) * BLOCK_SIZE, (int) (i / MAP_W) * BLOCK_SIZE);
+            wall(bmp, color_sq, (i % MAP_W) * BLOCK_SIZE, (int)(i / MAP_W) * BLOCK_SIZE);
         }
     }
     gx_draw_chaser(bmp, state);
@@ -336,7 +334,6 @@ vector_xy_t *robot2(robot_t *robot) {
     gx_trans(robot->x, robot->y, robot_vec);
     return robot_vec;
 }
-
 
 //Movement
 void init_values(state_t *state) {
@@ -397,7 +394,6 @@ void chaser_searches(robot_t *chaser, int action) {
     move(chaser);
     resolve_tile_collision(chaser);
 }
-
 
 //Collision & Polygons
 int pg_collision(vector_xy_t *pg1, vector_xy_t *pg2) {
@@ -509,12 +505,10 @@ void resolve_tile_collision(robot_t *robot) {
     }
 }
 
-
 //Intelligent Movement
 double search_actions(state_t state, int *chosen_action) {
     double best_score = 1000;
     double score[4] = {0}; //4 chaser actions
-    int act_chosen = -1;
 
     if (robots_collision(&state.chaser, &state.runner)) {
         return 0;
