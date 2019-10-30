@@ -5,28 +5,6 @@
 #include <string.h>
 #include <stdbool.h>
 #include <math.h>
-#define M_PI 3.14159265358979323846
-#define WIDTH 640
-#define HEIGHT 480
-#define BLOCK_SIZE 40
-#define MAP "XXXXXXXXXXXXXXXX" \
-            "X              X" \
-            "X  XXXX   XXX  X" \
-            "X   XX      X  X" \
-            "X       XXX    X" \
-            "XXXXXX         X" \
-            "X         XXXXXX" \
-            "X    XXX       X" \
-            "X  XX     XX   X" \
-            "X   X    XX    X" \
-            "X      XXX     X" \
-            "XXXXXXXXXXXXXXXX"
-#define MAP_W (WIDTH / BLOCK_SIZE)
-#define MAP_H (HEIGHT / BLOCK_SIZE)
-#define MAX_VEL 12
-#define ROB_W 20
-#define ROB_L (ROB_W * 4 / 3)
-#define MAX_DEPTH 3
 
 // Vector/low-level Operations
 vector_xy_t *vector_create(void) {

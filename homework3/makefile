@@ -5,5 +5,5 @@ CFLAGS += -Wno-sign-compare -Wno-unused-parameter -Wno-unused-variable
 calc: calc.c
 	gcc -o $@ $^ $(CFLAGS) -lpthread -lm
 
-chase: chase.c bmp.c image_server.c
+chase: chase.c bmp.c image_server.c chase_functions.c
 	gcc -o $@ $^ $(CFLAGS) -lpthread -lm -O3
