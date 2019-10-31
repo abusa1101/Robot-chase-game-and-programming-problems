@@ -1,0 +1,139 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include <stdbool.h>
+#include <string.h>
+#include <time.h>
+#include <math.h>
+
+//Naive "add" hash
+uint32_t add_hash(uint8_t *data, int n) {
+    uint32_t hash = 0;
+    for (int i = 0; i < n; i++) {
+        hash += *data;
+        data++;
+    }
+    return hash;
+}
+
+//Naive/Better table hash
+uint32_t table_hash_keys[256];
+
+void setup_table_hash(void) {
+    for (int i = 0; i < 256; i++) {
+        table_hash_keys[i] = rand();
+    }
+}
+
+uint32_t table_b_hash(uint8_t *data, int n) {
+    uint32_t hash = 0;
+    setup_table_hash();
+    for (int i = 0; i < n; i++) {
+        hash += table_hash_keys[*data];
+        data++;
+    }
+    return hash;
+}
+
+//Better Hash Table
+uint32_t table_a_hash(uint8_t *data, int n) {
+    setup_table_hash();
+    uint32_t hash = 0;
+    for (int i = 0; i < n; i++) {
+        hash = (hash << 3) ^ table_hash_keys[*data];
+        data++;
+    }
+    return hash;
+}
+
+//DJB2A
+uint32_t DJB2A(uint8_t *data, int n) {
+    setup_table_hash();
+    uint32_t hash = 5381;
+    for (int i = 0; i < n; i++) {
+        hash = ((hash << 5) + hash) ^ *data;
+        hash += table_hash_keys[*data];
+        data++;
+    }
+    return hash;
+}
+
+//FNV1A
+uint32_t FNV1A(uint8_t *data, int n) {
+    uint32_t FNV_offset_basis = 2166136261;
+    uint32_t FNV_prime = 16777619;
+
+    uint32_t hash = FNV_offset_basis;
+           for (int i = 0; i < n; i++) {
+           	hash ^= *data;
+           	hash *= FNV_prime;
+            data++;
+        }
+    return hash;
+}
+
+//Fxhash32
+// uint32_t rotate_left(uint32_t value, uint32_t count) {
+//   return value << count | value >> (32 - count);
+// }
+//
+// uint32_t fxhash32_step(uint32_t hash, uint32_t value) {
+//   const uint32_t key = 0x27220a95;
+//   // const uint64_t key = 0x517cc1b727220a95;
+//   return (rotate_left(hash, 5) ^ value) * key;
+// }
+//
+// uint32_t fxhash32(uint8_t *data, int n) {
+//   uint32_t hash = 0;
+//   for each block of 4/8 bytes in data {
+//       uint32_t number;
+//       memcpy(&number, pointer to those letters in data, sizeof(number));
+//       hash = fxhash32_step(hash, number);
+//   }
+//
+//   for each remaining letter in data {
+//       hash = fxhash32_step(hash, that letter);
+//   }
+//
+//   return hash;
+// }
+
+int main(int argc, char **argv) {
+    if (argc != 3) { //No of arguments error
+        fprintf(stderr, "usage: %s <file> <key> <lines before>\n", argv[0]);
+        return 1;
+    }
+
+    char *func = argv[1];
+    uint8_t *data = (uint8_t*)argv[2];
+    int n = (int)strlen(argv[2]);
+
+    if (strcmp(func, "add") == 0) {
+        uint32_t hash = add_hash(data, n);
+        printf("0x%x\n", hash);
+
+    } else if (strcmp(func, "table_a")) {
+        uint32_t hash = table_a_hash(data, n);
+        printf("0x%x\n", hash);
+
+    } else if (strcmp(func, "table_b")) {
+        uint32_t hash = table_b_hash(data, n);
+        printf("0x%x\n", hash);
+
+    } else if (strcmp(func, "djb2a")) {
+        uint32_t hash = DJB2A(data, n);
+        printf("0x%x\n", hash);
+
+    } else if (strcmp(func, "fnv1a")) {
+        uint32_t hash = FNV1A(data, n);
+        printf("0x%x\n", hash);
+
+    } else if (strcmp(func, "fxhash32")) {
+        //uint32_t hash = fxhash32(data, n);
+        //printf("0x%x\n", hash);
+    } else {
+        printf("Error: Please enter a valid hash function");
+    }
+
+
+}
