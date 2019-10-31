@@ -62,11 +62,11 @@ uint32_t FNV1A(uint8_t *data, int n) {
     uint32_t FNV_offset_basis = 2166136261;
     uint32_t FNV_prime = 16777619;
     uint32_t hash = FNV_offset_basis;
-           for (int i = 0; i < n; i++) {
-           	hash ^= *data;
-           	hash *= FNV_prime;
-            data++;
-        }
+    for (int i = 0; i < n; i++) {
+        hash ^= *data;
+        hash *= FNV_prime;
+        data++;
+    }
     return hash;
 }
 
@@ -110,32 +110,26 @@ int main(int argc, char **argv) {
     if (strcmp(func, "add") == 0) {
         uint32_t hash_add = add_hash(data, n);
         printf("0x%x\n", hash_add);
-
     }
     if (strcmp(func, "table_a") == 0) {
         uint32_t hash_a = table_a_hash(data, n);
         printf("0x%x\n", hash_a);
-
     }
     if (strcmp(func, "table_b") == 0) {
         uint32_t hash_b = table_b_hash(data, n);
         printf("0x%x\n", hash_b);
-
     }
     if (strcmp(func, "djb2a") == 0) {
         uint32_t hash_dj = DJB2A(data, n);
         printf("0x%x\n", hash_dj);
-
     }
     if (strcmp(func, "fnv1a") == 0) {
         uint32_t hash_fn = FNV1A(data, n);
         printf("0x%x\n", hash_fn);
-
     }
     if (strcmp(func, "fxhash32") == 0) {
         //uint32_t hash = fxhash32(data, n);
         //printf("0x%x\n", hash);
     }
-
-
+    return 0;
 }
