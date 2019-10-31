@@ -104,7 +104,7 @@ int main(int argc, char **argv) {
 
     char *func = argv[1];
 
-    uint8_t *data = (uint8_t*)argv[2];
+    uint8_t *data = (uint8_t *)argv[2];
     int n = (int)strlen(argv[2]);
 
     if (strcmp(func, "add") == 0) {
