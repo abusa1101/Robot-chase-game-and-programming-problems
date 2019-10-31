@@ -25,7 +25,7 @@ void setup_table_hash(void) {
     }
 }
 
-uint32_t table_b_hash(uint8_t *data, int n) {
+uint32_t table_a_hash(uint8_t *data, int n) {
     uint32_t hash = 0;
     setup_table_hash();
     for (int i = 0; i < n; i++) {
@@ -36,7 +36,7 @@ uint32_t table_b_hash(uint8_t *data, int n) {
 }
 
 //Better Hash Table
-uint32_t table_a_hash(uint8_t *data, int n) {
+uint32_t table_b_hash(uint8_t *data, int n) {
     setup_table_hash();
     uint32_t hash = 0;
     for (int i = 0; i < n; i++) {
@@ -52,7 +52,6 @@ uint32_t DJB2A(uint8_t *data, int n) {
     uint32_t hash = 5381;
     for (int i = 0; i < n; i++) {
         hash = ((hash << 5) + hash) ^ *data;
-        hash += table_hash_keys[*data];
         data++;
     }
     return hash;
@@ -62,7 +61,6 @@ uint32_t DJB2A(uint8_t *data, int n) {
 uint32_t FNV1A(uint8_t *data, int n) {
     uint32_t FNV_offset_basis = 2166136261;
     uint32_t FNV_prime = 16777619;
-
     uint32_t hash = FNV_offset_basis;
            for (int i = 0; i < n; i++) {
            	hash ^= *data;
@@ -105,34 +103,38 @@ int main(int argc, char **argv) {
     }
 
     char *func = argv[1];
+
     uint8_t *data = (uint8_t*)argv[2];
     int n = (int)strlen(argv[2]);
 
     if (strcmp(func, "add") == 0) {
-        uint32_t hash = add_hash(data, n);
-        printf("0x%x\n", hash);
+        uint32_t hash_add = add_hash(data, n);
+        printf("0x%x\n", hash_add);
 
-    } else if (strcmp(func, "table_a")) {
-        uint32_t hash = table_a_hash(data, n);
-        printf("0x%x\n", hash);
+    }
+    if (strcmp(func, "table_a") == 0) {
+        uint32_t hash_a = table_a_hash(data, n);
+        printf("0x%x\n", hash_a);
 
-    } else if (strcmp(func, "table_b")) {
-        uint32_t hash = table_b_hash(data, n);
-        printf("0x%x\n", hash);
+    }
+    if (strcmp(func, "table_b") == 0) {
+        uint32_t hash_b = table_b_hash(data, n);
+        printf("0x%x\n", hash_b);
 
-    } else if (strcmp(func, "djb2a")) {
-        uint32_t hash = DJB2A(data, n);
-        printf("0x%x\n", hash);
+    }
+    if (strcmp(func, "djb2a") == 0) {
+        uint32_t hash_dj = DJB2A(data, n);
+        printf("0x%x\n", hash_dj);
 
-    } else if (strcmp(func, "fnv1a")) {
-        uint32_t hash = FNV1A(data, n);
-        printf("0x%x\n", hash);
+    }
+    if (strcmp(func, "fnv1a") == 0) {
+        uint32_t hash_fn = FNV1A(data, n);
+        printf("0x%x\n", hash_fn);
 
-    } else if (strcmp(func, "fxhash32")) {
+    }
+    if (strcmp(func, "fxhash32") == 0) {
         //uint32_t hash = fxhash32(data, n);
         //printf("0x%x\n", hash);
-    } else {
-        printf("Error: Please enter a valid hash function");
     }
 
 
