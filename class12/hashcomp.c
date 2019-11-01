@@ -111,8 +111,8 @@ uint32_t fibonacci32_reduce(uint32_t hash) {
     return hash;
 }
 
-void evaluate_hash_reduce(int n_entries, test_entry_t *entries, uint32_t (*hash_f)(uint8_t *, int),
-                          uint32_t (*reduce_f)(uint32_t)) {
+void evaluate_hash_reduce(int n_entries, test_entry_t *entries,
+                          uint32_t (*hash_f)(uint8_t *, int), uint32_t (*reduce_f)(uint32_t)) {
     double elapsed = 0.0;
     int loop_num = 0;
     int collision = 0;
@@ -135,13 +135,10 @@ void evaluate_hash_reduce(int n_entries, test_entry_t *entries, uint32_t (*hash_
 }
 
 int main(int argc, char **argv) {
-    // First we need to collect all the entries/strings/data that we will try to hash
-    // This needs to be done up front for the benchmarking later to be valid.
     int max_entries = TABLE_SIZE / 2;
     test_entry_t *entries = calloc(max_entries, sizeof(test_entry_t));
 
-    for (uint16_t i = 1; i < 1000; i++) {
-        //entries[i] = i;
+    for (uint16_t i = 0; i < 1000; i++) {
         entries[i].data = malloc(sizeof(i));
         memcpy(entries[i].data, &i, sizeof(i));
         entries[i].n = sizeof(i);
