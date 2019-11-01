@@ -113,11 +113,8 @@ uint32_t fibonacci32_reduce(uint32_t hash) {
 
 void evaluate_hash_reduce(int n_entries, test_entry_t *entries, uint32_t (*hash_f)(uint8_t *, int),
                           uint32_t (*reduce_f)(uint32_t)) {
-
     double elapsed = 0.0;
     int loop_num = 0;
-    // int table_arr[8192] = {0};
-    // int collision = 0;
     int collision = 0;
     clock_t start = clock();
     while (elapsed < 0.5) {
@@ -132,10 +129,8 @@ void evaluate_hash_reduce(int n_entries, test_entry_t *entries, uint32_t (*hash_
             loop_num++;
         }
         elapsed = (clock() - start) / (double)CLOCKS_PER_SEC;
-
-        //table_arr[8192] = {0};
     }
-    elapsed = (elapsed / loop_num) * pow(10,9);
+    elapsed = (elapsed / loop_num) * pow(10, 9);
     printf("%lfns per iteration, with %d collisions\n", elapsed, collision);
 }
 
@@ -151,7 +146,7 @@ int main(int argc, char **argv) {
         memcpy(entries[i].data, &i, sizeof(i));
         entries[i].n = sizeof(i);
     }
-    FILE *fp = fopen("book.txt","r");
+    FILE *fp = fopen("book.txt", "r");
     char buffer[256];
     for (int i = 1000; i < max_entries; i++) {
         char *line = fgets(buffer, 256, fp);
@@ -159,17 +154,8 @@ int main(int argc, char **argv) {
         entries[i].n = strlen(line);
     }
     setup_table_hash();
-    // This is an array of function pointers
-    // Which will let us iterate through all the different hash functions
-    // The syntax is actually only slightly different from a normal function
-    // for a function pointer, the name of the function is in parenthesis
-    // and it has an asterisk in front of it. The brackets after the name
-    // show it is an array of function pointers. Everything outside those parentheses
-    // work like normal for the function definition, and the arguments don't need names.
     uint32_t (*hash_functions[])(uint8_t *, int) = {add_hash, table_a_hash, table_b_hash,
                                                     djb2a_hash, fnv1a_hash, fxhash32_hash};
-    // This is a good idiom to get the number of elements in a static array in C
-    // This only works because the hash function array is declared as a literal array with { ... }
     int n_hash_functions = sizeof(hash_functions) / sizeof(hash_functions[0]);
 
     uint32_t (*reduce_functions[])(uint32_t) = {modulo2_reduce, modulo_prime_reduce,
