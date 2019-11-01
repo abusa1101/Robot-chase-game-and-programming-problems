@@ -121,12 +121,12 @@ void evaluate_hash_reduce(int n_entries, test_entry_t *entries, uint32_t (*hash_
         int table_arr[8192] = {0};
         collision = 0;
         for (int i = 0; i < n_entries; i++) {
+            loop_num++;
             uint32_t hash = reduce_f(hash_f(entries[i].data, entries[i].n));
             table_arr[hash] += 1;
             if (table_arr[hash] > 1) {
                 collision++;
             }
-            loop_num++;
         }
         elapsed = (clock() - start) / (double)CLOCKS_PER_SEC;
     }
