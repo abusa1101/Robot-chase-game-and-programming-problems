@@ -6,4 +6,4 @@ hash: hash.c
 	gcc -o $@ $^ $(CFLAGS) -lpthread -lm
 
 hashcomp: hashcomp.c
-	gcc -o $@ $^ $(CFLAGS) -lpthread -lm
+	gcc -o $@ $^ $(CFLAGS) -lpthread -lm -O3
