@@ -72,18 +72,18 @@ uint32_t FNV1A(uint8_t *data, int n) {
 
 //Fxhash32
 uint32_t rotate_left(uint32_t value, uint32_t count) {
-  return value << count | value >> (32 - count);
+    return value << count | value >> (32 - count);
 }
 
 uint32_t fxhash32_step(uint32_t hash, uint32_t value) {
-  const uint32_t key = 0x27220a95;
-  //const uint64_t key = 0x517cc1b727220a95;
-  return (rotate_left(hash, 5) ^ value) * key;
+    const uint32_t key = 0x27220a95;
+    //const uint64_t key = 0x517cc1b727220a95;
+    return (rotate_left(hash, 5) ^ value) * key;
 }
 
 uint32_t fxhash32(uint8_t *data, int n) {
-  uint32_t hash = 0;
-  int data_chunks = n / 4;
+    uint32_t hash = 0;
+    int data_chunks = n / 4;
     for (int i = 0; i < data_chunks; i++) {
         uint32_t number;
         memcpy(&number, data, sizeof(number));
@@ -95,7 +95,7 @@ uint32_t fxhash32(uint8_t *data, int n) {
         hash = fxhash32_step(hash, *data);
         data += 1;
     }
-  return hash;
+    return hash;
 }
 
 int main(int argc, char **argv) {
