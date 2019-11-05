@@ -16,13 +16,17 @@ typedef struct hashtable_entry {
 typedef struct hashtable {
     hashtable_entry_t entries;
     int size;
-    int key;
+    int entries_size;
 } hashtable_t;
 
 typedef struct test_entry {
     uint8_t *data;
     int n;
 } test_entry_t;
+
+unsigned int log2n(unsigned int n) {
+    return (n > 1) ? 1 + log2n(n / 2) : 0;
+}
 
 uint32_t rotate_left(uint32_t value, uint32_t count) {
     return value << count | value >> (32 - count);
@@ -51,9 +55,9 @@ uint32_t fxhash32_hash(uint8_t *data, int n) {
     return hash;
 }
 
-uint32_t fibonacci32_reduce(uint32_t hash) {
+uint32_t fibonacci32_reduce(uint32_t hash, int lognum) {
     const uint32_t factor32 = 2654435769;
-    hash = (uint32_t)(hash * factor32) >> (32 - 13);
+    hash = (uint32_t)(hash * factor32) >> (32 - lognum);
     return hash;
 }
 
@@ -75,18 +79,46 @@ uint32_t evaluate_hash_reduce(int n_entries, test_entry_t *entries,
     return hash;
 }
 
-void hashtable_create(void) {
-    int max_entries = TABLE_SIZE;
-    hashtable_t *table = calloc(max_entries, sizeof(hashtable_t));
+hashtable_t *hashtable_create(void) {
+    hashtable_t *table = calloc(sizeof(hashtable_t), 1);
     table->size = TABLE_SIZE;
-    table->key = 0;
+    table->entries_size = calloc(sizeof(hashtable_entry_t), table->size);
+    return table;
 }
 
-void hashtable_set(key, value) {
-    uint32_t fx_hash = fxhash32_hash();
-    uint32_t fibo_hash = fibonacci32_reduce();
+void hashtable_set(char *key, int value) {
+    int n = 7; //change this for rehashing
+    int lognum = log2n(n);
+    uint32_t hash = fibonacci32_reduce(fxhash32_hash(key, strlen(key)), lognum);
+    bool is_slot_empty = true;
+    while(is_slot_empty) {
+        if (hashtable.entries[hash]->value == NULL) {
+            //copy key and value and increment size by 1
+            hashtable.entries[hash]->key = strdup(key);
+            hashtable.entries[hash]->value = value;
+            hashtable.entries_size++;
+            is_slot_empty = false;
+        } else {
+            //compare keys
+            if (strcmp(hashtable.entries[hash]->key, key) == 0) {
+                //update entry value
+                hashtable.entries[hash]->value = value;
+            } else {
+                hash++;
+                //repeat back to step 2 so go back to while loop
+            }
+        }
+    }
 }
 
-bool hashtable_get(key, value ptr) {
+bool hashtable_get(key, value ptr) {}
 
-}
+void rehash(void) {}
+
+void hashtable_probe_max(void) {}
+
+void hashtable_probe(void) {}
+
+void hashtable_destroy(void) {}
+
+void hashtable_size(void) {}
