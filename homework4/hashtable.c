@@ -8,6 +8,7 @@
 #include <math.h>
 #define TABLE_SIZE 128
 
+
 typedef struct hashtable_entry {
     char *key;
     int value;
@@ -98,7 +99,7 @@ void hashtable_destroy(hashtable_t *hashtable, bool free_table) {
     }
 }
 
-void hashtable_set(char *key, int value, hashtable_t *hashtable) {
+void hashtable_set(hashtable_t *hashtable, char *key, int value) {
     double load_factor = hashtable->entries_size / hashtable->size;
     if (load_factor >= 0.5) {
         rehash(hashtable);
@@ -136,7 +137,7 @@ bool hashtable_get(hashtable_t *hashtable, char *key, int *value) {
             return false;
         } else {
             if (strcmp(hashtable->entries[hash]->key, key) == 0) {
-                hashtable->entries[hash]->value = value;
+                value = hashtable->entries[hash]->value;
                 //is_slot_empty = false;
                 return true;
             } else {
@@ -146,8 +147,8 @@ bool hashtable_get(hashtable_t *hashtable, char *key, int *value) {
     }
 }
 
-void rehash(hashtable_t *old_hashtable, int table_size) {
-    hashtable_t *new_hashtable = hashtable_create(table_size * 2);
+void rehash(hashtable_t *old_hashtable) {
+    hashtable_t *new_hashtable = hashtable_create(old_hashtable->size * 2);
     for (int i = 0; i < old_hashtable->size; i++) {
         new_hashtable->entries[hash]->key = strdup(old_hashtable->entries[hash]->key);
         new_hashtable->entries[hash]->value = old_hashtable->entries[hash]->value;
@@ -164,15 +165,33 @@ void hashtable_probe(void) {}
 
 void hashtable_size(void) {}
 
+void read_word(FILE *fp, char *word, int char_num) {
+    char c = fgetc(fp);
+    int len = 0;
+    while (c != EOF && c != ' ') {
+        if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')) {
+            word[len] = c;
+            len++;
+        }
+    }
+}
 
 int main(void) {
-
     FILE *fp = fopen("book.txt", "r");
-    for (int i = 0; i < max_entries; i++) {
-        char *word = malloc(256);
-        char *letter = fgetc(fp, word, 256);
-
+    if (!fp) {
+        fprintf(stderr, "Error: Missing file.\n");
+        exit(1);
     }
+
+    char *word1 = malloc(256);
+    read_word(fp, word1, 256);
+    char *word2 = malloc(256);
+    read_word(fp, word2, 256); //do we increment fp at some point here??
+
+    // char *buffer = malloc(256);
+    int j = snprintf(word1, sizeof(word1), "%s", word2);
+
+    fclose(fp);
     hashtable_t *hashtable = hashtable_create(TABLE_SIZE);
 
     // int bigram_size = hashtable_size();
@@ -182,5 +201,5 @@ int main(void) {
 
     hashtable_destroy(hashtable, true); //true = destroy hashtable_t
 
-    return 1;
+    return 0;
 }
