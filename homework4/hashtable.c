@@ -24,6 +24,7 @@ typedef struct test_entry {
     int n;
 } test_entry_t;
 
+
 unsigned int log2n(unsigned int n) {
     return (n > 1) ? 1 + log2n(n / 2) : 0;
 }
@@ -79,46 +80,107 @@ uint32_t evaluate_hash_reduce(int n_entries, test_entry_t *entries,
     return hash;
 }
 
-hashtable_t *hashtable_create(void) {
+
+hashtable_t *hashtable_create(int table_size) {
     hashtable_t *table = calloc(sizeof(hashtable_t), 1);
-    table->size = TABLE_SIZE;
+    table->size = table_size;
     table->entries_size = calloc(sizeof(hashtable_entry_t), table->size);
     return table;
 }
 
-void hashtable_set(char *key, int value) {
+void hashtable_destroy(hashtable_t *hashtable, bool free_table) {
+    for (int i = 0; i < hashtable->entries_size; i++) { //or i < table size?????
+        free(hashtable->entries[i]->key);
+    }
+    free(hashtable->entries);
+    if (free_table) {
+        free(hashtable);
+    }
+}
+
+void hashtable_set(char *key, int value, hashtable_t *hashtable) {
+    double load_factor = hashtable->entries_size / hashtable->size;
+    if (load_factor >= 0.5) {
+        rehash(hashtable);
+    }
     int n = 7; //change this for rehashing
     int lognum = log2n(n);
     uint32_t hash = fibonacci32_reduce(fxhash32_hash(key, strlen(key)), lognum);
     bool is_slot_empty = true;
     while(is_slot_empty) {
-        if (hashtable.entries[hash]->value == NULL) {
+        if (hashtable->entries[hash]->key == NULL) {
             //copy key and value and increment size by 1
-            hashtable.entries[hash]->key = strdup(key);
-            hashtable.entries[hash]->value = value;
-            hashtable.entries_size++;
+            hashtable->entries[hash]->key = strdup(key);
+            hashtable->entries[hash]->value = value;
+            hashtable->entries_size++;
             is_slot_empty = false;
-        } else {
-            //compare keys
-            if (strcmp(hashtable.entries[hash]->key, key) == 0) {
-                //update entry value
-                hashtable.entries[hash]->value = value;
+        } else { //compare keys
+            if (strcmp(hashtable->entries[hash]->key, key) == 0) {
+                hashtable->entries[hash]->value = value; //update entry value
+                is_slot_empty = false;
             } else {
-                hash++;
-                //repeat back to step 2 so go back to while loop
+                hash++; //repeat back to step 2 so go back to while loop
             }
         }
     }
 }
 
-bool hashtable_get(key, value ptr) {}
+bool hashtable_get(hashtable_t *hashtable, char *key, int *value) {
+    int n = 7;
+    int lognum = log2n(n);
+    uint32_t hash = fibonacci32_reduce(fxhash32_hash(key, strlen(key)), lognum);
+    bool is_slot_empty = true;
+    while(is_slot_empty) {
+        if (hashtable->entries[hash]->key == NULL) {
+            //is_slot_empty = false;
+            return false;
+        } else {
+            if (strcmp(hashtable->entries[hash]->key, key) == 0) {
+                hashtable->entries[hash]->value = value;
+                //is_slot_empty = false;
+                return true;
+            } else {
+                hash++;
+            }
+        }
+    }
+}
 
-void rehash(void) {}
+void rehash(hashtable_t *old_hashtable, int table_size) {
+    hashtable_t *new_hashtable = hashtable_create(table_size * 2);
+    for (int i = 0; i < old_hashtable->size; i++) {
+        new_hashtable->entries[hash]->key = strdup(old_hashtable->entries[hash]->key);
+        new_hashtable->entries[hash]->value = old_hashtable->entries[hash]->value;
+        new_hashtable->entries_size++;
+    }
+    hashtable_destroy(old_hashtable, false); //false = DO NOT destroy hashtable_t
+    new_hashtable->entries = old_hashtable->entries;
+    free(new_hashtable);
+}
 
 void hashtable_probe_max(void) {}
 
 void hashtable_probe(void) {}
 
-void hashtable_destroy(void) {}
-
 void hashtable_size(void) {}
+
+
+int main(void) {
+
+    FILE *fp = fopen("book.txt", "r");
+    for (int i = 0; i < max_entries; i++) {
+        char *word = malloc(256);
+        char *letter = fgetc(fp, word, 256);
+
+    }
+    hashtable_t *hashtable = hashtable_create(TABLE_SIZE);
+
+    // int bigram_size = hashtable_size();
+    // printf("Rehashing reduced collisions from XX to XX");
+    // printf("Bigram 'of the' has count of XXX");
+    // printf("Total of %d different bigrams recorded", bigram_size);
+
+    hashtable_destroy(hashtable, true); //true = destroy hashtable_t
+
+    return 1;
+}
