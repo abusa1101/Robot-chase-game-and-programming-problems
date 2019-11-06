@@ -186,6 +186,9 @@ int main(void) {
         exit(1);
     }
 
+    while (1) {
+        if
+    }
     char *word1 = malloc(256);
     read_word(fp, word1, 256);
     char *word2 = malloc(256);
