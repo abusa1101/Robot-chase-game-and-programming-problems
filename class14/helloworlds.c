@@ -26,6 +26,8 @@ int main(void) {
     for (int i = 0; i < N_THREADS; i++) {
         thread_infos[i].num = i;
         pthread_create(&thread_infos[i].thread, NULL, thread_start, &thread_infos[i]);
+    }
+    for (int i = 0; i < N_THREADS; i++) {
         pthread_join(thread_infos[i].thread, NULL);
     }
 
