@@ -87,7 +87,7 @@ hashtable_t *hashtable_create(int table_size) {
 
 void hashtable_destroy(hashtable_t *hashtable, bool free_table) {
     for (int i = 0; i < hashtable->entries_size; i++) { //or i < table size?????
-        free(hashtable->entries[i]->key);
+        free(hashtable->entries[i].key);
     }
     free(hashtable->entries);
     if (free_table) {
@@ -98,8 +98,8 @@ void hashtable_destroy(hashtable_t *hashtable, bool free_table) {
 void rehash(hashtable_t *old_hashtable) {
     hashtable_t *new_hashtable = hashtable_create(old_hashtable->size * 2);
     for (int i = 0; i < old_hashtable->size; i++) {
-        new_hashtable->entries[hash]->key = strdup(old_hashtable->entries[hash]->key);
-        new_hashtable->entries[hash]->value = old_hashtable->entries[hash]->value;
+        new_hashtable->entries[i].key = strdup(old_hashtable->entries[i].key);
+        new_hashtable->entries[i].value = old_hashtable->entries[i].value;
         new_hashtable->entries_size++;
     }
     hashtable_destroy(old_hashtable, false); //false = DO NOT destroy hashtable_t
@@ -116,15 +116,15 @@ void hashtable_set(hashtable_t *hashtable, char *key, int value) {
     uint32_t hash = fibonacci32_reduce(fxhash32_hash(key, strlen(key)), hashtable->size);
     bool is_slot_empty = true;
     while(is_slot_empty) {
-        if (hashtable->entries[hash]->key == NULL) {
+        if (hashtable->entries[hash].key == NULL) {
             //copy key and value and increment size by 1
-            hashtable->entries[hash]->key = strdup(key);
-            hashtable->entries[hash]->value = value;
+            hashtable->entries[hash].key = strdup(key);
+            hashtable->entries[hash].value = value;
             hashtable->entries_size++;
             is_slot_empty = false;
         } else { //compare keys
-            if (strcmp(hashtable->entries[hash]->key, key) == 0) {
-                hashtable->entries[hash]->value = value; //update entry value
+            if (strcmp(hashtable->entries[hash].key, key) == 0) {
+                hashtable->entries[hash].value = value; //update entry value
                 is_slot_empty = false;
             } else {
                 hash++; //repeat back to step 2 so go back to while loop
@@ -137,12 +137,12 @@ bool hashtable_get(hashtable_t *hashtable, char *key, int *value) {
     uint32_t hash = fibonacci32_reduce(fxhash32_hash(key, strlen(key)), hashtable->size);
     bool is_slot_empty = true;
     while(is_slot_empty) {
-        if (hashtable->entries[hash]->key == NULL) {
+        if (hashtable->entries[hash].key == NULL) {
             //is_slot_empty = false;
             return false;
         } else {
-            if (strcmp(hashtable->entries[hash]->key, key) == 0) {
-                value = hashtable->entries[hash]->value;
+            if (strcmp(hashtable->entries[hash].key, key) == 0) {
+                *value = hashtable->entries[hash].value;
                 //is_slot_empty = false;
                 return true;
             } else {
@@ -150,9 +150,10 @@ bool hashtable_get(hashtable_t *hashtable, char *key, int *value) {
             }
         }
     }
+    return false;
 }
 
-
+// int hashtable_collisions(hashtable_t *hashtable) {}
 
 // void hashtable_probe_max(void) {}
 //
@@ -185,22 +186,27 @@ int main(void) {
         exit(1);
     }
 
-    // char *word1 = malloc(256);
-    // read_word(fp, word1, 256);
-    // char *word2 = malloc(256);
-    // read_word(fp, word2, 256);
-    // char *buffer = malloc(256);
+    char *word1 = malloc(256);
+    read_word(fp, word1, 256);
+    char *word2 = malloc(256);
+    read_word(fp, word2, 256);
+    char *buffer = malloc(256);
     // for (int i = 0; i < 10; i++) {
     //     printf("%c", word1[i]);
     // }
     // for (int i = 0; i < 10; i++) {
     //     printf("%c", word2[i]);
     // }
-    //snprintf(buffer, 256, "%s %s\n", word1, word2);
-    // printf("%s: %s %s\n", buffer, word1, word2);
-    // fclose(fp);
+    snprintf(buffer, 256, "%s %s\n", word1, word2);
+    printf("%s: %s %s\n", buffer, word1, word2);
+
 
     hashtable_t *hashtable = hashtable_create(TABLE_SIZE);
+    // int value = 10;
+    // char *key;
+    // strcpy(key, "abc");
+    // hashtable_set(hashtable, key, value);
+    //hashtable_get(hashtable, &key, &value);
 
     // int bigram_size = hashtable_size();
     // printf("Rehashing reduced collisions from XX to XX");
@@ -208,9 +214,9 @@ int main(void) {
     // printf("Total of %d different bigrams recorded", bigram_size);
 
     hashtable_destroy(hashtable, true); //true = destroy hashtable_t
-    // free(buffer);
-    // free(word2);
-    // free(word1);
-
+    free(buffer);
+    free(word2);
+    free(word1);
+    fclose(fp);
     return 0;
 }
