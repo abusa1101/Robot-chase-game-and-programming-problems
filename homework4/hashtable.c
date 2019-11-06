@@ -197,8 +197,9 @@ int main(void) {
     // for (int i = 0; i < 10; i++) {
     //     printf("%c", word2[i]);
     // }
-    snprintf(buffer, 256, "%s %s\n", word1, word2);
-    printf("%s: %s %s\n", buffer, word1, word2);
+    snprintf(buffer, 256, "%s %s", word1, word2);
+    printf("%s\n", buffer);
+    printf("%ld\n", strlen(buffer));
 
 
     hashtable_t *hashtable = hashtable_create(TABLE_SIZE);
