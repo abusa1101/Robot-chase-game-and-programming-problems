@@ -8,7 +8,7 @@
 #include <math.h>
 #include <ctype.h>
 #define TABLE_SIZE 128
-
+#define STR_SIZE 256
 
 typedef struct hashtable_entry {
     char *key;
@@ -186,26 +186,33 @@ int main(void) {
         exit(1);
     }
 
-    while (1) {
-        if
+    hashtable_t *hashtable = hashtable_create(TABLE_SIZE);
+    char check = '';
+    while (!feof(fp)) {
+        if (check == '\n') {
+            break;
+        }
+        char *word1 = malloc(STR_SIZE);
+        read_word(fp, word1, STR_SIZE);
+        char *word2 = malloc(STR_SIZE);
+        read_word(fp, word2, STR_SIZE);
+        char *buffer = malloc(STR_SIZE);
+
+        snprintf(buffer, STR_SIZE * 2, "%s %s", word1, word2);
+        printf("%s\n", buffer);
+        printf("%ld\n", strlen(buffer));
+        hashtable_get(hashtable, &key, &value);
+        hashtable_set(hashtable, buffer, value);
     }
-    char *word1 = malloc(256);
-    read_word(fp, word1, 256);
-    char *word2 = malloc(256);
-    read_word(fp, word2, 256);
-    char *buffer = malloc(256);
+
     // for (int i = 0; i < 10; i++) {
     //     printf("%c", word1[i]);
     // }
     // for (int i = 0; i < 10; i++) {
     //     printf("%c", word2[i]);
     // }
-    snprintf(buffer, 256, "%s %s", word1, word2);
-    printf("%s\n", buffer);
-    printf("%ld\n", strlen(buffer));
 
 
-    hashtable_t *hashtable = hashtable_create(TABLE_SIZE);
     // int value = 10;
     // char *key;
     // strcpy(key, "abc");
