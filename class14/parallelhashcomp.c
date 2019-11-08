@@ -5,12 +5,9 @@
 #include <stdbool.h>
 #include <string.h>
 #include <time.h>
+#include <math.h>
 #include <pthread.h>
 #define TABLE_SIZE 8192
-uint32_t table_hash_keys[256];
-
-const uint32_t factor32 = 2654435769;
-
 uint32_t table_hash_keys[256];
 
 typedef struct test_entry {
@@ -22,7 +19,7 @@ typedef struct thread_info {
     int num;
     uint32_t (*hash_f)(uint8_t *key, int value);
     uint32_t (*reduce_f)(uint32_t hash);
-    float coll_time;
+    float avg_time;
     int collisions;
     test_entry_t *entries;
     int n_entries;
@@ -162,7 +159,7 @@ void evaluate_hash_reduce(int n_entries, test_entry_t *entries,
 void *thread_start(void *user) {
     thread_info_t *info = user;
     evaluate_hash_reduce(info->n_entries, info->entries, info->hash_f,
-                         info->reduce_f, &info->coll_time, &info->collisions);
+                         info->reduce_f, &info->avg_time, &info->collisions);
     return NULL;
 }
 
@@ -219,7 +216,7 @@ int main(int argc, char **argv) {
                     }
                     for (int j = 0; j < limit; j++) {
                         pthread_join(thread_infos[j].thread, NULL);
-                        printf("%.2fns per iteration, with %d collisions\n", thread_infos[j].coll_time,
+                        printf("%.2fns per iteration, with %d collisions\n", thread_infos[j].avg_time,
                         thread_infos[j].collisions);
                     }
                 }
