@@ -35,6 +35,12 @@ double seconds_now(void) {
     return now.tv_sec + now.tv_nsec / 1000000000.0;
 }
 
+void setup_table_hash(void) {
+    for (int i = 0; i < 256; i++) {
+        table_hash_keys[i] = rand();
+    }
+}
+
 uint32_t add_hash(uint8_t *data, int n) {
     uint32_t hash = 0;
     for (int i = 0; i < n; i++) {
@@ -42,12 +48,6 @@ uint32_t add_hash(uint8_t *data, int n) {
         data++;
     }
     return hash;
-}
-
-void setup_table_hash(void) {
-    for (int i = 0; i < 256; i++) {
-        table_hash_keys[i] = rand();
-    }
 }
 
 uint32_t table_a_hash(uint8_t *data, int n) {
