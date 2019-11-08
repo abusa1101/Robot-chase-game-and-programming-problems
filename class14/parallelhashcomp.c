@@ -5,14 +5,38 @@
 #include <stdbool.h>
 #include <string.h>
 #include <time.h>
-#include <math.h>
+#include <pthread.h>
 #define TABLE_SIZE 8192
+uint32_t table_hash_keys[256];
+
+const uint32_t factor32 = 2654435769;
+
 uint32_t table_hash_keys[256];
 
 typedef struct test_entry {
     uint8_t *data;
     int n;
 } test_entry_t;
+
+typedef struct thread_info {
+    int num;
+    uint32_t (*hash_f)(uint8_t *key, int value);
+    uint32_t (*reduce_f)(uint32_t hash);
+    float coll_time;
+    int collisions;
+    test_entry_t *entries;
+    int n_entries;
+    pthread_t thread;
+} thread_info_t;
+
+double seconds_now(void) {
+    struct timespec now;
+    if (clock_gettime(CLOCK_MONOTONIC, &now)) {
+        fprintf(stderr, "Retrieving system time failed.\n");
+        exit(1);
+    }
+    return now.tv_sec + now.tv_nsec / 1000000000.0;
+}
 
 uint32_t add_hash(uint8_t *data, int n) {
     uint32_t hash = 0;
@@ -112,11 +136,12 @@ uint32_t fibonacci32_reduce(uint32_t hash) {
 }
 
 void evaluate_hash_reduce(int n_entries, test_entry_t *entries,
-                          uint32_t (*hash_f)(uint8_t *, int), uint32_t (*reduce_f)(uint32_t)) {
+                          uint32_t (*hash_f)(uint8_t *, int), uint32_t (*reduce_f)(uint32_t),
+                          float *time, int *coll) {
     double elapsed = 0.0;
     int loop_num = 0;
     int collision = 0;
-    clock_t start = clock();
+    clock_t start = seconds_now();
     while (elapsed < 0.5) {
         int table_arr[8192] = {0};
         collision = 0;
@@ -128,14 +153,25 @@ void evaluate_hash_reduce(int n_entries, test_entry_t *entries,
                 collision++;
             }
         }
-        elapsed = (clock() - start) / (double)CLOCKS_PER_SEC;
+        elapsed = (seconds_now() - start) / (double)CLOCKS_PER_SEC;
     }
     elapsed = (elapsed / loop_num) * pow(10, 9);
-    printf("%lfns per iteration, with %d collisions\n", elapsed, collision);
+    //printf("%lfns per iteration, with %d collisions\n", elapsed, collision);
+}
+
+void *thread_start(void *user) {
+    thread_info_t *info = user;
+    evaluate_hash_reduce(info->n_entries, info->entries, info->hash_f,
+                         info->reduce_f, &info->coll_time, &info->collisions);
+    return NULL;
 }
 
 int main(int argc, char **argv) {
+    setup_table_hash();
+    int N_THREADS = atoi(argv[1]);
+    thread_info_t thread_infos[N_THREADS];
     int max_entries = TABLE_SIZE / 2;
+    int n_entries = max_entries;
     test_entry_t *entries = calloc(max_entries, sizeof(test_entry_t));
 
     for (uint16_t i = 0; i < 1000; i++) {
@@ -144,33 +180,57 @@ int main(int argc, char **argv) {
         entries[i].n = sizeof(i);
     }
     FILE *fp = fopen("book.txt", "r");
+    if (!fp) {
+        fprintf(stderr, "Error: Missing file.\n");
+        exit(1);
+    }
     char buffer[256];
     for (int i = 1000; i < max_entries; i++) {
         char *line = fgets(buffer, 256, fp);
         entries[i].data = (uint8_t *)strdup(line);
         entries[i].n = strlen(line);
     }
-    setup_table_hash();
-    uint32_t (*hash_functions[])(uint8_t *, int) = {table_a_hash, add_hash, table_b_hash,
-                                                    djb2a_hash, fnv1a_hash, fxhash32_hash};
+
+    uint32_t (*hash_functions[])(uint8_t *, int) = {add_hash, table_a_hash, table_b_hash, djb2a_hash, fnv1a_hash, fxhash32_hash};
     int n_hash_functions = sizeof(hash_functions) / sizeof(hash_functions[0]);
 
-    uint32_t (*reduce_functions[])(uint32_t) = {modulo_prime_reduce, modulo2_reduce,
-                                                fibonacci32_reduce};
-    int n_reduce_functions = sizeof(reduce_functions) / sizeof(reduce_functions[0]);
-    int n_entries = max_entries;
-    for (int hash_i = 0; hash_i < n_hash_functions; hash_i++) {
-        for (int reduce_i = 0; reduce_i < n_reduce_functions; reduce_i++) {
-            evaluate_hash_reduce(n_entries, entries, hash_functions[hash_i],
-                                 reduce_functions[reduce_i]);
+    uint32_t (*reduce_functions[])(uint32_t) = {modulo2_reduce, modulo_prime_reduce,
+        fibonacci32_reduce};
+        int n_reduce_functions = sizeof(reduce_functions) / sizeof(reduce_functions[0]);
+
+        for (int hash_i = 0; hash_i < n_hash_functions; hash_i++) {
+            for (int reduce_i = 0; reduce_i < n_reduce_functions; reduce_i++) {
+                int idx = ((hash_i * n_reduce_functions) + (reduce_i));
+                int i = idx % N_THREADS;
+                thread_infos[i].num = i;
+                thread_infos[i].n_entries = n_entries;
+                thread_infos[i].entries = entries;
+                thread_infos[i].hash_f = hash_functions[hash_i];
+                thread_infos[i].reduce_f = reduce_functions[reduce_i];
+                pthread_create(&thread_infos[i].thread, NULL, thread_start, &thread_infos[i]);
+                if (i >= (N_THREADS - 1) || idx == n_hash_functions * n_reduce_functions - 1) {
+                    int limit;
+                    if (idx == n_hash_functions * n_reduce_functions - 1 && i == N_THREADS - 1) {
+                        limit = N_THREADS;
+                    } else if (idx == n_hash_functions * n_reduce_functions - 1) {
+                        limit = (idx + 1) % N_THREADS;
+                    } else {
+                        limit = N_THREADS;
+                    }
+                    for (int j = 0; j < limit; j++) {
+                        pthread_join(thread_infos[j].thread, NULL);
+                        printf("%.2fns per iteration, with %d collisions\n", thread_infos[j].coll_time,
+                        thread_infos[j].collisions);
+                    }
+                }
+            }
         }
-        printf("\n");
+
+        for (int i = 0; i < max_entries; i++) {
+            free(entries[i].data);
+            entries[i].data = NULL;
+        }
+        free(entries);
+        entries = NULL;
+        return 0;
     }
-    for (int i = 0; i < max_entries; i++) {
-        free(entries[i].data);
-        entries[i].data = NULL;
-    }
-    free(entries);
-    entries = NULL;
-    return 0;
-}
