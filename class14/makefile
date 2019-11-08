@@ -6,4 +6,4 @@ helloworlds: helloworlds.c
 	gcc -o $@ $^ $(CFLAGS) -lpthread -lm
 
 parallelhashcomp: parallelhashcomp.c
-	gcc -o $@ $^ $(CFLAGS) -lpthread -lm -o3
+	gcc -o $@ $^ $(CFLAGS) -lpthread -lm -O3
