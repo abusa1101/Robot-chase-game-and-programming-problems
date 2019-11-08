@@ -5,10 +5,11 @@
 #include <stdbool.h>
 #include <string.h>
 #include <time.h>
-#include <math.h>
 #include <pthread.h>
 #define TABLE_SIZE 8192
 uint32_t table_hash_keys[256];
+#define N_THREADS 16
+#define DEBUG_ON 0
 
 typedef struct test_entry {
     uint8_t *data;
@@ -17,12 +18,12 @@ typedef struct test_entry {
 
 typedef struct thread_info {
     int num;
+    int n_entries;
+    test_entry_t *entries;
     uint32_t (*hash_f)(uint8_t *key, int value);
     uint32_t (*reduce_f)(uint32_t hash);
     float avg_time;
     int collisions;
-    test_entry_t *entries;
-    int n_entries;
     pthread_t thread;
 } thread_info_t;
 
@@ -47,6 +48,9 @@ uint32_t add_hash(uint8_t *data, int n) {
 void setup_table_hash(void) {
     for (int i = 0; i < 256; i++) {
         table_hash_keys[i] = rand();
+        if (DEBUG_ON) {
+            printf("hash key: %d\n", table_hash_keys[i]);
+        }
     }
 }
 
@@ -78,12 +82,10 @@ uint32_t djb2a_hash(uint8_t *data, int n) {
 }
 
 uint32_t fnv1a_hash(uint8_t *data, int n) {
-    uint32_t FNV_offset_basis = 2166136261;
-    uint32_t FNV_prime = 16777619;
-    uint32_t hash = FNV_offset_basis;
+    uint32_t hash = 2166136261;
+    uint32_t prime = 16777619;
     for (int i = 0; i < n; i++) {
-        hash ^= *data;
-        hash *= FNV_prime;
+        hash = (hash ^ *data) * prime;
         data++;
     }
     return hash;
@@ -95,69 +97,69 @@ uint32_t rotate_left(uint32_t value, uint32_t count) {
 
 uint32_t fxhash32_step(uint32_t hash, uint32_t value) {
     const uint32_t key = 0x27220a95;
-    //const uint64_t key = 0x517cc1b727220a95;
     return (rotate_left(hash, 5) ^ value) * key;
 }
 
 uint32_t fxhash32_hash(uint8_t *data, int n) {
     uint32_t hash = 0;
-    int data_chunks = n / 4;
-    for (int i = 0; i < data_chunks; i++) {
+    while (n > 3) {
         uint32_t number;
         memcpy(&number, data, sizeof(number));
-        data += 4;
         hash = fxhash32_step(hash, number);
+        n -= 4;
+        data += 4;
     }
-    int remaining_bytes = n - (4 * data_chunks);
-    for (int i = 0; i < remaining_bytes; i++) {
+    while (n > 0) {
         hash = fxhash32_step(hash, *data);
-        data += 1;
+        n--;
+        data++;
     }
     return hash;
 }
 
 uint32_t modulo2_reduce(uint32_t hash) {
-    hash = hash & ((1 << 13) - 1);
-    return hash;
+    return hash & ((1 << 13) - 1);
 }
 
 uint32_t modulo_prime_reduce(uint32_t hash) {
-    hash = hash % 8191;
-    return hash;
+    return hash % 8191;
 }
 
 uint32_t fibonacci32_reduce(uint32_t hash) {
-    const uint32_t factor32 = 2654435769;
-    hash = (uint32_t)(hash * factor32) >> (32 - 13);
-    return hash;
+    return (hash * 2654435769) >> (32 - 13);
 }
 
 void evaluate_hash_reduce(int n_entries, test_entry_t *entries,
                           uint32_t (*hash_f)(uint8_t *, int), uint32_t (*reduce_f)(uint32_t),
                           float *time, int *coll) {
-    double elapsed = 0.0;
-    int loop_num = 0;
-    int collision = 0;
-    clock_t start = seconds_now();
-    while (elapsed < 0.5) {
-        int table_arr[8192] = {0};
-        collision = 0;
+    double start = seconds_now();
+    long iterations = 0;
+    while (seconds_now() - start < 0.5) {
         for (int i = 0; i < n_entries; i++) {
-            loop_num++;
-            uint32_t hash = reduce_f(hash_f(entries[i].data, entries[i].n));
-            table_arr[hash] += 1;
-            if (table_arr[hash] > 1) {
-                collision++;
-            }
+            reduce_f(hash_f(entries[i].data, entries[i].n));
+            iterations++;
         }
-        elapsed = (seconds_now() - start) / (double)CLOCKS_PER_SEC;
     }
-    elapsed = (elapsed / loop_num) * pow(10, 9);
-    //printf("%lfns per iteration, with %d collisions\n", elapsed, collision);
+    bool is_hashed[8192] = {0};
+    int collision;
+    collision = 0;
+    for (int i = 0; i < n_entries; i++) {
+        uint32_t hash = reduce_f(hash_f(entries[i].data, entries[i].n));
+        if (is_hashed[hash]) {
+            collision++;
+        } else {
+            is_hashed[hash] = true;
+        }
+    }
+    *coll = collision;
+    double avg_time = ((seconds_now() - start) / (iterations)) * 1000000000;
+    *time = avg_time;
+    // double elapsed = (clock() - start) / (double)CLOCKS_PER_SEC;
+    // printf("complex_calculation() took %.12f seconds\n", elapsed);
 }
 
 void *thread_start(void *user) {
-    thread_info_t *info = user;
+    thread_info_t *info = user; //casting null pointer to the correct type.
     evaluate_hash_reduce(info->n_entries, info->entries, info->hash_f,
                          info->reduce_f, &info->avg_time, &info->collisions);
     return NULL;
@@ -165,69 +167,68 @@ void *thread_start(void *user) {
 
 int main(int argc, char **argv) {
     setup_table_hash();
-    int N_THREADS = atoi(argv[1]);
-    thread_info_t thread_infos[N_THREADS];
+    int n_threads = atoi(argv[1]);
+    thread_info_t thread_infos[n_threads];
     int max_entries = TABLE_SIZE / 2;
     int n_entries = max_entries;
     test_entry_t *entries = calloc(max_entries, sizeof(test_entry_t));
 
-    for (uint16_t i = 0; i < 1000; i++) {
-        entries[i].data = malloc(sizeof(i));
-        memcpy(entries[i].data, &i, sizeof(i));
-        entries[i].n = sizeof(i);
+    for (int i = 0; i < 1000; i++) {
+        uint16_t num = i;
+        entries[i].data = malloc(sizeof(num));
+        memcpy(entries[i].data, &num, sizeof(num));
+        entries[i].n = sizeof(num);
     }
-    FILE *fp = fopen("book.txt", "r");
-    if (!fp) {
-        fprintf(stderr, "Error: Missing file.\n");
-        exit(1);
+    FILE *book = fopen("book.txt", "r");
+    if (!book) {
+        fprintf(stderr, "file not found!\n");
+        return 1;
     }
-    char buffer[256];
-    for (int i = 1000; i < max_entries; i++) {
-        char *line = fgets(buffer, 256, fp);
-        entries[i].data = (uint8_t *)strdup(line);
-        entries[i].n = strlen(line);
+    for (int i = 1000; i < n_entries; i++) {
+        entries[i].data = malloc(sizeof(char) * 100);
+        char *line = fgets((char *)entries[i].data, 100, book);
+        entries[i].n = (int)strlen(line);
     }
 
-    uint32_t (*hash_functions[])(uint8_t *, int) = {add_hash, table_a_hash, table_b_hash, djb2a_hash, fnv1a_hash, fxhash32_hash};
+    uint32_t (*hash_functions[])(uint8_t *, int) = {add_hash, table_a_hash, table_b_hash,
+                                                    djb2a_hash, fnv1a_hash, fxhash32_hash};
     int n_hash_functions = sizeof(hash_functions) / sizeof(hash_functions[0]);
 
     uint32_t (*reduce_functions[])(uint32_t) = {modulo2_reduce, modulo_prime_reduce,
-        fibonacci32_reduce};
-        int n_reduce_functions = sizeof(reduce_functions) / sizeof(reduce_functions[0]);
+                                                fibonacci32_reduce};
+    int n_reduce_functions = sizeof(reduce_functions) / sizeof(reduce_functions[0]);
 
-        for (int hash_i = 0; hash_i < n_hash_functions; hash_i++) {
-            for (int reduce_i = 0; reduce_i < n_reduce_functions; reduce_i++) {
-                int idx = ((hash_i * n_reduce_functions) + (reduce_i));
-                int i = idx % N_THREADS;
-                thread_infos[i].num = i;
-                thread_infos[i].n_entries = n_entries;
-                thread_infos[i].entries = entries;
-                thread_infos[i].hash_f = hash_functions[hash_i];
-                thread_infos[i].reduce_f = reduce_functions[reduce_i];
-                pthread_create(&thread_infos[i].thread, NULL, thread_start, &thread_infos[i]);
-                if (i >= (N_THREADS - 1) || idx == n_hash_functions * n_reduce_functions - 1) {
-                    int limit;
-                    if (idx == n_hash_functions * n_reduce_functions - 1 && i == N_THREADS - 1) {
-                        limit = N_THREADS;
-                    } else if (idx == n_hash_functions * n_reduce_functions - 1) {
-                        limit = (idx + 1) % N_THREADS;
-                    } else {
-                        limit = N_THREADS;
-                    }
-                    for (int j = 0; j < limit; j++) {
-                        pthread_join(thread_infos[j].thread, NULL);
-                        printf("%.2fns per iteration, with %d collisions\n", thread_infos[j].avg_time,
-                        thread_infos[j].collisions);
-                    }
+    for (int hash_i = 0; hash_i < n_hash_functions; hash_i++) {
+        for (int reduce_i = 0; reduce_i < n_reduce_functions; reduce_i++) {
+            int idx = ((hash_i * n_reduce_functions) + (reduce_i));
+            int i = idx % n_threads;
+            thread_infos[i].num = i;
+            thread_infos[i].n_entries = n_entries;
+            thread_infos[i].entries = entries;
+            thread_infos[i].hash_f = hash_functions[hash_i];
+            thread_infos[i].reduce_f = reduce_functions[reduce_i];
+            pthread_create(&thread_infos[i].thread, NULL, thread_start, &thread_infos[i]);
+            if (i >= (n_threads - 1) || idx == n_hash_functions * n_reduce_functions - 1) {
+                int limit;
+                if (idx == n_hash_functions * n_reduce_functions - 1 && i == n_threads - 1) {
+                    limit = n_threads;
+                } else if (idx == n_hash_functions * n_reduce_functions - 1) {
+                    limit = (idx + 1) % n_threads;
+                } else {
+                    limit = n_threads;
+                }
+                for (int j = 0; j < limit; j++) {
+                    pthread_join(thread_infos[j].thread, NULL);
+                    printf("%.2fns per iteration, with %d collisions\n", thread_infos[j].avg_time,
+                           thread_infos[j].collisions);
                 }
             }
         }
-
-        for (int i = 0; i < max_entries; i++) {
-            free(entries[i].data);
-            entries[i].data = NULL;
-        }
-        free(entries);
-        entries = NULL;
-        return 0;
     }
+
+    for (int i = 0; i < n_entries; i++) {
+        free(entries[i].data);
+    }
+    free(entries);
+    return 0;
+}
