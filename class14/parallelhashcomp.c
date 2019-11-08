@@ -6,26 +6,14 @@
 #include <string.h>
 #include <time.h>
 #include <pthread.h>
+
 #define TABLE_SIZE 8192
-uint32_t table_hash_keys[256];
 #define N_THREADS 16
 #define DEBUG_ON 0
 
-typedef struct test_entry {
-    uint8_t *data;
-    int n;
-} test_entry_t;
+const uint32_t factor32 = 2654435769;
 
-typedef struct thread_info {
-    int num;
-    int n_entries;
-    test_entry_t *entries;
-    uint32_t (*hash_f)(uint8_t *key, int value);
-    uint32_t (*reduce_f)(uint32_t hash);
-    float avg_time;
-    int collisions;
-    pthread_t thread;
-} thread_info_t;
+uint32_t table_hash_keys[256];
 
 double seconds_now(void) {
     struct timespec now;
@@ -126,9 +114,13 @@ uint32_t modulo_prime_reduce(uint32_t hash) {
 }
 
 uint32_t fibonacci32_reduce(uint32_t hash) {
-    return (hash * 2654435769) >> (32 - 13);
+    return (hash * factor32) >> (32 - 13);
 }
 
+typedef struct test_entry {
+    uint8_t *data;
+    int n;
+} test_entry_t;
 void evaluate_hash_reduce(int n_entries, test_entry_t *entries,
                           uint32_t (*hash_f)(uint8_t *, int), uint32_t (*reduce_f)(uint32_t),
                           float *time, int *coll) {
@@ -157,6 +149,17 @@ void evaluate_hash_reduce(int n_entries, test_entry_t *entries,
     // double elapsed = (clock() - start) / (double)CLOCKS_PER_SEC;
     // printf("complex_calculation() took %.12f seconds\n", elapsed);
 }
+
+typedef struct thread_info {
+    int num;
+    int n_entries;
+    test_entry_t *entries;
+    uint32_t (*hash_f)(uint8_t *key, int value);
+    uint32_t (*reduce_f)(uint32_t hash);
+    float avg_time;
+    int collisions;
+    pthread_t thread;
+} thread_info_t;
 
 void *thread_start(void *user) {
     thread_info_t *info = user; //casting null pointer to the correct type.
