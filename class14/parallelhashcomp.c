@@ -6,7 +6,6 @@
 #include <string.h>
 #include <time.h>
 #include <math.h>
-#include <pthread.h>
 #define TABLE_SIZE 8192
 uint32_t table_hash_keys[256];
 
@@ -14,45 +13,6 @@ typedef struct test_entry {
     uint8_t *data;
     int n;
 } test_entry_t;
-
-typedef struct thread_info {
-    int num;
-    uint32_t (*hash_functions[6])(uint8_t *, int);
-    int hash_i;
-    uint32_t (*reduce_functions[3])(uint32_t);
-    int reduce_i;
-    test_entry_t *entries;
-    int n_entries;
-    pthread_t thread;
-} thread_info_t;
-
-void *thread_start(void *user) {
-    thread_info_t *info = user;
-    evaluate_hash_reduce(info.n_entries, info.entries, info.hash_functions[info.hash_i],
-                         info.reduce_functions[info.reduce_i]);
-    return NULL;
-}
-
-void *thread_start_main(void *user) {
-    thread_info_t *info = user;
-    for (int i = 0; i < N_THREADS; i++) {
-        thread_infos[i].num = i;
-        pthread_create(&thread_infos[i].thread, NULL, thread_start, &thread_infos[i]);
-    }
-    for (int i = 0; i < N_THREADS; i++) {
-        pthread_join(thread_infos[i].thread, NULL);
-    }
-    return NULL;
-}
-
-double seconds_now(void) {
-    struct timespec now;
-    if (clock_gettime(CLOCK_MONOTONIC, &now)) {
-        fprintf(stderr, "Retrieving system time failed.\n");
-        exit(1);
-    }
-    return now.tv_sec + now.tv_nsec / 1000000000.0;
-}
 
 uint32_t add_hash(uint8_t *data, int n) {
     uint32_t hash = 0;
@@ -156,7 +116,7 @@ void evaluate_hash_reduce(int n_entries, test_entry_t *entries,
     double elapsed = 0.0;
     int loop_num = 0;
     int collision = 0;
-    clock_t start = seconds_now();
+    clock_t start = clock();
     while (elapsed < 0.5) {
         int table_arr[8192] = {0};
         collision = 0;
@@ -168,18 +128,15 @@ void evaluate_hash_reduce(int n_entries, test_entry_t *entries,
                 collision++;
             }
         }
-        elapsed = (seconds_now() - start) / (double)CLOCKS_PER_SEC;
+        elapsed = (clock() - start) / (double)CLOCKS_PER_SEC;
     }
     elapsed = (elapsed / loop_num) * pow(10, 9);
     printf("%lfns per iteration, with %d collisions\n", elapsed, collision);
 }
 
 int main(int argc, char **argv) {
-    int N_THREADS = atoi(argv[1]);
-    thread_info_t thread_infos[N_THREADS];
-
     int max_entries = TABLE_SIZE / 2;
-    thread_infos.entries = calloc(max_entries, sizeof(test_entry_t));
+    test_entry_t *entries = calloc(max_entries, sizeof(test_entry_t));
 
     for (uint16_t i = 0; i < 1000; i++) {
         entries[i].data = malloc(sizeof(i));
@@ -194,22 +151,26 @@ int main(int argc, char **argv) {
         entries[i].n = strlen(line);
     }
     setup_table_hash();
-
-    thread_infos.n_entries = max_entries;
-    thread_infos.hash_functions = {add_hash, table_a_hash, table_b_hash,
+    uint32_t (*hash_functions[])(uint8_t *, int) = {add_hash, table_a_hash, table_b_hash,
                                                     djb2a_hash, fnv1a_hash, fxhash32_hash};
-    thread_infos.reduce_functions = {modulo2_reduce, modulo_prime_reduce,
+    int n_hash_functions = sizeof(hash_functions) / sizeof(hash_functions[0]);
+
+    uint32_t (*reduce_functions[])(uint32_t) = {modulo2_reduce, modulo_prime_reduce,
                                                 fibonacci32_reduce};
-        mainthread_infos.num = i;
-        pthread_create(&mainthread_infos.thread, NULL, mainthread_infos, &mainthread_infos);
-        pthread_join(mainthread_infos.thread, NULL);
-
-
+    int n_reduce_functions = sizeof(reduce_functions) / sizeof(reduce_functions[0]);
+    int n_entries = max_entries;
+    for (int hash_i = 0; hash_i < n_hash_functions; hash_i++) {
+        for (int reduce_i = 0; reduce_i < n_reduce_functions; reduce_i++) {
+            evaluate_hash_reduce(n_entries, entries, hash_functions[hash_i],
+                                 reduce_functions[reduce_i]);
+        }
+        printf("\n");
+    }
     for (int i = 0; i < max_entries; i++) {
         free(entries[i].data);
         entries[i].data = NULL;
     }
-    free(thread_infos.entries);
+    free(entries);
     entries = NULL;
     return 0;
 }
