@@ -59,23 +59,19 @@ uint32_t fibonacci32_reduce(uint32_t hash, int lognum) {
     return hash;
 }
 
-// uint32_t evaluate_hash_reduce(int n_entries, test_entry_t *entries,
-//                           uint32_t (*hash_f)(uint8_t *, int), uint32_t (*reduce_f)(uint32_t)) {
-//
-//     int loop_num = 0;
-//     int collision = 0;
-//     int table_arr[8192] = {0};
-//     collision = 0;
-//     for (int i = 0; i < n_entries; i++) {
-//         loop_num++;
-//         uint32_t hash = reduce_f(hash_f(entries[i].data, entries[i].n));
-//         table_arr[hash] += 1;
-//         if (table_arr[hash] > 1) {
-//             collision++;
-//         }
-//     }
-//     return hash;
-// }
+int hashtable_collisions(hashtable_t *hashtable, char *key, int value) {
+    int collision = 0;
+    int table_arr[8192] = {0};
+    collision = 0;
+    for (int i = 0; i < n_entries; i++) {
+        uint32_t hash = fibonacci32_reduce(fxhash32_hash(key, strlen(key)), hashtable->size);
+        table_arr[hash] += 1;
+        if (table_arr[hash] > 1) {
+            collision++;
+        }
+    }
+    return hash;
+}
 
 hashtable_t *hashtable_create(int table_size) {
     hashtable_t *table = calloc(sizeof(hashtable_t), 1);
@@ -128,6 +124,7 @@ void hashtable_set(hashtable_t *hashtable, char *key, int value) {
                 is_slot_empty = false;
             } else {
                 hash++; //repeat back to step 2 so go back to while loop
+                //hashtable_collision();
             }
         }
     }
@@ -138,28 +135,37 @@ bool hashtable_get(hashtable_t *hashtable, char *key, int *value) {
     bool is_slot_empty = true;
     while(is_slot_empty) {
         if (hashtable->entries[hash].key == NULL) {
-            //is_slot_empty = false;
-            return false;
+            return false; //key is not contained
         } else {
             if (strcmp(hashtable->entries[hash].key, key) == 0) {
-                *value = hashtable->entries[hash].value;
-                //is_slot_empty = false;
+                *value = hashtable->entries[hash].value; //if key matches, return the value associated with that key
                 return true;
             } else {
-                hash++;
+                hash++; //there is a key but it doesnt match so look for the next empty spot
             }
         }
     }
     return false;
 }
 
-// int hashtable_collisions(hashtable_t *hashtable) {}
+int hashtable_probe_max(hashtable_t *hashtable) {
+    return hashtable->size;
+}
 
-// void hashtable_probe_max(void) {}
-//
-// void hashtable_probe(void) {}
-//
-// void hashtable_size(void) {}
+bool hashtable_probe(hashtable_t *hashtable, int n, char **key, int *value) {
+    for (int i = 0; i < n, i++) {
+        if (hashtable->entries[hash].key) {
+            key[i] = hashtable->entries[hash].key;
+            *value = hashtable->entries[hash].value;
+            return true;
+        }
+    }
+    return false;
+}
+
+int hashtable_size(hashtable_t *hashtable) {
+    return hashtable->entries_size;
+}
 
 void read_word(FILE *fp, char *word, int char_num) {
     int len = 0;
@@ -167,13 +173,10 @@ void read_word(FILE *fp, char *word, int char_num) {
         char c = fgetc(fp);
         if (feof(fp) || c == ' ') {
             word[len] = '\0';
-            //printf("%c", c);
             return;
         }
         if (isalpha(c)) {
-            //printf("%c", c);
             word[len] = c;
-            //printf("%c", word[len]);
             len++;
         }
     }
@@ -188,23 +191,20 @@ int main(void) {
 
     char *word = malloc(STR_SIZE);
     read_word(fp, word, STR_SIZE);
-    //hashtable_t *hashtable = hashtable_create(TABLE_SIZE);
-    //int i = 1;
+    hashtable_t *hashtable = hashtable_create(TABLE_SIZE);
     while (!feof(fp)) {
-        char *prev_word = strdup(word);
+        char *prev_word = word;
         word = malloc(STR_SIZE);
         read_word(fp, word, STR_SIZE);
-        char *buffer = malloc(STR_SIZE);
+        char *buffer = malloc(STR_SIZE)
         snprintf(buffer, STR_SIZE, "%s %s", prev_word, word);
         printf("%s\n", buffer);
-        //i++;
         //printf("\n%ld\n", strlen(buffer));
         //hashtable_get(hashtable, &key, &value);
         //hashtable_set(hashtable, buffer, value);
         free(buffer);
         free(prev_word);
     }
-    //printf("%d\n", i);
     free(word);
 
     // int bigram_size = hashtable_size();
@@ -212,57 +212,7 @@ int main(void) {
     // printf("Bigram 'of the' has count of XXX");
     // printf("Total of %d different bigrams recorded", bigram_size);
 
-    //hashtable_destroy(hashtable, true); //true = destroy hashtable_t
-    //free(buffer);
-    //free(word2);
-    //free(word1);
+    hashtable_destroy(hashtable, true); //true = destroy hashtable_t
     fclose(fp);
     return 0;
 }
-
-// char *word1_reset = NULL;
-// // while (!feof(fp)) {
-// //     char *word1 = malloc(STR_SIZE);
-// //     if(word1_reset != NULL) {
-// //         word1 = word1_reset;
-// //         free(word1_reset);
-// //     }
-// //     read_word(fp, word1, STR_SIZE);
-// //     char *word2 = malloc(STR_SIZE);
-// //     read_word(fp, word2, STR_SIZE);
-// //     char *buffer = malloc(STR_SIZE);
-// //
-// //     snprintf(buffer, STR_SIZE, "%s %s", word1, word2);
-// //     printf("%s\n", buffer);
-// //     printf("%ld\n", strlen(buffer));
-// //     //hashtable_get(hashtable, &key, &value);
-// //     //hashtable_set(hashtable, buffer, value);
-// //
-// //     word1_reset = strdup(word2);
-// //     free(buffer);
-// //     free(word2);
-// //     free(word1);
-// // }
-//
-// while (!feof(fp)) {
-//     char *word1 = malloc(STR_SIZE);
-//     if(word1_reset != NULL) {
-//         word1 = word1_reset;
-//         free(word1_reset);
-//     }
-//     read_word(fp, word1, STR_SIZE);
-//     char *word2 = malloc(STR_SIZE);
-//     read_word(fp, word2, STR_SIZE);
-//     char *buffer = malloc(STR_SIZE);
-//
-//     snprintf(buffer, STR_SIZE, "%s %s", word1, word2);
-//     printf("%s\n", buffer);
-//     printf("%ld\n", strlen(buffer));
-//     //hashtable_get(hashtable, &key, &value);
-//     //hashtable_set(hashtable, buffer, value);
-//
-//     word1_reset = strdup(word2);
-//     free(buffer);
-//     free(word2);
-//     free(word1);
-// }
