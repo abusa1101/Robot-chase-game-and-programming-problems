@@ -151,11 +151,11 @@ int main(int argc, char **argv) {
         entries[i].n = strlen(line);
     }
     setup_table_hash();
-    uint32_t (*hash_functions[])(uint8_t *, int) = {add_hash, table_a_hash, table_b_hash,
+    uint32_t (*hash_functions[])(uint8_t *, int) = {table_a_hash, add_hash, table_b_hash,
                                                     djb2a_hash, fnv1a_hash, fxhash32_hash};
     int n_hash_functions = sizeof(hash_functions) / sizeof(hash_functions[0]);
 
-    uint32_t (*reduce_functions[])(uint32_t) = {modulo2_reduce, modulo_prime_reduce,
+    uint32_t (*reduce_functions[])(uint32_t) = {modulo_prime_reduce, modulo2_reduce,
                                                 fibonacci32_reduce};
     int n_reduce_functions = sizeof(reduce_functions) / sizeof(reduce_functions[0]);
     int n_entries = max_entries;
