@@ -180,54 +180,89 @@ void read_word(FILE *fp, char *word, int char_num) {
 }
 
 int main(void) {
-    FILE *fp = fopen("book.txt", "r");
+    FILE *fp = fopen("book2.txt", "r");
     if (!fp) {
         fprintf(stderr, "Error: Missing file.\n");
         exit(1);
     }
 
-    hashtable_t *hashtable = hashtable_create(TABLE_SIZE);
-    char check = '';
+    char *word = malloc(STR_SIZE);
+    read_word(fp, word, STR_SIZE);
+    //hashtable_t *hashtable = hashtable_create(TABLE_SIZE);
+    //int i = 1;
     while (!feof(fp)) {
-        if (check == '\n') {
-            break;
-        }
-        char *word1 = malloc(STR_SIZE);
-        read_word(fp, word1, STR_SIZE);
-        char *word2 = malloc(STR_SIZE);
-        read_word(fp, word2, STR_SIZE);
+        char *prev_word = strdup(word);
+        word = malloc(STR_SIZE);
+        read_word(fp, word, STR_SIZE);
         char *buffer = malloc(STR_SIZE);
-
-        snprintf(buffer, STR_SIZE * 2, "%s %s", word1, word2);
+        snprintf(buffer, STR_SIZE, "%s %s", prev_word, word);
         printf("%s\n", buffer);
-        printf("%ld\n", strlen(buffer));
-        hashtable_get(hashtable, &key, &value);
-        hashtable_set(hashtable, buffer, value);
+        //i++;
+        //printf("\n%ld\n", strlen(buffer));
+        //hashtable_get(hashtable, &key, &value);
+        //hashtable_set(hashtable, buffer, value);
+        free(buffer);
+        free(prev_word);
     }
-
-    // for (int i = 0; i < 10; i++) {
-    //     printf("%c", word1[i]);
-    // }
-    // for (int i = 0; i < 10; i++) {
-    //     printf("%c", word2[i]);
-    // }
-
-
-    // int value = 10;
-    // char *key;
-    // strcpy(key, "abc");
-    // hashtable_set(hashtable, key, value);
-    //hashtable_get(hashtable, &key, &value);
+    //printf("%d\n", i);
+    free(word);
 
     // int bigram_size = hashtable_size();
     // printf("Rehashing reduced collisions from XX to XX");
     // printf("Bigram 'of the' has count of XXX");
     // printf("Total of %d different bigrams recorded", bigram_size);
 
-    hashtable_destroy(hashtable, true); //true = destroy hashtable_t
-    free(buffer);
-    free(word2);
-    free(word1);
+    //hashtable_destroy(hashtable, true); //true = destroy hashtable_t
+    //free(buffer);
+    //free(word2);
+    //free(word1);
     fclose(fp);
     return 0;
 }
+
+// char *word1_reset = NULL;
+// // while (!feof(fp)) {
+// //     char *word1 = malloc(STR_SIZE);
+// //     if(word1_reset != NULL) {
+// //         word1 = word1_reset;
+// //         free(word1_reset);
+// //     }
+// //     read_word(fp, word1, STR_SIZE);
+// //     char *word2 = malloc(STR_SIZE);
+// //     read_word(fp, word2, STR_SIZE);
+// //     char *buffer = malloc(STR_SIZE);
+// //
+// //     snprintf(buffer, STR_SIZE, "%s %s", word1, word2);
+// //     printf("%s\n", buffer);
+// //     printf("%ld\n", strlen(buffer));
+// //     //hashtable_get(hashtable, &key, &value);
+// //     //hashtable_set(hashtable, buffer, value);
+// //
+// //     word1_reset = strdup(word2);
+// //     free(buffer);
+// //     free(word2);
+// //     free(word1);
+// // }
+//
+// while (!feof(fp)) {
+//     char *word1 = malloc(STR_SIZE);
+//     if(word1_reset != NULL) {
+//         word1 = word1_reset;
+//         free(word1_reset);
+//     }
+//     read_word(fp, word1, STR_SIZE);
+//     char *word2 = malloc(STR_SIZE);
+//     read_word(fp, word2, STR_SIZE);
+//     char *buffer = malloc(STR_SIZE);
+//
+//     snprintf(buffer, STR_SIZE, "%s %s", word1, word2);
+//     printf("%s\n", buffer);
+//     printf("%ld\n", strlen(buffer));
+//     //hashtable_get(hashtable, &key, &value);
+//     //hashtable_set(hashtable, buffer, value);
+//
+//     word1_reset = strdup(word2);
+//     free(buffer);
+//     free(word2);
+//     free(word1);
+// }
