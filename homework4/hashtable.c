@@ -108,7 +108,7 @@ void rehash(hashtable_t *old_hashtable) {
         new_hashtable->entries[i].value = old_hashtable->entries[i].value;
         new_hashtable->entries_size++;
     }
-    hashtable_destroy(old_hashtable, false); //false = DO NOT destroy hashtable_t
+    hashtable_destroy(old_hashtable, false); //false = DO NOT destroy hashtable_t. Destroy only entries
     new_hashtable->entries = old_hashtable->entries;
     //int new_coll = hashtable_collisions(new_hashtable);
     free(new_hashtable);

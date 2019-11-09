@@ -15,18 +15,18 @@ int main(void) {
 
     hashtable_t *student = hashtable_create(4);
 
-    hashtable_set(student, p1, 22);
+    hashtable_set(student, p1, 6);
     printf("filled %d out of %d\n", hashtable_size(student), hashtable_probe_max(student));
-    hashtable_set(student, p2, 170);
-    printf("filled %d out of %d\n", hashtable_size(student), hashtable_probe_max(student));
-    hashtable_set(student, p3, 90);
-    printf("filled %d out of %d\n", hashtable_size(student), hashtable_probe_max(student));
-    hashtable_set(student, p4, 30);
-    printf("filled %d out of %d\n", hashtable_size(student), hashtable_probe_max(student));
-    hashtable_set(student, p5, 30);
-    printf("filled %d out of %d\n", hashtable_size(student), hashtable_probe_max(student));
-    hashtable_set(student, p6, 1005);
-    printf("filled %d out of %d\n", hashtable_size(student), hashtable_probe_max(student));
+    //hashtable_set(student, p2, 270);
+    //printf("filled %d out of %d\n", hashtable_size(student), hashtable_probe_max(student));
+    // hashtable_set(student, p3, 90);
+    // printf("filled %d out of %d\n", hashtable_size(student), hashtable_probe_max(student));
+    // hashtable_set(student, p4, 30);
+    // printf("filled %d out of %d\n", hashtable_size(student), hashtable_probe_max(student));
+    // hashtable_set(student, p5, 30);
+    // printf("filled %d out of %d\n", hashtable_size(student), hashtable_probe_max(student));
+    // hashtable_set(student, p6, 1005);
+    // printf("filled %d out of %d\n", hashtable_size(student), hashtable_probe_max(student));
 
     // hashtable_get(student, p6, pval_ptr);
     // printf("ptr: %d\n", *pval_ptr);
