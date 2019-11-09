@@ -4,3 +4,6 @@ CFLAGS += -fsanitize=address -fsanitize=undefined
 
 bigrams: bigrams.c hashtable.c
 	gcc -o $@ $^ $(CFLAGS) -lpthread -lm -O3
+
+test: test.c hashtable.c
+	gcc -o $@ $^ $(CFLAGS) -lpthread -lm -O3

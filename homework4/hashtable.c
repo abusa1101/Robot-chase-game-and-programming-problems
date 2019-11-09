@@ -100,21 +100,8 @@ int hashtable_size(hashtable_t *hashtable) {
     return hashtable->entries_size;
 }
 
-int hashtable_probe_max(hashtable_t *hashtable) {
-    return hashtable->size;
-}
-
-bool hashtable_probe(hashtable_t *hashtable, int i, char **key, int *value) {
-    if (hashtable->entries[i].key) {
-        key[i] = hashtable->entries[i].key;
-        *value = hashtable->entries[i].value;
-        return true;
-    }
-    return false;
-}
-
 void rehash(hashtable_t *old_hashtable) {
-    int old_coll = hashtable_collisions(old_hashtable);
+    //int old_coll = hashtable_collisions(old_hashtable);
     hashtable_t *new_hashtable = hashtable_create(old_hashtable->size * 2);
     for (int i = 0; i < old_hashtable->size; i++) {
         new_hashtable->entries[i].key = strdup(old_hashtable->entries[i].key);
@@ -123,9 +110,9 @@ void rehash(hashtable_t *old_hashtable) {
     }
     hashtable_destroy(old_hashtable, false); //false = DO NOT destroy hashtable_t
     new_hashtable->entries = old_hashtable->entries;
-    int new_coll = hashtable_collisions(new_hashtable);
+    //int new_coll = hashtable_collisions(new_hashtable);
     free(new_hashtable);
-    printf("Rehashing reduced collisions from %d to %d", old_coll, new_coll);
+    //printf("Rehashing reduced collisions from %d to %d", old_coll, new_coll);
 }
 
 void hashtable_set(hashtable_t *hashtable, char *key, int value) {
@@ -169,6 +156,19 @@ bool hashtable_get(hashtable_t *hashtable, char *key, int *value) {
                 hash++; //there is a key but it doesnt match so look for the next empty spot
             }
         }
+    }
+    return false;
+}
+
+int hashtable_probe_max(hashtable_t *hashtable) {
+    return hashtable->size;
+}
+
+bool hashtable_probe(hashtable_t *hashtable, int i, char **key, int *value) {
+    if (hashtable->entries[i].key) {
+        key[i] = hashtable->entries[i].key;
+        *value = hashtable->entries[i].value;
+        return true;
     }
     return false;
 }
