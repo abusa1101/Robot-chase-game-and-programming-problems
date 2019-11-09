@@ -8,22 +8,50 @@
 #include <math.h>
 #include <ctype.h>
 #include "hashtable.h"
-#define STR_SIZE 256
+#define STR_SIZE 512
 
 //BIGRAM FUNCTIONS
+// void skip(FILE *fp) {
+//     while (!feof(fp) && !isalpha(fgetc(fp))) {
+//     }
+//     // if (!feof(fp)) {
+//     //     fseek(fp, -1, SEEK_CUR);
+//     // }
+// }
+
 void read_word(FILE *fp, char *word, int char_num) {
-    int len = 0;
-    while (1) {
-        char c = fgetc(fp);
-        if (feof(fp) || c == ' ') {
-            word[len] = '\0';
-            return;
-        }
-        if (isalpha(c)) {
-            word[len] = c;
-            len++;
+    // int len = 0;
+    // while (1) {
+    //     char c = fgetc(fp);
+    //     if (feof(fp) || c == ' ') {
+    //         word[len] = '\0';
+    //         return;
+    //     }
+    //     if (isalpha(c)) {
+    //         word[len] = c;
+    //         len++;
+    //     } else {
+    //         // word[len] = ' ';
+    //         // len++;
+    //         word[len] = '\0';
+    //         len++;
+    //         return;
+    //     }
+    //     //skip(fp);
+    // }
+    char c = fgetc(fp);
+    while (!isalpha(c)) {
+        c = fgetc(fp);
+        if (feof(fp)) {
+            break;
         }
     }
+    while (isalpha(c)) {
+        *word = c;
+        word++;
+        c = fgetc(fp);
+    }
+    *word = '\0';
 }
 
 int main(void) {
@@ -32,7 +60,7 @@ int main(void) {
         fprintf(stderr, "Error: Missing file.\n");
         exit(1);
     }
-
+    int value = 0;
     char *word = malloc(STR_SIZE);
     read_word(fp, word, STR_SIZE);
     hashtable_t *hashtable = hashtable_create(TABLE_SIZE);
@@ -41,28 +69,50 @@ int main(void) {
         word = malloc(STR_SIZE);
         read_word(fp, word, STR_SIZE);
         char *buffer = malloc(STR_SIZE);
-        snprintf(buffer, STR_SIZE, "%s %s", prev_word, word);
+        //if (word) {
+            snprintf(buffer, STR_SIZE, "%s %s", prev_word, word);
+        //}
         printf("%s\n", buffer);
-        //printf("\n%ld\n", strlen(buffer));
-        //hashtable_get(hashtable, &key, &value);
-        //hashtable_set(hashtable, buffer, value);
+
+        if (hashtable_get(hashtable, buffer, &value)) {
+            hashtable_set(hashtable, buffer, value + 1);
+        } else {
+            hashtable_set(hashtable, buffer, 1);
+        }
+
         free(buffer);
         free(prev_word);
     }
     free(word);
 
-    // int n = hashtable_probe_max(hashtable);
-    // for (int i = 0; i < n; i++) {
-    //     char *key;
-    //     int val;
-    //     if (hashtable_probe(hashtable, i, &key, &val)) {
-    //         // do something
-    //     }
-    // }
-    // int bigram_size = hashtable_size();
-    // printf("Bigram 'of the' has count of XXX");
-    // printf("Total of %d different bigrams recorded", bigram_size);
+    int bigram_size = hashtable_size(hashtable);
 
+    bool is200bigrams = false;
+     int n = hashtable_probe_max(hashtable);
+    char *key = malloc(bigram_size * sizeof(key));
+    for (int i = 0; i < n; i++) {
+        int val;
+        if (hashtable_probe(hashtable, i, &key, &val)) {
+            if (val >= 200) {
+                //is200bigrams = true;
+                printf("Bigram '%s' has count of %d", key, val);
+            }
+        }
+    }
+    if(!is200bigrams) {
+        char *key2 = malloc(bigram_size * sizeof(key2));
+        for (int i = 0; i < n; i++) {
+            int val2;
+            if (hashtable_probe(hashtable, i, &key2, &val2)) {
+                printf("Bigram '%s' has count of %d", key2, val2);
+            }
+        }
+        free(key2);
+    }
+
+
+    printf("Total of %d different bigrams recorded", bigram_size);
+    free(key);
     hashtable_destroy(hashtable, true); //true = destroy hashtable_t
     fclose(fp);
     return 0;

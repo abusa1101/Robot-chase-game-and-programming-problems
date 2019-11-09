@@ -64,7 +64,8 @@ uint32_t fibonacci32_reduce(uint32_t hash, int lognum) {
 //HASHTABLE FUNCTIONS
 int hashtable_collisions(hashtable_t *hashtable) {
     int collision = 0;
-    int table_arr[TABLE_SIZE] = {0};
+    //int table_arr[hashtable->size] = {0};
+    int *table_arr = calloc(sizeof(int), hashtable->size);
     for (int i = 0; i < hashtable->size; i++) {
         char *key = hashtable->entries[i].key;
         if (key) {
@@ -75,6 +76,7 @@ int hashtable_collisions(hashtable_t *hashtable) {
             }
         }
     }
+    free(table_arr);
     return collision;
 }
 
@@ -102,7 +104,7 @@ int hashtable_size(hashtable_t *hashtable) {
 
 void rehash(hashtable_t *old_hashtable) {
     //printf("rehashing now");
-    //int old_coll = hashtable_collisions(old_hashtable);
+    int old_coll = hashtable_collisions(old_hashtable);
     hashtable_t *new_hashtable = hashtable_create(old_hashtable->size * 2);
     for (int i = 0; i < old_hashtable->size; i++) {
         if (old_hashtable->entries[i].key) {
@@ -115,9 +117,9 @@ void rehash(hashtable_t *old_hashtable) {
     old_hashtable->entries = new_hashtable->entries;
     old_hashtable->size = new_hashtable->size ;
     old_hashtable->entries_size = new_hashtable->entries_size;
-    //int new_coll = hashtable_collisions(new_hashtable);
+    int new_coll = hashtable_collisions(new_hashtable);
     free(new_hashtable);
-    //printf("Rehashing reduced collisions from %d to %d", old_coll, new_coll);
+    printf("Rehashing reduced collisions from %d to %d\n", old_coll, new_coll);
 }
 
 void hashtable_set(hashtable_t *hashtable, char *key, int value) {
@@ -141,7 +143,9 @@ void hashtable_set(hashtable_t *hashtable, char *key, int value) {
                 is_slot_empty = false;
             } else {
                 hash++; //repeat back to step 2 so go back to while loop
-                //hashtable_collision();
+                if (hash >= hashtable->size) {
+                    hash = 0;
+                }
             }
         }
     }
@@ -159,6 +163,9 @@ bool hashtable_get(hashtable_t *hashtable, char *key, int *value) {
                 return true;
             } else {
                 hash++; //there is a key but it doesnt match so look for the next empty spot
+                if (hash > hashtable->size) {
+                    hash = 0;
+                }
             }
         }
     }
