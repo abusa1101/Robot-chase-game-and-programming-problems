@@ -87,7 +87,7 @@ hashtable_t *hashtable_create(int table_size) {
 }
 
 void hashtable_destroy(hashtable_t *hashtable, bool free_table) {
-    for (int i = 0; i < hashtable->entries_size; i++) { //or i < table size?????
+    for (int i = 0; i < hashtable->size; i++) { //or i < table size?????
         free(hashtable->entries[i].key);
     }
     free(hashtable->entries);
@@ -101,22 +101,27 @@ int hashtable_size(hashtable_t *hashtable) {
 }
 
 void rehash(hashtable_t *old_hashtable) {
+    //printf("rehashing now");
     //int old_coll = hashtable_collisions(old_hashtable);
     hashtable_t *new_hashtable = hashtable_create(old_hashtable->size * 2);
     for (int i = 0; i < old_hashtable->size; i++) {
-        new_hashtable->entries[i].key = strdup(old_hashtable->entries[i].key);
-        new_hashtable->entries[i].value = old_hashtable->entries[i].value;
-        new_hashtable->entries_size++;
+        if (old_hashtable->entries[i].key) {
+            new_hashtable->entries[i].key = strdup(old_hashtable->entries[i].key);
+            new_hashtable->entries[i].value = old_hashtable->entries[i].value;
+            new_hashtable->entries_size++;
+        }
     }
     hashtable_destroy(old_hashtable, false); //false = DO NOT destroy hashtable_t. Destroy only entries
-    new_hashtable->entries = old_hashtable->entries;
+    old_hashtable->entries = new_hashtable->entries;
+    old_hashtable->size = new_hashtable->size ;
+    old_hashtable->entries_size = new_hashtable->entries_size;
     //int new_coll = hashtable_collisions(new_hashtable);
     free(new_hashtable);
     //printf("Rehashing reduced collisions from %d to %d", old_coll, new_coll);
 }
 
 void hashtable_set(hashtable_t *hashtable, char *key, int value) {
-    double load_factor = hashtable->entries_size / hashtable->size;
+    double load_factor = (double)hashtable->entries_size / (double)hashtable->size;
     if (load_factor >= 0.5) {
         rehash(hashtable);
     }
