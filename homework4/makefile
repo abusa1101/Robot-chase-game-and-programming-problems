@@ -2,5 +2,5 @@ CFLAGS = -ggdb3 -std=c11 -Wall -Wunused-parameter -Wstrict-prototypes -Werror -W
 CFLAGS += -Wno-sign-compare -Wno-unused-parameter -Wno-unused-variable
 CFLAGS += -fsanitize=address -fsanitize=undefined
 
-hashtable: hashtable.c
+bigrams: bigrams.c hashtable.c
 	gcc -o $@ $^ $(CFLAGS) -lpthread -lm -O3
