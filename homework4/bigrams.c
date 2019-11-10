@@ -8,51 +8,21 @@
 #include <math.h>
 #include <ctype.h>
 #include "hashtable.h"
-#define STR_SIZE 512
 
 //BIGRAM FUNCTIONS
-// void skip(FILE *fp) {
-//     while (!feof(fp) && !isalpha(fgetc(fp))) {
-//     }
-//     // if (!feof(fp)) {
-//     //     fseek(fp, -1, SEEK_CUR);
-//     // }
-// }
-
 void read_word(FILE *fp, char *word, int char_num) {
-    // int len = 0;
-    // while (1) {
-    //     char c = fgetc(fp);
-    //     if (isalpha(c)) {
-    //         word[len] = c;
-    //         len++;
-    //     } else {
-    //         //c = fgetc(fp);
-    //         // word[len] = ' ';
-    //         // len++;
-    //         word[len] = ' ';
-    //         len++;
-    //         // return;
-    //     }
-    //     if (feof(fp) || c == ' ' || word[len] == ' ') {
-    //         word[len] = '\0';
-    //         return;
-    //     }
-    //     //skip(fp);
-    // }
-    char c = fgetc(fp);
-    while (!isalpha(c)) {
-        c = fgetc(fp);
-        if (feof(fp)) {
-            break;
+    int len = 0;
+    while(1) {
+        char c = fgetc(fp);
+        if (isalpha(c)) {
+            word[len] = c;
+            len++;
+        }
+        if (isspace(c) || feof(fp)) {
+            word[len] = '\0';
+            return;
         }
     }
-    while (isalpha(c)) {
-        *word = c;
-        word++;
-        c = fgetc(fp);
-    }
-    *word = '\0';
 }
 
 int main(void) {
@@ -69,20 +39,21 @@ int main(void) {
         char *prev_word = word;
         word = malloc(STR_SIZE);
         read_word(fp, word, STR_SIZE);
-        char *buffer = malloc(STR_SIZE);
-        //if (word) {
-            snprintf(buffer, STR_SIZE, "%s %s", prev_word, word);
-        //}
-        //printf("%s\n", buffer);
-
-        if (hashtable_get(hashtable, buffer, &value)) {
-            hashtable_set(hashtable, buffer, value + 1);
-        } else {
-            hashtable_set(hashtable, buffer, 1);
+        if (strlen(word) == 0) {
+            read_word(fp, word, STR_SIZE);
         }
-
-        free(buffer);
-        free(prev_word);
+        if (strlen(word)) {
+            char *buffer = malloc(STR_SIZE);
+            snprintf(buffer, STR_SIZE, "%s %s", prev_word, word);
+            //printf("%s\n", buffer);
+            if (hashtable_get(hashtable, buffer, &value)) {
+                hashtable_set(hashtable, buffer, value + 1);
+            } else {
+                hashtable_set(hashtable, buffer, 1);
+            }
+            free(buffer);
+            free(prev_word);
+        }
     }
     free(word);
 

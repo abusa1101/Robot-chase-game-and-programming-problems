@@ -116,7 +116,7 @@ void rehash(hashtable_t *old_hashtable) {
     old_hashtable->entries = new_hashtable->entries;
     old_hashtable->size = new_hashtable->size ;
     old_hashtable->entries_size = new_hashtable->entries_size;
-    int new_coll = hashtable_collisions(new_hashtable);
+    int new_coll = hashtable_collisions(old_hashtable); //IS THIS SAME AS NEW_HT? WHAT SHOULD I PUT HERE?!
     free(new_hashtable);
     printf("Rehashing reduced collisions from %d to %d\n", old_coll, new_coll);
 }
