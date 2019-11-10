@@ -8,6 +8,7 @@
 #include <math.h>
 #include <ctype.h>
 #include "hashtable.h"
+#define STR_SIZE 256
 
 //BIGRAM FUNCTIONS
 void read_word(FILE *fp, char *word, int char_num) {
