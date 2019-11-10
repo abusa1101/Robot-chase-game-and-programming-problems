@@ -103,7 +103,6 @@ int hashtable_size(hashtable_t *hashtable) {
 }
 
 void rehash(hashtable_t *old_hashtable) {
-    //printf("rehashing now");
     int old_coll = hashtable_collisions(old_hashtable);
     hashtable_t *new_hashtable = hashtable_create(old_hashtable->size * 2);
     for (int i = 0; i < old_hashtable->size; i++) {
@@ -178,7 +177,7 @@ int hashtable_probe_max(hashtable_t *hashtable) {
 
 bool hashtable_probe(hashtable_t *hashtable, int i, char **key, int *value) {
     if (hashtable->entries[i].key) {
-        key[i] = hashtable->entries[i].key;
+        *key = hashtable->entries[i].key;
         *value = hashtable->entries[i].value;
         return true;
     }

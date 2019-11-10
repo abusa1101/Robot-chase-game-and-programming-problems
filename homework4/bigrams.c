@@ -23,18 +23,19 @@ void read_word(FILE *fp, char *word, int char_num) {
     // int len = 0;
     // while (1) {
     //     char c = fgetc(fp);
-    //     if (feof(fp) || c == ' ') {
-    //         word[len] = '\0';
-    //         return;
-    //     }
     //     if (isalpha(c)) {
     //         word[len] = c;
     //         len++;
     //     } else {
+    //         //c = fgetc(fp);
     //         // word[len] = ' ';
     //         // len++;
-    //         word[len] = '\0';
+    //         word[len] = ' ';
     //         len++;
+    //         // return;
+    //     }
+    //     if (feof(fp) || c == ' ' || word[len] == ' ') {
+    //         word[len] = '\0';
     //         return;
     //     }
     //     //skip(fp);
@@ -55,7 +56,7 @@ void read_word(FILE *fp, char *word, int char_num) {
 }
 
 int main(void) {
-    FILE *fp = fopen("book2.txt", "r");
+    FILE *fp = fopen("book.txt", "r");
     if (!fp) {
         fprintf(stderr, "Error: Missing file.\n");
         exit(1);
@@ -72,7 +73,7 @@ int main(void) {
         //if (word) {
             snprintf(buffer, STR_SIZE, "%s %s", prev_word, word);
         //}
-        printf("%s\n", buffer);
+        //printf("%s\n", buffer);
 
         if (hashtable_get(hashtable, buffer, &value)) {
             hashtable_set(hashtable, buffer, value + 1);
@@ -86,33 +87,33 @@ int main(void) {
     free(word);
 
     int bigram_size = hashtable_size(hashtable);
-
     bool is200bigrams = false;
-     int n = hashtable_probe_max(hashtable);
-    char *key = malloc(bigram_size * sizeof(key));
+    int n = hashtable_probe_max(hashtable);
+
+
     for (int i = 0; i < n; i++) {
+        char *key;
         int val;
         if (hashtable_probe(hashtable, i, &key, &val)) {
             if (val >= 200) {
-                //is200bigrams = true;
-                printf("Bigram '%s' has count of %d", key, val);
+                is200bigrams = true;
+                printf("Bigram '%s' has count of %d\n", key, val);
             }
         }
     }
+
+
     if(!is200bigrams) {
-        char *key2 = malloc(bigram_size * sizeof(key2));
+        char *key2;
         for (int i = 0; i < n; i++) {
             int val2;
             if (hashtable_probe(hashtable, i, &key2, &val2)) {
-                printf("Bigram '%s' has count of %d", key2, val2);
+                printf("Bigram '%s' has count of %d\n", key2, val2);
             }
         }
-        free(key2);
     }
+    printf("Total of %d different bigrams recorded\n", bigram_size);
 
-
-    printf("Total of %d different bigrams recorded", bigram_size);
-    free(key);
     hashtable_destroy(hashtable, true); //true = destroy hashtable_t
     fclose(fp);
     return 0;
