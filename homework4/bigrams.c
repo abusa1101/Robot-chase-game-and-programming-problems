@@ -13,8 +13,9 @@
 //BIGRAM FUNCTIONS
 void read_word(FILE *fp, char *word, int char_num) {
     int len = 0;
-    while(1) {
-        char c = fgetc(fp);
+    char c;
+    while (1) {
+        c = fgetc(fp);
         if (isalpha(c)) {
             word[len] = c;
             len++;
@@ -62,7 +63,6 @@ int main(void) {
     bool is200bigrams = false;
     int n = hashtable_probe_max(hashtable);
 
-
     for (int i = 0; i < n; i++) {
         char *key;
         int val;
@@ -74,8 +74,7 @@ int main(void) {
         }
     }
 
-
-    if(!is200bigrams) {
+    if (!is200bigrams) {
         char *key2;
         for (int i = 0; i < n; i++) {
             int val2;

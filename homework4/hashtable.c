@@ -21,7 +21,6 @@ typedef struct hashtable {
     int entries_size;
 } hashtable_t;
 
-
 //LOW-LEVEL FUNCTIONS
 int log2n(int n) {
     return (n > 1) ? 1 + log2n(n / 2) : 0;
@@ -59,7 +58,6 @@ uint32_t fibonacci32_reduce(uint32_t hash, int lognum) {
     hash = (uint32_t)(hash * factor32) >> (32 - log2n(lognum));
     return hash;
 }
-
 
 //HASHTABLE FUNCTIONS
 int hashtable_collisions(hashtable_t *hashtable) {
@@ -114,9 +112,9 @@ void rehash(hashtable_t *old_hashtable) {
     }
     hashtable_destroy(old_hashtable, false); //false = DO NOT destroy hashtable_t. Destroy only entries
     old_hashtable->entries = new_hashtable->entries;
-    old_hashtable->size = new_hashtable->size ;
+    old_hashtable->size = new_hashtable->size;
     old_hashtable->entries_size = new_hashtable->entries_size;
-    int new_coll = hashtable_collisions(old_hashtable); //IS THIS SAME AS NEW_HT? WHAT SHOULD I PUT HERE?!
+    int new_coll = hashtable_collisions(old_hashtable); //IS THIS SAME AS NEW_HT?
     free(new_hashtable);
     printf("Rehashing reduced collisions from %d to %d\n", old_coll, new_coll);
 }
@@ -129,8 +127,8 @@ void hashtable_set(hashtable_t *hashtable, char *key, int value) {
 
     uint32_t hash = fibonacci32_reduce(fxhash32_hash(key, strlen(key)), hashtable->size);
     bool is_slot_empty = true;
-    while(is_slot_empty) {
-        if (hashtable->entries[hash].key == NULL) {
+    while (is_slot_empty) {
+        if (!hashtable->entries[hash].key) {
             //copy key and value and increment size by 1
             hashtable->entries[hash].key = strdup(key);
             hashtable->entries[hash].value = value;
@@ -153,12 +151,13 @@ void hashtable_set(hashtable_t *hashtable, char *key, int value) {
 bool hashtable_get(hashtable_t *hashtable, char *key, int *value) {
     uint32_t hash = fibonacci32_reduce(fxhash32_hash(key, strlen(key)), hashtable->size);
     bool is_slot_empty = true;
-    while(is_slot_empty) {
-        if (hashtable->entries[hash].key == NULL) {
+    while (is_slot_empty) {
+        if (!hashtable->entries[hash].key) {
             return false; //key is not contained
         } else {
             if (strcmp(hashtable->entries[hash].key, key) == 0) {
-                *value = hashtable->entries[hash].value; //if key matches, return the value associated with that key
+                *value = hashtable->entries[hash].value;
+                //if key matches, return the value associated with that key
                 return true;
             } else {
                 hash++; //there is a key but it doesnt match so look for the next empty spot
