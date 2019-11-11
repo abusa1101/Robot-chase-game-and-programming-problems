@@ -107,17 +107,17 @@ void rehash(hashtable_t *old_hashtable) {
     hashtable_t *new_hashtable = hashtable_create(old_hashtable->size * 2);
     for (int i = 0; i < old_hashtable->size; i++) {
         if (old_hashtable->entries[i].key) {
-            // new_hashtable->entries[i].key = strdup(old_hashtable->entries[i].key);
-            // new_hashtable->entries[i].value = old_hashtable->entries[i].value;
             hashtable_set(new_hashtable, old_hashtable->entries[i].key, old_hashtable->entries[i].value);
             new_hashtable->entries_size++;
         }
     }
-    hashtable_destroy(old_hashtable, false); //false = DO NOT destroy hashtable_t. Destroy only entries
+    hashtable_destroy(old_hashtable, false);
+    //false = DO NOT destroy hashtable_t. Destroy only entries
     old_hashtable->entries = new_hashtable->entries;
     old_hashtable->size = new_hashtable->size;
     old_hashtable->entries_size = new_hashtable->entries_size;
-    int new_coll = hashtable_collisions(old_hashtable); //IS THIS SAME AS NEW_HT?
+    int new_coll = hashtable_collisions(old_hashtable);
+    //IS THIS SAME AS NEW_HT?
     free(new_hashtable);
     printf("Rehashing reduced collisions from %d to %d\n", old_coll, new_coll);
 }
