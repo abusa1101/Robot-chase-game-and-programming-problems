@@ -65,7 +65,7 @@ uint32_t fibonacci32_reduce(uint32_t hash, int lognum) {
 int hashtable_collisions(hashtable_t *hashtable) {
     int collision = 0;
     //int table_arr[hashtable->size] = {0};
-    int *table_arr = calloc(sizeof(int), hashtable->size);
+    int *table_arr = calloc(hashtable->size, sizeof(int));
     for (int i = 0; i < hashtable->size; i++) {
         char *key = hashtable->entries[i].key;
         if (key) {
@@ -109,7 +109,7 @@ void rehash(hashtable_t *old_hashtable) {
         if (old_hashtable->entries[i].key) {
             // new_hashtable->entries[i].key = strdup(old_hashtable->entries[i].key);
             // new_hashtable->entries[i].value = old_hashtable->entries[i].value;
-            hashtable_set(new_hashtable,old_hashtable->entries[i].key, old_hashtable->entries[i].value);
+            hashtable_set(new_hashtable, old_hashtable->entries[i].key, old_hashtable->entries[i].value);
             new_hashtable->entries_size++;
         }
     }
