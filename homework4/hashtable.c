@@ -21,6 +21,7 @@ typedef struct hashtable {
     int entries_size;
 } hashtable_t;
 
+//Declare functions
 void hashtable_set(hashtable_t *hashtable, char *key, int value);
 
 //LOW-LEVEL FUNCTIONS

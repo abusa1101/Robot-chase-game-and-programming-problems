@@ -25,22 +25,6 @@ void read_word(FILE *fp, char *word, int char_num) {
         c = fgetc(fp);
     }
     *word = '\0';
-
-    // int len = 0;
-    // while (1) {
-    //     char c = fgetc(fp);
-    //     if (isalpha(c)) {
-    //         word[len] = c;
-    //         len++;
-    //     } else {
-    //         word[len] = '\0';
-    //         return;
-    //     }
-    //     if (feof(fp)) {
-    //         word[len] = '\0';
-    //         return;
-    //     }
-    // }
 }
 
 int main(void) {
@@ -105,18 +89,3 @@ int main(void) {
     fclose(fp);
     return 0;
 }
-
-
-// int len = 0;
-// char c;
-// while (1) {
-//     c = fgetc(fp);
-//     if (isalpha(c)) {
-//         word[len] = c;
-//         len++;
-//     }
-//     if (isspace(c) || feof(fp)) {
-//         word[len] = '\0';
-//         return;
-//     }
-// }
