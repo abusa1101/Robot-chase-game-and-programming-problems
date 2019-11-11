@@ -54,8 +54,8 @@ int main(void) {
                 hashtable_set(hashtable, buffer, 1);
             }
             free(buffer);
-            free(prev_word);
         }
+        free(prev_word);
     }
     free(word);
 
