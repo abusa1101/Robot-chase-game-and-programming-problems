@@ -21,6 +21,8 @@ typedef struct hashtable {
     int entries_size;
 } hashtable_t;
 
+void hashtable_set(hashtable_t *hashtable, char *key, int value);
+
 //LOW-LEVEL FUNCTIONS
 int log2n(int n) {
     return (n > 1) ? 1 + log2n(n / 2) : 0;
@@ -105,8 +107,9 @@ void rehash(hashtable_t *old_hashtable) {
     hashtable_t *new_hashtable = hashtable_create(old_hashtable->size * 2);
     for (int i = 0; i < old_hashtable->size; i++) {
         if (old_hashtable->entries[i].key) {
-            new_hashtable->entries[i].key = strdup(old_hashtable->entries[i].key);
-            new_hashtable->entries[i].value = old_hashtable->entries[i].value;
+            // new_hashtable->entries[i].key = strdup(old_hashtable->entries[i].key);
+            // new_hashtable->entries[i].value = old_hashtable->entries[i].value;
+            hashtable_set(new_hashtable,old_hashtable->entries[i].key, old_hashtable->entries[i].value);
             new_hashtable->entries_size++;
         }
     }
