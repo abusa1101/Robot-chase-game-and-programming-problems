@@ -67,7 +67,7 @@ int main(void) {
         char *key;
         int val;
         if (hashtable_probe(hashtable, i, &key, &val)) {
-            if (val > 200) {
+            if (val >= 200) {
                 is200bigrams = true;
                 printf("Bigram '%s' has count of %d\n", key, val);
             }
