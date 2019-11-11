@@ -109,7 +109,7 @@ void rehash(hashtable_t *old_hashtable) {
     for (int i = 0; i < old_hashtable->size; i++) {
         if (old_hashtable->entries[i].key) {
             hashtable_set(new_hashtable, old_hashtable->entries[i].key, old_hashtable->entries[i].value);
-            new_hashtable->entries_size++;
+            //new_hashtable->entries_size++;
         }
     }
     hashtable_destroy(old_hashtable, false);
@@ -124,8 +124,9 @@ void rehash(hashtable_t *old_hashtable) {
 }
 
 void hashtable_set(hashtable_t *hashtable, char *key, int value) {
-    double load_factor = (double)hashtable->entries_size / (double)hashtable->size;
+    double load_factor = hashtable->entries_size / (double)hashtable->size;
     if (load_factor >= 0.5) {
+        //printf("lf: %lf\n", load_factor);
         rehash(hashtable);
     }
 
