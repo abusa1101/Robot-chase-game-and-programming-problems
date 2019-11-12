@@ -126,7 +126,6 @@ void rehash(hashtable_t *old_hashtable) {
 void hashtable_set(hashtable_t *hashtable, char *key, int value) {
     double load_factor = hashtable->entries_size / (double)hashtable->size;
     if (load_factor >= 0.5) {
-        //printf("lf: %lf\n", load_factor);
         rehash(hashtable);
     }
 
