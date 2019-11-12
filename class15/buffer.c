@@ -28,7 +28,7 @@ void *producer_thread(void *user) {
                 buffer[buffer_size] = msg;
                 buffer_size++;
             }
-            msg ++;
+            msg++;
             while (buffer_size >= BUFFER_CAPACITY) {
                 //wait a nanosecond, or as little as possible
                 struct timespec interval = {0, 1}; //former number-seconds, latter-nanoseconds
@@ -41,10 +41,8 @@ void *producer_thread(void *user) {
 }
 
 int main(int argc, char **argv) {
-    if (argv[1] != NULL) {
-        if (strcmp(argv[1], "mutex") == 0) {
-            mutex_mode = true;
-        }
+    if (argc > 1 && strcmp(argv[1], "mutex") == 0) {
+        mutex_mode = true;
     }
     //Start producer thread
     pthread_t thread;
@@ -55,7 +53,7 @@ int main(int argc, char **argv) {
             if (mutex_mode) {
                 pthread_mutex_lock(&mutex);
             }
-            buffer_size --;
+            buffer_size--;
             //printf("BS: %d\n", buffer_size);
             printf("%d\n", buffer[buffer_size]);
             if (mutex_mode) {
@@ -65,8 +63,6 @@ int main(int argc, char **argv) {
                 break;
             }
         }
-
     }
-    //pthread_join(thread_infos[i].thread, NULL);
     return 0;
 }
