@@ -47,6 +47,7 @@ typedef struct robot {
 } robot_t;
 
 typedef struct state {
+    int user_action;
     robot_t chaser;
 } state_t;
 
