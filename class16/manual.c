@@ -32,9 +32,6 @@ int main(int argc, char **argv) {
     //}
 
     pthread_t chaser_thread;
-    double wall_r = BLOCK_SIZE / sqrt(2);
-    double robot_r = sqrt(pow(ROB_W / 2, 2) + pow(ROB_L / 2, 2));
-    double collision_dist_sq = pow(wall_r + robot_r, 2);
 
     bitmap_t bmp = {0};
     state_t state = {0};
@@ -51,8 +48,8 @@ int main(int argc, char **argv) {
         gx_draw_game(&bmp, &state);
         serving_img(bmp);
         //printf("%.2f %.2f\n", state.chaser.fwd_vel, state.chaser.ang_vel);
-        printf("action: %d\n", state.user_action);
-        state.user_action = 0;
+        //printf("action: %d\n", state.user_action);
+        //state.user_action = 0;
     }
 
     free(bmp.data);
@@ -86,7 +83,6 @@ void *io_thread(void *user) {
 
     while (true) {
         int c = getc(stdin);
-        //printf("%c: %d\n", c, c);
         if (c == 'q') {
             exit(0);
         }
@@ -94,8 +90,6 @@ void *io_thread(void *user) {
             c = getc(stdin);
             if (c == 'A') {
                 state->user_action = 1; //up
-            } else if (c == 'B') {
-                state->user_action = 4; // down
             } else if (c == 'C') {
                 state->user_action = 2; //left
             } else if (c == 'D') {

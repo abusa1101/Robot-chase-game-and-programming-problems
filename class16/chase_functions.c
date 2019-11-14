@@ -313,15 +313,16 @@ void chaser_movement(state_t *state) {
             state->chaser.fwd_vel = MAX_VEL;
         }
     } else if (action == 2) { //left
-        state->chaser.ang_vel += M_PI / 32;
-    } else if (action == 3){ //right
         state->chaser.ang_vel -= M_PI / 32;
+    } else if (action == 3){ //right
+        state->chaser.ang_vel += M_PI / 32;
     }
     state->chaser.theta += state->chaser.ang_vel;
     state->chaser.ang_vel *= 0.8;
     printf("%d: %.2f %.2f\n", action, state->chaser.fwd_vel, state->chaser.ang_vel);
     move(&state->chaser);
     resolve_tile_collision(&state->chaser);
+    state->user_action = 0;
 }
 
 //Collision & Polygons
