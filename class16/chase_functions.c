@@ -307,7 +307,6 @@ void move(robot_t *robot) {
 
 void chaser_movement(state_t *state) {
     int action = state->user_action;
-    // pthread_mutex_lock(&mutex);
     if (action == 1) { //up
         state->chaser.fwd_vel += 4;
         if (state->chaser.fwd_vel > MAX_VEL) {
@@ -320,7 +319,6 @@ void chaser_movement(state_t *state) {
     }
     state->chaser.theta += state->chaser.ang_vel;
     state->chaser.ang_vel *= 0.8;
-    // pthread_mutex_unlock(&mutex);
     printf("%d: %.2f %.2f\n", action, state->chaser.fwd_vel, state->chaser.ang_vel);
     move(&state->chaser);
     resolve_tile_collision(&state->chaser);
