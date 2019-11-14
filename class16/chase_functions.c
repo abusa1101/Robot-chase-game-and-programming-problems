@@ -297,7 +297,7 @@ void init_values(state_t *state) {
     state->chaser.y = 240;
 }
 
-void move(state_t *state, robot_t *robot) {
+void move(robot_t *robot) {
     double fwd_vel = min(MAX_VEL, robot->fwd_vel);
     double xdist = fwd_vel * cos(robot->theta);
     double ydist = fwd_vel * -sin(robot->theta);
@@ -307,28 +307,23 @@ void move(state_t *state, robot_t *robot) {
 
 void chaser_movement(state_t *state) {
     int action = state->user_action;
-    pthread_mutex_lock(&mutex);
-    switch (action) {
-    case 1: //up
+    // pthread_mutex_lock(&mutex);
+    if (action == 1) { //up
         state->chaser.fwd_vel += 4;
         if (state->chaser.fwd_vel > MAX_VEL) {
             state->chaser.fwd_vel = MAX_VEL;
         }
-        break;
-    case 2: //left
+    } else if (action == 2) { //left
         state->chaser.ang_vel += M_PI / 32;
-        break;
-    case 3: //right
+    } else if (action == 3){ //right
         state->chaser.ang_vel -= M_PI / 32;
-        break;
-    default:
-        break;
     }
     state->chaser.theta += state->chaser.ang_vel;
     state->chaser.ang_vel *= 0.8;
-    pthread_mutex_unlock(&mutex);
-    move(state->chaser);
-    resolve_tile_collision(state->chaser);
+    // pthread_mutex_unlock(&mutex);
+    printf("%d: %.2f %.2f\n", action, state->chaser.fwd_vel, state->chaser.ang_vel);
+    move(&state->chaser);
+    resolve_tile_collision(&state->chaser);
 }
 
 //Collision & Polygons

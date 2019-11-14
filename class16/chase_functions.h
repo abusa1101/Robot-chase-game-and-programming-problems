@@ -77,7 +77,7 @@ vector_xy_t *robot2(robot_t *robot);
 //Movement
 void init_values(state_t *state);
 void move(robot_t *robot);
-void chaser_searches(robot_t *chaser, int action);
+void chaser_movement(state_t *state);
 
 //Collision & Polygons
 int pg_collision(vector_xy_t *pg1, vector_xy_t *pg2);
