@@ -47,7 +47,7 @@ int main(int argc, char **argv) {
         chaser_movement(&state);
         gx_draw_game(&bmp, &state);
         serving_img(bmp);
-        //printf("%.2f %.2f\n", state.chaser.fwd_vel, state.chaser.ang_vel);
+        printf("%.2f %.2f\n", state.chaser.fwd_vel, state.chaser.ang_vel);
         //printf("action: %d\n", state.user_action);
         //state.user_action = 0;
     }
