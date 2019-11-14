@@ -305,27 +305,25 @@ void move(robot_t *robot) {
     robot->y += ydist;
 }
 
-void chaser_searches(robot_t *chaser, int action) {
-    switch (action) {
-    case 1:
-        chaser->fwd_vel += 2;
-        if (chaser->fwd_vel > MAX_VEL) {
-            chaser->fwd_vel = MAX_VEL;
+void chaser_movement(state_t *state) {
+    int action = state->user_action;
+    // pthread_mutex_lock(&mutex);
+    if (action == 1) { //up
+        state->chaser.fwd_vel += 4;
+        if (state->chaser.fwd_vel > MAX_VEL) {
+            state->chaser.fwd_vel = MAX_VEL;
         }
-        break;
-    case 2:
-        chaser->ang_vel += M_PI / 16;
-        break;
-    case 3:
-        chaser->ang_vel -= M_PI / 16;
-        break;
-    default:
-        break;
+    } else if (action == 2) { //left
+        state->chaser.ang_vel += M_PI / 32;
+    } else if (action == 3){ //right
+        state->chaser.ang_vel -= M_PI / 32;
     }
-    chaser->theta += chaser->ang_vel;
-    chaser->ang_vel *= 0.8;
-    move(chaser);
-    resolve_tile_collision(chaser);
+    state->chaser.theta += state->chaser.ang_vel;
+    state->chaser.ang_vel *= 0.8;
+    // pthread_mutex_unlock(&mutex);
+    printf("%d: %.2f %.2f\n", action, state->chaser.fwd_vel, state->chaser.ang_vel);
+    move(&state->chaser);
+    resolve_tile_collision(&state->chaser);
 }
 
 //Collision & Polygons
