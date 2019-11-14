@@ -94,15 +94,14 @@ void *io_thread(void *user) {
             c = getc(stdin);
             if (c == 'A') {
                 state->user_action = 1; //up
-            }
-            if (c == 'B') {
+            } else if (c == 'B') {
                 state->user_action = 4; // down
-            }
-            if (c == 'C') {
+            } else if (c == 'C') {
                 state->user_action = 2; //left
-            }
-            if (c == 'D') {
+            } else if (c == 'D') {
                 state->user_action = 3; // right
+            } else {
+                continue;
             }
         }
     }
