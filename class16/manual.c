@@ -23,16 +23,8 @@ int main(int argc, char **argv) {
         fprintf(stderr, "Error: Wrong number of arguments\n");
         return 1;
     }
-    // bool disabled = false;
-    // if (strcmp(argv[1], "disable")) {
-    //     disabled = true;
-    // }
-    //if (!disabled) {
-        image_server_start("8000");
-    //}
 
     pthread_t chaser_thread;
-
     bitmap_t bmp = {0};
     state_t state = {0};
     bmp.width = 640;
@@ -48,8 +40,6 @@ int main(int argc, char **argv) {
         gx_draw_game(&bmp, &state);
         serving_img(bmp);
         printf("%.2f %.2f\n", state.chaser.fwd_vel, state.chaser.ang_vel);
-        //printf("action: %d\n", state.user_action);
-        //state.user_action = 0;
     }
 
     free(bmp.data);

@@ -160,6 +160,11 @@ void gx_round(vector_xy_t *pathpoints) {
 }
 
 void gx_fill(bitmap_t *bmp, color_bgr_t color, vector_xy_t *pathpoints) {
+    if (bmp->height < 0) {
+        bmp->height = 0;
+    } else if (bmp->height > 480) {
+        bmp->height = 480;
+    }
     int x0[bmp->height];
     int x1[bmp->height];
     for (int i = 0; i < bmp->height; i++) {
