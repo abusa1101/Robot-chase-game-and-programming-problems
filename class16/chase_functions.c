@@ -314,7 +314,7 @@ void chaser_movement(state_t *state) {
         }
     } else if (action == 2) { //left
         state->chaser.ang_vel -= M_PI / 32;
-    } else if (action == 3){ //right
+    } else if (action == 3) { //right
         state->chaser.ang_vel += M_PI / 32;
     }
     state->chaser.theta += state->chaser.ang_vel;
