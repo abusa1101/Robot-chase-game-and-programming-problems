@@ -405,17 +405,16 @@ bool tile_collision(robot_t *robot, double tile_x, double tile_y) {
 bool resolve_tile_collision(robot_t *robot) {
     int map_x = (robot->x * MAP_W / WIDTH);
     int map_y = (robot->y * MAP_H / HEIGHT);
-    bool notincollision = true;
-    bool collision_status = false;
-    bool return_is_collision = false;
-    while (!collision_status) {
+    bool in_collision = true;
+    bool had_collision = false;
+    while (in_collision) {
+        in_collision = false;
         for (int y = (int)max(map_y - 1, 0); y <= map_y + 1; y++) {
             for (int x = (int)max(map_x - 1, 0); x <= map_x + 1; x++) {
                 if (MAP[y * MAP_W + x] == 'X') {
-                    notincollision = true;
                     if (tile_collision(robot, x, y)) {
-                        return_is_collision = true;
-                        notincollision = false;
+                        had_collision = true;
+                        in_collision = true;
                         //printf("%d, %d\n", x, y);
                         double dx = (x + 0.5) * BLOCK_SIZE - robot->x;
                         double dy = (y + 0.5) * BLOCK_SIZE - robot->y;
@@ -428,9 +427,6 @@ bool resolve_tile_collision(robot_t *robot) {
                 }
             }
         }
-        if (notincollision) {
-            collision_status = true;
-        }
     }
-    return return_is_collision;
+    return had_collision;
 }
