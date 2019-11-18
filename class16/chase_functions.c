@@ -326,7 +326,7 @@ void chaser_movement(state_t *state) {
     state->chaser.ang_vel *= 0.8;
     //printf("%d: %.2f %.2f\n", action, state->chaser.fwd_vel, state->chaser.ang_vel);
     move(&state->chaser);
-    if(resolve_tile_collision(&state->chaser)) {
+    if (resolve_tile_collision(&state->chaser)) {
         state->chaser.fwd_vel *= 0.25;
     }
     state->user_action = 0;
