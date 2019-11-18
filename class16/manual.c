@@ -19,10 +19,10 @@ void reset_terminal(void);
 void *io_thread(void *user);
 
 int main(int argc, char **argv) {
-    if (argc != 2) {
-        fprintf(stderr, "Error: Wrong number of arguments\n");
-        return 1;
-    }
+    // if (argc != 2) {
+    //     fprintf(stderr, "Error: Wrong number of arguments\n");
+    //     return 1;
+    // }
 
     pthread_t chaser_thread;
     bitmap_t bmp = {0};

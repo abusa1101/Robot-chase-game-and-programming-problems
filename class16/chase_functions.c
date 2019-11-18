@@ -326,7 +326,9 @@ void chaser_movement(state_t *state) {
     state->chaser.ang_vel *= 0.8;
     //printf("%d: %.2f %.2f\n", action, state->chaser.fwd_vel, state->chaser.ang_vel);
     move(&state->chaser);
-    resolve_tile_collision(&state->chaser);
+    if(resolve_tile_collision(&state->chaser)) {
+        state->chaser.fwd_vel *= 0.25;
+    }
     state->user_action = 0;
 }
 
@@ -400,17 +402,19 @@ bool tile_collision(robot_t *robot, double tile_x, double tile_y) {
     return collides;
 }
 
-void resolve_tile_collision(robot_t *robot) {
+bool resolve_tile_collision(robot_t *robot) {
     int map_x = (robot->x * MAP_W / WIDTH);
     int map_y = (robot->y * MAP_H / HEIGHT);
     bool notincollision = true;
     bool collision_status = false;
+    bool return_is_collision = false;
     while (!collision_status) {
         for (int y = (int)max(map_y - 1, 0); y <= map_y + 1; y++) {
             for (int x = (int)max(map_x - 1, 0); x <= map_x + 1; x++) {
                 if (MAP[y * MAP_W + x] == 'X') {
                     notincollision = true;
                     if (tile_collision(robot, x, y)) {
+                        return_is_collision = true;
                         notincollision = false;
                         //printf("%d, %d\n", x, y);
                         double dx = (x + 0.5) * BLOCK_SIZE - robot->x;
@@ -420,7 +424,6 @@ void resolve_tile_collision(robot_t *robot) {
                         double dir_y = dy / dist;
                         robot->x -= 0.5 * dir_x;
                         robot->y -= 0.5 * dir_y;
-                        robot->fwd_vel *= 0.25;
                     }
                 }
             }
@@ -429,4 +432,5 @@ void resolve_tile_collision(robot_t *robot) {
             collision_status = true;
         }
     }
+    return return_is_collision;
 }
