@@ -75,6 +75,9 @@ void *io_thread(void *user) {
         if (c == 'q') {
             exit(0);
         }
+        if (c == 'r') {
+            //reset simulation
+        }
         if (c == '\e' && getc(stdin) == '[') {
             c = getc(stdin);
             if (c == 'A') {
@@ -195,16 +198,16 @@ void potential_field_control(state_t *state) {
     fy += to_goal_y * state->to_goal_magnitude * pow(to_goal_dist_y, state->to_goal_power);
 
     for each wall block {
-        to_runner = unit vector from the wall block to the chaser
-        to_obs_dist = distance between the runner and the chaser, approximating them as circles
+        to_runner = //unit vector from the wall block to the chaser
+        to_obs_dist = //distance between the runner and the chaser, approximating them as circles
         to_obs_dist = fmax(0.1, to_obs_dist)
         fx += to_runner * state->avoid_obs_magnitude * pow(to_obs_dist, state->avoid_obs_power);
         fy += to_runner * state->avoid_obs_magnitude * pow(to_obs_dist, state->avoid_obs_power);
     }
 
     double target_theta = theta of fx, fy vector
-    theta_error = target_theta - robot theta //constrained to range [-pi, pi]
+    theta_error = target_theta - state->chaser.theta; //constrained to range [-pi, pi]
     ang_velocity = 0.4 * theta_error //constrained to range [-pi / 16, pi / 16]
 
-    velocity = fmin(max_velocity, velocity + 2.0)
+    state->chaser.fwd_vel = fmin(max_velocity, state->chaser.fwd_vel + 2.0)
 }
