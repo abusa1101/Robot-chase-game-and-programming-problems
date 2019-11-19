@@ -103,3 +103,12 @@ bool resolve_tile_collision(robot_t *robot) {
     }
     return had_collision;
 }
+
+bool robots_collision(robot_t *chaser, robot_t *runner) {
+    vector_xy_t *chaser_vec = robot2(chaser);
+    vector_xy_t *runner_vec = robot2(runner);
+    bool collides = pg_collision(chaser_vec, runner_vec);
+    vector_free(runner_vec);
+    vector_free(chaser_vec);
+    return collides;
+}

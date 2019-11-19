@@ -233,6 +233,27 @@ void gx_draw_chaser(bitmap_t *bmp, state_t *state) {
     gx_fill(bmp, color_chaser, pathpoints);
 }
 
+void give_runner_pos(state_t *state, int run_index) {
+    int map_idx_x = run_index % MAP_W;
+    int map_idx_y = run_index / MAP_W;
+    state->runner.x = (map_idx_x + 0.5) * BLOCK_SIZE;
+    state->runner.y = (map_idx_y + 0.5) * BLOCK_SIZE;
+}
+
+void gx_draw_runner(bitmap_t *bmp, state_t *state, int run_index) {
+    if (run_index != -1) {
+        give_runner_pos(state, run_index);
+    }
+    color_bgr_t color_runner = {0, 255, 0};
+    vector_xy_t *points = gx_robot(ROB_W, ROB_L);
+    gx_rot(state->runner.theta, points);
+    gx_trans(state->runner.x, state->runner.y, points); //starts at center of map loc
+    gx_round(points);
+    vector_xy_t *pathpoints = call_rasterize(points);
+    gx_draw(bmp, color_runner, pathpoints);
+    gx_fill(bmp, color_runner, pathpoints);
+}
+
 void gx_draw_game(bitmap_t *bmp, state_t *state) {
     gx_set_backgound(bmp);
     color_bgr_t color_sq = {0, 0, 0};
@@ -242,6 +263,7 @@ void gx_draw_game(bitmap_t *bmp, state_t *state) {
         }
     }
     gx_draw_chaser(bmp, state);
+    gx_draw_runner(bmp, state, state->initial_runner_idx);
 }
 
 vector_xy_t *robot2(robot_t *robot) {

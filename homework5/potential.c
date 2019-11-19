@@ -16,10 +16,16 @@ int main(int argc, char **argv) {
     gx_draw_game(&bmp, &state);
     while (true) {
         image_server_start("8000");
-        chaser_movement(&state);
+
+        play_game(&state);
+
         gx_draw_game(&bmp, &state);
         serving_img(bmp);
+
         printf("%.2f %.2f\n", state.chaser.fwd_vel, state.chaser.ang_vel);
+        if (robots_collision(&state.chaser, &state.runner)) {
+            break;
+        }
     }
 
     free(bmp.data);

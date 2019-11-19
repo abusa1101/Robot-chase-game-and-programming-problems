@@ -97,7 +97,6 @@ bool pg_intersection(vector_xy_t *pg1, vector_xy_t *pg2);
 bool line_intersection(double x0, double y0, double x1, double y1,
                        double x2, double y2, double x3, double y3);
 bool check4containment(vector_xy_t *pg, double x, double y);
-
 bool robots_collision(robot_t *chaser, robot_t *runner);
 bool tile_collision(robot_t *robot, double tile_x, double tile_y);
 void resolve_tile_collision(robot_t *robot);
