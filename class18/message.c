@@ -7,7 +7,8 @@
 
 void on_l2g(const lcm_recv_buf_t *rbuf, const char *channel,
             const l2g_t *msg, void *userdata) {
-    printf("%.2f %.2f %.2f\n", userdata->l2g[0], userdata->l2g[1], userdata->l2g[2]);
+    l2g_t *lcm_message = userdata;
+    printf("%.2f %.2f %.2f\n", lcm_message->l2g[0], lcm_message->l2g[1], lcm_message->l2g[2]);
 }
 
 double seconds_now(void) {
