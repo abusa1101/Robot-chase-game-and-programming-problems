@@ -8,8 +8,11 @@
 
 int main(int argc, char **argv) {
     bitmap_t bmp = {0};
+    bmp_init(&bmp);
+
     state_t state = {0};
-    init_values(&bmp, &state);
+    init_values(&state);
+    
     pthread_t chaser_thread;
     pthread_create(&chaser_thread, NULL, io_thread, &state);
 

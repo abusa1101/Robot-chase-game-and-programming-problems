@@ -56,6 +56,18 @@ double min(double a, double b) {
     return c;
 }
 
+int constrain(int val, int LL, int UL) {
+    val = (val < LL) ? LL : val;
+    val = (val > UL) ? UL : val;
+    return val;
+}
+
+void bmp_init(bitmap_t *bmp) {
+    bmp->width = 640;
+    bmp->height = 480;
+    bmp->data = calloc(bmp->width * bmp->height, sizeof(color_bgr_t));
+}
+
 //Threading/IO
 void reset_terminal(void) {
     tcsetattr(STDIN_FILENO, TCSANOW, &original_termios);
@@ -76,18 +88,26 @@ void *io_thread(void *user) {
             exit(0);
         }
         if (c == 'r') {
-            //reset simulation
+            reset_simulation();
         }
         if (c == '\e' && getc(stdin) == '[') {
             c = getc(stdin);
-            if (c == 'A') {
-                state->user_action = 1; //up
-            } else if (c == 'B') {
-                state->user_action = 4; //down
-            } else if (c == 'C') {
-                state->user_action = 2; //left
-            } else if (c == 'D') {
-                state->user_action = 3; // right
+            if (c == 'A') { //up
+                state->user_action = 1;
+                update_parameter(state, 1);
+            } else if (c == 'B') { //down
+                state->user_action = 4;
+                update_parameter(state, 0);
+            } else if (c == 'C') { //left
+                state->current_parameter--;
+                if (state->current_parameter < 1) {
+                    state->current_parameter = 7; //or % maybe?
+                }
+            } else if (c == 'D') { // right
+                state->current_parameter++;
+                if (state->current_parameter > 7) {
+                    state->current_parameter = 1; //or % maybe?
+                }
             } else {
                 continue;
             }
@@ -97,10 +117,7 @@ void *io_thread(void *user) {
 
 
 //Movement
-void init_values(bitmap_t *bmp, state_t *state) {
-    bmp->width = 640;
-    bmp->height = 480;
-    bmp->data = calloc(bmp->width * bmp->height, sizeof(color_bgr_t));
+void init_values(state_t *state) {
     state->chaser.theta = 0;
     state->chaser.x = 320;
     state->chaser.y = 240;
@@ -112,12 +129,12 @@ void init_values(bitmap_t *bmp, state_t *state) {
     state->delay_every = 1;
     state->to_goal_magnitude = 50.0;
     state->to_goal_power = 0;
-    state->avoid_obs_magnitude 50.0;
+    state->avoid_obs_magnitude 1.0;
     state->avoid_obs_power = -2;
     state->max_velocity = 12;
 }
 
-void serving_img(bitmap_t bmp) {
+void serving_img(bitmap_t bmp, state_t *state) {
     size_t bmp_size = bmp_calculate_size(&bmp);
     uint8_t *serialized_bmp = malloc(bmp_size);
     bmp_serialize(&bmp, serialized_bmp);
@@ -198,16 +215,80 @@ void potential_field_control(state_t *state) {
     fy += to_goal_y * state->to_goal_magnitude * pow(to_goal_dist_y, state->to_goal_power);
 
     for each wall block {
-        to_runner = //unit vector from the wall block to the chaser
+        to_chaser = //unit vector from the wall block to the chaser
         to_obs_dist = //distance between the runner and the chaser, approximating them as circles
         to_obs_dist = fmax(0.1, to_obs_dist)
-        fx += to_runner * state->avoid_obs_magnitude * pow(to_obs_dist, state->avoid_obs_power);
-        fy += to_runner * state->avoid_obs_magnitude * pow(to_obs_dist, state->avoid_obs_power);
+        fx += to_chaser * state->avoid_obs_magnitude * pow(to_obs_dist, state->avoid_obs_power);
+        fy += to_chaser * state->avoid_obs_magnitude * pow(to_obs_dist, state->avoid_obs_power);
     }
 
     double target_theta = theta of fx, fy vector
-    theta_error = target_theta - state->chaser.theta; //constrained to range [-pi, pi]
-    ang_velocity = 0.4 * theta_error //constrained to range [-pi / 16, pi / 16]
+    double theta_error = target_theta - state->chaser.theta; //wrapped around to range [-pi, pi]
+    state->chaser.ang_velocity = 0.4 * theta_error //constrained to range [-pi / 16, pi / 16]
 
     state->chaser.fwd_vel = fmin(max_velocity, state->chaser.fwd_vel + 2.0)
+}
+
+void update_parameters(state_t *state, bool action_is_up) {
+    if (action_is_up) {
+        if (state->current_parameter == 1) {
+            state->initial_runner_idx += next starting loc;
+        } else if (state->current_parameter == 2) {
+            state->delay_every += 1;
+            constrain(state->delay_every, 1, 10000000); //inf basically
+        } else if (state->current_parameter == 3) {
+            state->to_goal_magnitude *= 2;
+        } else if (state->current_parameter == 4) {
+            state->to_goal_power += 1;
+            constrain(state->to_goal_power, -3, 3);
+        } else if (state->current_parameter == 5) {
+            state->avoid_obs_magnitude *= 2;
+        } else if (state->current_parameter == 6) {
+            state->avoid_obs_power += 1;
+            constrain(state->avoid_obs_power, -3, 3);
+        } else if (state->current_parameter == 7) {
+            state->max_velocity += 1;
+            constrain(state->max_velocity, 1, 12);
+        } else {
+            printf("UP Error: No such parameter (>7). Check IO_thread");
+        }
+    } else {
+        if (state->current_parameter == 1) {
+            state->initial_runner_idx -= next starting loc;
+        } else if (state->current_parameter == 2) {
+            state->delay_every -= 1;
+            constrain(state->delay_every, 1, 10000000); //inf basically
+        } else if (state->current_parameter == 3) {
+            state->to_goal_magnitude /= 2;
+        } else if (state->current_parameter == 4) {
+            state->to_goal_power -= 1;
+            constrain(state->to_goal_power, -3, 3);
+        } else if (state->current_parameter == 5) {
+            state->avoid_obs_magnitude /= 2;
+        } else if (state->current_parameter == 6) {
+            state->avoid_obs_power -= 1;
+            constrain(state->avoid_obs_power, -3, 3);
+        } else if (state->current_parameter == 7) {
+            state->max_velocity -= 1;
+            constrain(state->max_velocity, 1, 12);
+        } else {
+            printf("DOWN Error: No such parameter (<7). Check IO_thread");
+        }
+    }
+}
+
+void reset_simulation(state_t *state) {
+    srand(0);
+    init_values(state);
+    state->initial_runner_idx = current runner pos;
+
+    state->runner.fwd_vel = 0;
+    state->runner.ang_vel = 0;
+    state->runner.theta = 0;
+
+    state->chaser.fwd_vel = 0;
+    state->chaser.ang_vel = 0;
+    state->chaser.theta = 0;
+
+    state->current_parameter = 1;
 }

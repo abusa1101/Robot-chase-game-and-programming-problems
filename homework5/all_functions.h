@@ -55,13 +55,14 @@ typedef struct state {
     int user_action;
     robot_t runner;
     robot_t chaser;
-    int initial_runner_idx;
+    int initial_runner_idx; // initially 17
     int delay_every; // must be >= 1
     double to_goal_magnitude;
     int to_goal_power; //[-3,3]
     double avoid_obs_magnitude;
     int avoid_obs_power; //[-3,3]
     int max_velocity; //[1,12]
+    int current_parameter;
 } state_t;
 
 //Vector/Init/Low-level Operations
