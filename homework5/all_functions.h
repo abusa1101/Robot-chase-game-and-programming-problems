@@ -43,7 +43,6 @@ typedef struct vector_xy {
 } vector_xy_t;
 
 typedef struct robot {
-    bool is_runner;
     double x;
     double y;
     double theta;
