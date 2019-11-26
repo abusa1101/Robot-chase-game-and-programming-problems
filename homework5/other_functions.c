@@ -69,59 +69,24 @@ void bmp_init(bitmap_t *bmp) {
     bmp->data = calloc(bmp->width * bmp->height, sizeof(color_bgr_t));
 }
 
-int give_runner_pos2(double x, double y) { //FIX THIS- HOW TO GET IDX FROM X, Y
-    int map_x = (x * MAP_W / WIDTH);
-    int map_y = (y * MAP_H / HEIGHT);
-    int pos = MAP[map_y * MAP_W + map_x] //?????
-    return pos;
+int give_robot_idx(double x, double y) {
+    int idx = (int)y * MAP_W + (int)x;
+    return idx;
 }
 
-
-//Threading/IO
-void reset_terminal(void) {
-    tcsetattr(STDIN_FILENO, TCSANOW, &original_termios);
-}
-
-void *io_thread(void *user) {
-    state_t *state = user;
-    tcgetattr(0, &original_termios);
-    atexit(reset_terminal);
-    struct termios new_termios;
-    memcpy(&new_termios, &original_termios, sizeof(new_termios));
-    new_termios.c_lflag &= ~(ECHO | ICANON);
-    tcsetattr(STDIN_FILENO, TCSANOW, &new_termios);
-
-    while (true) {
-        int c = getc(stdin);
-        if (c == 'q') {
-            exit(0);
+int move_to_robot_idx(int current_idx, bool is_next) {
+    if (MAP[current_idx] == 'X' && is_next) {
+        while (MAP[current_idx] == 'X') {
+            current_idx++;
+            current_idx = constrain(current_idx, 1, 60);
         }
-        if (c == 'r') {
-            reset_simulation();
-        }
-        if (c == '\e' && getc(stdin) == '[') {
-            c = getc(stdin);
-            if (c == 'A') { //up
-                state->user_action = 1;
-                update_parameter(state, 1);
-            } else if (c == 'B') { //down
-                state->user_action = 4;
-                update_parameter(state, 0);
-            } else if (c == 'C') { //left
-                state->current_parameter--;
-                if (state->current_parameter < 1) {
-                    state->current_parameter = 7; //or % maybe?
-                }
-            } else if (c == 'D') { // right
-                state->current_parameter++;
-                if (state->current_parameter > 7) {
-                    state->current_parameter = 1; //or % maybe?
-                }
-            } else {
-                continue;
-            }
+    } else if (MAP[current_idx] == 'X' && !is_next){
+        while (MAP[current_idx] == 'X') {
+            current_idx--;
+            current_idx = constrain(current_idx, 1, 60); //FIX THIS NUMBER 60 LATER
         }
     }
+    return current_idx;
 }
 
 
@@ -137,7 +102,7 @@ void init_values(state_t *state) {
     state->delay_every = 1;
     state->to_goal_magnitude = 50.0;
     state->to_goal_power = 0;
-    state->avoid_obs_magnitude 1.0;
+    state->avoid_obs_magnitude = 1.0;
     state->avoid_obs_power = -2;
     state->max_velocity = 12;
 }
@@ -154,7 +119,20 @@ void serving_img(bitmap_t bmp, state_t *state) {
     nanosleep(&interval, NULL);
 }
 
-void move(robot_t *robot) {
+void runner_walks(state_t *state, robot_t *runner) {
+    int num_chosen = rand() % 20;
+    if (num_chosen == 1) {
+        runner->fwd_vel += 2;
+    } else if (num_chosen == 2) {
+        runner->ang_vel += (M_PI / 16);
+    }
+    runner->theta += runner->ang_vel;
+    runner->ang_vel *= 0.8;
+    move(state, runner);
+    resolve_tile_collision(runner);
+}
+
+void move(state_t *state, robot_t *robot) {
     double fwd_vel = min(state->max_velocity, robot->fwd_vel);
     double xdist = fwd_vel * cos(robot->theta);
     double ydist = fwd_vel * -sin(robot->theta);
@@ -162,53 +140,20 @@ void move(robot_t *robot) {
     robot->y += ydist;
 }
 
-void runner_walks(robot_t *runner) {
-    int num_chosen = rand() % 20; //[max = 19, min = 0]
-    if (num_chosen == 1) {
-        runner->fwd_vel += 2;
-        //printf("%d ", num_chosen);
-    } else if (num_chosen == 2) {
-        runner->ang_vel += (M_PI / 16);
-        //printf("%d ", num_chosen);
-    } else {
-        //printf("%d ", 0);
-    }
-    runner->theta += runner->ang_vel;
-    runner->ang_vel *= 0.8;
-    move(runner);
-    resolve_tile_collision(runner);
-}
-
-void chaser_movement(state_t *state) {
-    // int action = state->user_action; //FIX THIS- WHAT TO FILL HERE, WHERE R WE CALLING THIS FUNC?
-    // if (action == 1) { //up
-    //     state->chaser.fwd_vel += 4;
-    //     if (state->chaser.fwd_vel > state->max_velocity) {
-    //         state->chaser.fwd_vel = state->max_velocity;
-    //     }
-    // } else if (action == 2) { //left
-    //     state->chaser.ang_vel -= M_PI / 32;
-    // } else if (action == 3) { //right
-    //     state->chaser.ang_vel += M_PI / 32;
-    // }
+void chaser_moves(state_t *state) {
+    potential_field_control(state);
     state->chaser.theta += state->chaser.ang_vel;
     state->chaser.ang_vel *= 0.8;
-    move(&state->chaser);
+    move(state, &state->chaser);
     if (resolve_tile_collision(&state->chaser)) {
         state->chaser.fwd_vel *= 0.25;
     }
-    //state->user_action = 0;
-}
-
-void play_game(state_t *state) {
-    runner_walks(&state->runner);
-    chaser_movement(state);
 }
 
 
 //Potential Field
 void potential_field_control(state_t *state) {
-    double robot_r = sqrt((ROB_W / 2)^2 + (ROB_L / 2)^2); //circle approx radius of robot
+    double robot_r = sqrt(pow((ROB_W / 2), 2) + pow((ROB_L / 2), 2)); //circle approx radius of robot
     double wall_r = BLOCK_SIZE / sqrt(2); //circle approx radius of wall block
     double fx = 0.0; //forces on robot
     double fy = 0.0;
@@ -224,7 +169,7 @@ void potential_field_control(state_t *state) {
     fy += to_goal_y * state->to_goal_magnitude * pow(to_goal_dist_y, state->to_goal_power);
 
     int map_x = (state->chaser.x * MAP_W / WIDTH);
-    int map_y = (state->robot.y * MAP_H / HEIGHT);
+    int map_y = (state->chaser.y * MAP_H / HEIGHT);
     for (int y = (int)max(map_y - 1, 0); y <= map_y + 1; y++) {
         for (int x = (int)max(map_x - 1, 0); x <= map_x + 1; x++) {
             double dist_sq = pow(state->chaser.x - x, 2) + pow(state->chaser.y - y, 2);
@@ -237,24 +182,24 @@ void potential_field_control(state_t *state) {
         }
     }
 
-    double target_theta = acos(fx);//theta of fx, fy vector FIX THIS also rad/deg?
-    double theta_error = target_theta - state->chaser.theta; //wrapped around to range [-pi, pi] FIX THIS WRAP AS IN?
+    double target_theta = atan2(fy,fx);
+    double theta_error = target_theta - state->chaser.theta;
     if (theta_error > M_PI) {
         theta_error = -M_PI + (theta_error - M_PI);
     } else if (theta_error < -M_PI) {
         theta_error = M_PI - (-theta_error - M_PI);
     }
-    double ang_vel = 0.4 * theta_error; //constrained to range [-pi / 16, pi / 16]
-    state->chaser.ang_velocity = constrain(ang_vel, - M_PI / 16, M_PI / 16);
+    double ang_vel = 0.4 * theta_error;
+    state->chaser.ang_vel = constrain(ang_vel, - M_PI / 16, M_PI / 16);
 
-    state->chaser.fwd_vel = fmin(max_velocity, state->chaser.fwd_vel + 2.0);
+    state->chaser.fwd_vel = fmin(state->max_velocity, state->chaser.fwd_vel + 2.0);
 }
 
 void update_parameters(state_t *state, bool action_is_up) {
     if (action_is_up) {
         if (state->current_parameter == 1) {
-            int start_location = give_runner_pos2(state->runner.x, state->runner.y);
-            state->initial_runner_idx = start_location;
+            int start_idx = give_robot_idx(state->runner.x, state->runner.y);
+            state->initial_runner_idx = move_to_robot_idx(start_idx, 1); //is_next = 1, !is_next = 0
         } else if (state->current_parameter == 2) {
             state->delay_every += 1;
             constrain(state->delay_every, 1, 10000000); //inf basically
@@ -272,11 +217,12 @@ void update_parameters(state_t *state, bool action_is_up) {
             state->max_velocity += 1;
             constrain(state->max_velocity, 1, 12);
         } else {
-            printf("UP Error: No such parameter (>7). Check IO_thread");
+            printf("UP Error: No such parameter (> 7). Check IO_thread");
         }
     } else { //action = down
         if (state->current_parameter == 1) {
-            state->initial_runner_idx = give_runner_pos2(state->runner.x, state->runner.y);
+            int start_idx = give_robot_idx(state->runner.x, state->runner.y);
+            state->initial_runner_idx = move_to_robot_idx(start_idx, 0);
         } else if (state->current_parameter == 2) {
             state->delay_every -= 1;
             constrain(state->delay_every, 1, 10000000); //inf basically
@@ -294,7 +240,7 @@ void update_parameters(state_t *state, bool action_is_up) {
             state->max_velocity -= 1;
             constrain(state->max_velocity, 1, 12);
         } else {
-            printf("DOWN Error: No such parameter (<7). Check IO_thread");
+            printf("DOWN Error: No such parameter (< 7). Check IO_thread");
         }
     }
 }
@@ -302,21 +248,7 @@ void update_parameters(state_t *state, bool action_is_up) {
 void reset_simulation(state_t *state) {
     srand(0);
     init_values(state);
-
-    // int map_x = (robot->x * MAP_W / WIDTH); //FIX THIS
-    // int map_y = (robot->y * MAP_H / HEIGHT);
-    // (int y = (int)map_y
-    // (int x = (int)map_x
-
-    // int x = state->runner.x; //FIX THIS
-    // int y = state->runner.y;
-    // int counter = 0;
-    // while (MAP[y * MAP_W + x] == 'X') {
-    //     counter++;
-    // }
-    // state->initial_runner_idx = give_runner_pos2(state->runner.x + counter, state->runner.y + counter);
-
-    state->initial_runner_idx = give_runner_pos2(state->runner.x, state->runner.y); //FIX THIS
+    state->initial_runner_idx = give_robot_idx(state->runner.x, state->runner.y);
 
     state->runner.fwd_vel = 0;
     state->runner.ang_vel = 0;
@@ -327,4 +259,53 @@ void reset_simulation(state_t *state) {
     state->chaser.theta = 0;
 
     state->current_parameter = 1;
+}
+
+
+//Threading/IO
+void reset_terminal(void) {
+    tcsetattr(STDIN_FILENO, TCSANOW, &original_termios);
+}
+
+void *io_thread(void *user) {
+    //printf("\e[?25l");
+    state_t *state = user;
+    tcgetattr(0, &original_termios);
+    atexit(reset_terminal);
+    struct termios new_termios;
+    memcpy(&new_termios, &original_termios, sizeof(new_termios));
+    new_termios.c_lflag &= ~(ECHO | ICANON);
+    tcsetattr(STDIN_FILENO, TCSANOW, &new_termios);
+
+    while (true) {
+        int c = getc(stdin);
+        if (c == 'q') {
+            exit(0);
+        }
+        if (c == 'r') {
+            reset_simulation(state);
+        }
+        if (c == '\e' && getc(stdin) == '[') {
+            c = getc(stdin);
+            if (c == 'A') { //up
+                state->user_action = 1;
+                update_parameters(state, 1);
+            } else if (c == 'B') { //down
+                state->user_action = 4;
+                update_parameters(state, 0);
+            } else if (c == 'C') { //left
+                state->current_parameter--;
+                if (state->current_parameter < 1) {
+                    state->current_parameter = 7; //or % maybe?
+                }
+            } else if (c == 'D') { // right
+                state->current_parameter++;
+                if (state->current_parameter > 7) {
+                    state->current_parameter = 1; //or % maybe?
+                }
+            } else {
+                continue;
+            }
+        }
+    }
 }

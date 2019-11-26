@@ -70,6 +70,10 @@ void vector_append(vector_xy_t *v, double xvalue, double yvalue);
 void vector_free(vector_xy_t *v);
 double max(double a, double b);
 double min(double a, double b);
+int constrain(int val, int LL, int UL);
+void bmp_init(bitmap_t *bmp);
+int give_robot_idx(double x, double y);
+int move_to_robot_idx(int current_idx, bool is_next);
 
 //GX Functions
 vector_xy_t *gx_rect(double width, double height);
@@ -89,13 +93,6 @@ void gx_draw_runner(bitmap_t *bmp, state_t *state, int run_index);
 void gx_draw_game(bitmap_t *bmp, state_t *state);
 vector_xy_t *robot2(robot_t *robot);
 
-//Movement
-void init_values(bitmap_t *bmp, state_t *state);
-void serving_img(bitmap_t bmp);
-void move(robot_t *robot);
-void runner_walks(robot_t *runner);
-void chaser_movement(state_t *state);
-
 //Collision & Polygons
 int pg_collision(vector_xy_t *pg1, vector_xy_t *pg2);
 bool pg_intersection(vector_xy_t *pg1, vector_xy_t *pg2);
@@ -106,9 +103,18 @@ bool robots_collision(robot_t *chaser, robot_t *runner);
 bool tile_collision(robot_t *robot, double tile_x, double tile_y);
 bool resolve_tile_collision(robot_t *robot);
 
+//Movement
+void init_values(state_t *state);
+void serving_img(bitmap_t bmp, state_t *state) ;
+void move(state_t *state, robot_t *robot);
+void runner_walks(state_t *state, robot_t *runner);
+void chaser_moves(state_t *state);
+
 //Thread/IO
 void reset_terminal(void);
 void *io_thread(void *user);
 
 //Potential Field
-void play_game(state_t *state);
+void potential_field_control(state_t *state);
+void update_parameters(state_t *state, bool action_is_up);
+void reset_simulation(state_t *state);
