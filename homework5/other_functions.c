@@ -239,6 +239,11 @@ void potential_field_control(state_t *state) {
 
     double target_theta = acos(fx);//theta of fx, fy vector FIX THIS also rad/deg?
     double theta_error = target_theta - state->chaser.theta; //wrapped around to range [-pi, pi] FIX THIS WRAP AS IN?
+    if (theta_error > M_PI) {
+        theta_error = -M_PI + (theta_error - M_PI);
+    } else if (theta_error < -M_PI) {
+        theta_error = M_PI - (-theta_error - M_PI);
+    }
     double ang_vel = 0.4 * theta_error; //constrained to range [-pi / 16, pi / 16]
     state->chaser.ang_velocity = constrain(ang_vel, - M_PI / 16, M_PI / 16);
 
