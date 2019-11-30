@@ -157,7 +157,7 @@ void potential_field_control(state_t *state) {
 
     double dist_sq_robots = pow(state->runner.x - state->chaser.x, 2) +
                             pow(state->runner.y - state->chaser.y, 2);
-    double to_goal_x = (state->runner.x - state->chaser.x) / sqrt(dist_sq_robots)
+    double to_goal_x = (state->runner.x - state->chaser.x) / sqrt(dist_sq_robots);
     double to_goal_y = (state->runner.y - state->chaser.y) / sqrt(dist_sq_robots);
     double to_goal_dist_x = state->runner.x - state->chaser.x; //dist from chaser to runner
     double to_goal_dist_y = state->runner.y - state->chaser.y;
