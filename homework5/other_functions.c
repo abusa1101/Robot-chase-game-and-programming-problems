@@ -63,8 +63,8 @@ int constrain(int val, int LL, int UL) {
 }
 
 void bmp_init(bitmap_t *bmp) {
-    bmp->width = 640;
-    bmp->height = 480;
+    bmp->width = WIDTH;
+    bmp->height = HEIGHT;
     bmp->data = calloc(bmp->width * bmp->height, sizeof(color_bgr_t));
 }
 
@@ -91,8 +91,8 @@ int move_to_robot_idx(int current_idx, bool is_next) {
 //Movement
 void init_values(state_t *state) {
     state->chaser.theta = 0;
-    state->chaser.x = 320;
-    state->chaser.y = 240;
+    state->chaser.x = WIDTH / 2;
+    state->chaser.y = HEIGHT / 2;
     state->runner.theta = 0;
     state->runner.x = 0;
     state->runner.y = 0;
@@ -175,10 +175,12 @@ void potential_field_control(state_t *state) {
             double dist_sq = pow(state->chaser.x - x, 2) + pow(state->chaser.y - y, 2);
             double to_chaser_x = (state->chaser.x - x) / sqrt(dist_sq);
             double to_chaser_y = (state->chaser.y - y) / sqrt(dist_sq);
-            double to_obs_dist = sqrt(dist_sq_robots) - (robot_r + wall_r); //dist between runner and chaser, approx them as circles
+            double to_obs_dist = sqrt(dist_sq_robots) - (robot_r + wall_r);
             to_obs_dist = fmax(0.1, to_obs_dist);
-            fx += to_chaser_x * state->avoid_obs_magnitude * pow(to_obs_dist, state->avoid_obs_power);
-            fy += to_chaser_y * state->avoid_obs_magnitude * pow(to_obs_dist, state->avoid_obs_power);
+            fx += to_chaser_x * state->avoid_obs_magnitude *
+                  pow(to_obs_dist, state->avoid_obs_power);
+            fy += to_chaser_y * state->avoid_obs_magnitude *
+                  pow(to_obs_dist, state->avoid_obs_power);
         }
     }
 
