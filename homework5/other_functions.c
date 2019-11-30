@@ -112,7 +112,7 @@ void serving_img(bitmap_t bmp, state_t *state) {
     image_server_set_data(bmp_size, serialized_bmp);
     free(serialized_bmp);
     int seconds = 0;
-    long nanoseconds = 40 * 1000 * 1000; //FIX THIS- HOW TO USE DELAY_START?
+    long nanoseconds = SLEEP_40 * 1000 * 1000; //FIX THIS- HOW TO USE DELAY_START?
     struct timespec interval = {seconds, nanoseconds};
     nanosleep(&interval, NULL);
 }

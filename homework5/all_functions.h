@@ -30,6 +30,7 @@
 #define MAX_DEPTH 3
 #define ROB_W 20
 #define ROB_L (ROB_W * 4 / 3.0)
+#define SLEEP_40 40
 
 typedef struct points {
     double x;
