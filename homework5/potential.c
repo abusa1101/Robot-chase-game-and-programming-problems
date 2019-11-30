@@ -23,7 +23,6 @@ int main(int argc, char **argv) {
     gx_draw_game(&bmp, &state);
     serving_img(bmp, &state); //delay 40ms and all
 
-
     while (true) {
         chaser_moves(&state);
         runner_walks(&state, &state.runner);

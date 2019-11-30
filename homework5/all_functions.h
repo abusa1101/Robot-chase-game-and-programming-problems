@@ -105,7 +105,7 @@ bool resolve_tile_collision(robot_t *robot);
 
 //Movement
 void init_values(state_t *state);
-void serving_img(bitmap_t bmp, state_t *state) ;
+void serving_img(bitmap_t bmp, state_t *state);
 void move(state_t *state, robot_t *robot);
 void runner_walks(state_t *state, robot_t *runner);
 void chaser_moves(state_t *state);

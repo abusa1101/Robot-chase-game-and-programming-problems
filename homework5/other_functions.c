@@ -12,7 +12,6 @@
 
 struct termios original_termios;
 
-
 //Vector/low-level Operations
 vector_xy_t *vector_create(void) {
     vector_xy_t *v = malloc(sizeof(vector_xy_t));
@@ -80,7 +79,7 @@ int move_to_robot_idx(int current_idx, bool is_next) {
             current_idx++;
             current_idx = constrain(current_idx, 1, 60);
         }
-    } else if (MAP[current_idx] == 'X' && !is_next){
+    } else if (MAP[current_idx] == 'X' && !is_next) {
         while (MAP[current_idx] == 'X') {
             current_idx--;
             current_idx = constrain(current_idx, 1, 60); //FIX THIS NUMBER 60 LATER
@@ -88,7 +87,6 @@ int move_to_robot_idx(int current_idx, bool is_next) {
     }
     return current_idx;
 }
-
 
 //Movement
 void init_values(state_t *state) {
@@ -150,23 +148,24 @@ void chaser_moves(state_t *state) {
     }
 }
 
-
 //Potential Field
 void potential_field_control(state_t *state) {
-    double robot_r = sqrt(pow((ROB_W / 2), 2) + pow((ROB_L / 2), 2)); //circle approx radius of robot
-    double wall_r = BLOCK_SIZE / sqrt(2); //circle approx radius of wall block
+    double robot_r = sqrt(pow((ROB_W / 2), 2) + pow((ROB_L / 2), 2));
+    double wall_r = BLOCK_SIZE / sqrt(2);
     double fx = 0.0; //forces on robot
     double fy = 0.0;
 
     double dist_sq_robots = pow(state->runner.x - state->chaser.x, 2) +
-                             pow(state->runner.y - state->chaser.y, 2);
-    double to_goal_x = (state->runner.x - state->chaser.x) / sqrt(dist_sq_robots); //unit vec from chaser to runner
+                            pow(state->runner.y - state->chaser.y, 2);
+    double to_goal_x = (state->runner.x - state->chaser.x) / sqrt(dist_sq_robots)
     double to_goal_y = (state->runner.y - state->chaser.y) / sqrt(dist_sq_robots);
     double to_goal_dist_x = state->runner.x - state->chaser.x; //dist from chaser to runner
     double to_goal_dist_y = state->runner.y - state->chaser.y;
 
-    fx += to_goal_x * state->to_goal_magnitude * pow(to_goal_dist_x, state->to_goal_power);
-    fy += to_goal_y * state->to_goal_magnitude * pow(to_goal_dist_y, state->to_goal_power);
+    fx += to_goal_x * state->to_goal_magnitude *
+          pow(to_goal_dist_x, state->to_goal_power);
+    fy += to_goal_y * state->to_goal_magnitude *
+          pow(to_goal_dist_y, state->to_goal_power);
 
     for (int i = 0; i < MAP_H * MAP_W; i++) {
         if (MAP[i] == 'X') {
@@ -174,7 +173,7 @@ void potential_field_control(state_t *state) {
             int y = ((i / MAP_W) * BLOCK_SIZE) + (BLOCK_SIZE / 2);
 
             double dist_sq = pow(state->chaser.x - x, 2) + pow(state->chaser.y - y, 2);
-            double to_chaser_x = (state->chaser.x - x) / sqrt(dist_sq); //unit vector from the wall block to the chaser
+            double to_chaser_x = (state->chaser.x - x) / sqrt(dist_sq);
             double to_chaser_y = (state->chaser.y - y) / sqrt(dist_sq);
             double to_obs_dist = sqrt(dist_sq_robots) - (robot_r + wall_r); //dist between runner and chaser, approx them as circles
             to_obs_dist = fmax(0.1, to_obs_dist);
@@ -183,7 +182,7 @@ void potential_field_control(state_t *state) {
         }
     }
 
-    double target_theta = atan2(-fy,fx);
+    double target_theta = atan2(-fy, fx);
     double theta_error = target_theta - state->chaser.theta;
     if (theta_error > M_PI) {
         theta_error = -M_PI + (theta_error - M_PI);
@@ -191,7 +190,7 @@ void potential_field_control(state_t *state) {
         theta_error = M_PI - (-theta_error - M_PI);
     }
     double ang_vel = 0.4 * theta_error;
-    state->chaser.ang_vel = constrain(ang_vel, - M_PI / 16, M_PI / 16);
+    state->chaser.ang_vel = constrain(ang_vel, -M_PI / 16, M_PI / 16);
 
     state->chaser.fwd_vel = fmin(state->max_velocity, state->chaser.fwd_vel + 2.0);
 }
@@ -261,7 +260,6 @@ void reset_simulation(state_t *state) {
 
     state->current_parameter = 1;
 }
-
 
 //Threading/IO
 void reset_terminal(void) {
