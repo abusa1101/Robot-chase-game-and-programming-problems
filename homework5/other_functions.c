@@ -168,21 +168,22 @@ void potential_field_control(state_t *state) {
     fx += to_goal_x * state->to_goal_magnitude * pow(to_goal_dist_x, state->to_goal_power);
     fy += to_goal_y * state->to_goal_magnitude * pow(to_goal_dist_y, state->to_goal_power);
 
-    int map_x = (state->chaser.x * MAP_W / WIDTH);
-    int map_y = (state->chaser.y * MAP_H / HEIGHT);
-    for (int y = (int)max(map_y - 1, 0); y <= map_y + 1; y++) {
-        for (int x = (int)max(map_x - 1, 0); x <= map_x + 1; x++) {
+    for (int i = 0; i < MAP_H * MAP_W; i++) {
+        if (MAP[i] == 'X') {
+            int x = ((i % MAP_W) * BLOCK_SIZE) + (BLOCK_SIZE / 2);
+            int y = ((i / MAP_W) * BLOCK_SIZE) + (BLOCK_SIZE / 2);
+
             double dist_sq = pow(state->chaser.x - x, 2) + pow(state->chaser.y - y, 2);
             double to_chaser_x = (state->chaser.x - x) / sqrt(dist_sq); //unit vector from the wall block to the chaser
             double to_chaser_y = (state->chaser.y - y) / sqrt(dist_sq);
-            double to_obs_dist = sqrt(dist_sq_robots) - (2 * robot_r); //dist between runner and chaser, approx them as circles
+            double to_obs_dist = sqrt(dist_sq_robots) - (robot_r + wall_r); //dist between runner and chaser, approx them as circles
             to_obs_dist = fmax(0.1, to_obs_dist);
             fx += to_chaser_x * state->avoid_obs_magnitude * pow(to_obs_dist, state->avoid_obs_power);
             fy += to_chaser_y * state->avoid_obs_magnitude * pow(to_obs_dist, state->avoid_obs_power);
         }
     }
 
-    double target_theta = atan2(fy,fx);
+    double target_theta = atan2(-fy,fx);
     double theta_error = target_theta - state->chaser.theta;
     if (theta_error > M_PI) {
         theta_error = -M_PI + (theta_error - M_PI);
@@ -202,7 +203,7 @@ void update_parameters(state_t *state, bool action_is_up) {
             state->initial_runner_idx = move_to_robot_idx(start_idx, 1); //is_next = 1, !is_next = 0
         } else if (state->current_parameter == 2) {
             state->delay_every += 1;
-            constrain(state->delay_every, 1, 10000000); //inf basically
+            constrain(state->delay_every, 1, 10000000); //inf basically- FIX do we need this?
         } else if (state->current_parameter == 3) {
             state->to_goal_magnitude *= 2;
         } else if (state->current_parameter == 4) {
@@ -268,7 +269,7 @@ void reset_terminal(void) {
 }
 
 void *io_thread(void *user) {
-    //printf("\e[?25l");
+    printf("\e[?25l");
     state_t *state = user;
     tcgetattr(0, &original_termios);
     atexit(reset_terminal);
@@ -283,7 +284,7 @@ void *io_thread(void *user) {
             exit(0);
         }
         if (c == 'r') {
-            reset_simulation(state);
+            reset_simulation(state); //when r is pressed
         }
         if (c == '\e' && getc(stdin) == '[') {
             c = getc(stdin);
