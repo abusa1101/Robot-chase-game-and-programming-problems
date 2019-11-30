@@ -88,6 +88,18 @@ int move_to_robot_idx(int current_idx, bool is_next) {
     return current_idx;
 }
 
+void serving_img(bitmap_t bmp, state_t *state) {
+    size_t bmp_size = bmp_calculate_size(&bmp);
+    uint8_t *serialized_bmp = malloc(bmp_size);
+    bmp_serialize(&bmp, serialized_bmp);
+    image_server_set_data(bmp_size, serialized_bmp);
+    free(serialized_bmp);
+    int seconds = 0;
+    long nanoseconds = SLEEP_40 * 1000 * 1000; //FIX THIS- HOW TO USE DELAY_START?
+    struct timespec interval = {seconds, nanoseconds};
+    nanosleep(&interval, NULL);
+}
+
 //Movement
 void init_values(state_t *state) {
     state->chaser.theta = 0;
@@ -105,29 +117,19 @@ void init_values(state_t *state) {
     state->max_velocity = 12;
 }
 
-void serving_img(bitmap_t bmp, state_t *state) {
-    size_t bmp_size = bmp_calculate_size(&bmp);
-    uint8_t *serialized_bmp = malloc(bmp_size);
-    bmp_serialize(&bmp, serialized_bmp);
-    image_server_set_data(bmp_size, serialized_bmp);
-    free(serialized_bmp);
-    int seconds = 0;
-    long nanoseconds = SLEEP_40 * 1000 * 1000; //FIX THIS- HOW TO USE DELAY_START?
-    struct timespec interval = {seconds, nanoseconds};
-    nanosleep(&interval, NULL);
-}
-
-void runner_walks(state_t *state, robot_t *runner) {
+void runner_walks(state_t *state) {
     int num_chosen = rand() % 20;
     if (num_chosen == 1) {
-        runner->fwd_vel += 2;
+        state->runner.fwd_vel += 2;
     } else if (num_chosen == 2) {
-        runner->ang_vel += (M_PI / 16);
+        state->runner.ang_vel += (M_PI / 16);
     }
-    runner->theta += runner->ang_vel;
-    runner->ang_vel *= 0.8;
-    move(state, runner);
-    resolve_tile_collision(runner);
+    state->runner.theta += state->runner.ang_vel;
+    state->runner.ang_vel *= 0.8;
+    move(state, &state->runner);
+    if (resolve_tile_collision(&state->runner)) {
+        state->runner.fwd_vel *= 0.25;
+    }
 }
 
 void move(state_t *state, robot_t *robot) {
@@ -186,10 +188,10 @@ void potential_field_control(state_t *state) {
 
     double target_theta = atan2(-fy, fx);
     double theta_error = target_theta - state->chaser.theta;
-    if (theta_error > M_PI) {
-        theta_error = -M_PI + (theta_error - M_PI);
+    if (theta_error > M_PI) { //FIX THIS MAYBE?
+        theta_error = M_PI - theta_error;
     } else if (theta_error < -M_PI) {
-        theta_error = M_PI - (-theta_error - M_PI);
+        theta_error = -M_PI - theta_error;
     }
     double ang_vel = 0.4 * theta_error;
     state->chaser.ang_vel = constrain(ang_vel, -M_PI / 16, M_PI / 16);
@@ -219,7 +221,7 @@ void update_parameters(state_t *state, bool action_is_up) {
             state->max_velocity += 1;
             constrain(state->max_velocity, 1, 12);
         } else {
-            printf("UP Error: No such parameter (> 7). Check IO_thread");
+            printf("UP Error: No such parameter %d (> 7). Check IO_thread\n", state->current_parameter);
         }
     } else { //action = down
         if (state->current_parameter == 1) {
@@ -242,7 +244,7 @@ void update_parameters(state_t *state, bool action_is_up) {
             state->max_velocity -= 1;
             constrain(state->max_velocity, 1, 12);
         } else {
-            printf("DOWN Error: No such parameter (< 7). Check IO_thread");
+            printf("DOWN Error: No such parameter %d (< 7). Check IO_thread\n", state->current_parameter);
         }
     }
 }
@@ -269,7 +271,7 @@ void reset_terminal(void) {
 }
 
 void *io_thread(void *user) {
-    printf("\e[?25l");
+    //printf("\e[?25l");
     state_t *state = user;
     tcgetattr(0, &original_termios);
     atexit(reset_terminal);
@@ -289,20 +291,20 @@ void *io_thread(void *user) {
         if (c == '\e' && getc(stdin) == '[') {
             c = getc(stdin);
             if (c == 'A') { //up
-                state->user_action = 1;
+                //state->user_action = 1;
                 update_parameters(state, 1);
             } else if (c == 'B') { //down
-                state->user_action = 4;
+                //state->user_action = 4;
                 update_parameters(state, 0);
             } else if (c == 'C') { //left
                 state->current_parameter--;
                 if (state->current_parameter < 1) {
-                    state->current_parameter = 7; //or % maybe?
+                    state->current_parameter = 1; //OR 7?! USE % maybe?
                 }
             } else if (c == 'D') { // right
                 state->current_parameter++;
                 if (state->current_parameter > 7) {
-                    state->current_parameter = 1; //or % maybe?
+                    state->current_parameter = 7; //OR 1?! USE % maybe?
                 }
             } else {
                 continue;
