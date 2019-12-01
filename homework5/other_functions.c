@@ -89,15 +89,10 @@ int move_to_robot_idx(int current_idx, bool is_next) {
 }
 
 int robot_to_next_idx(int idx) {
-    //int idx = (int)y * MAP_W + (int)x;
-    if (MAP[idx] == 'X') {
-        while (MAP[idx] == 'X') {
-            idx++;
-            idx = constrain(idx, 17, 175); //is this necessary?
-        }
-    } else {
+    do {
         idx++;
-    }
+        idx = constrain(idx, 17, 175);
+    } while(MAP[idx] == 'X');
 
     return idx;
 }
@@ -176,13 +171,13 @@ void potential_field_control(state_t *state) {
                             pow(state->runner.y - state->chaser.y, 2);
     double to_goal_x = (state->runner.x - state->chaser.x) / sqrt(dist_sq_robots);
     double to_goal_y = (state->runner.y - state->chaser.y) / sqrt(dist_sq_robots);
-    double to_goal_dist_x = state->runner.x - state->chaser.x; //dist from chaser to runner
-    double to_goal_dist_y = state->runner.y - state->chaser.y;
+    double to_goal_dist = sqrt(pow(state->runner.x - state->chaser.x, 2) +
+                               pow(state->runner.y - state->chaser.y, 2)); //dist from chaser to runner
 
     fx += to_goal_x * state->to_goal_magnitude *
-          pow(to_goal_dist_x, state->to_goal_power);
+          pow(to_goal_dist, state->to_goal_power);
     fy += to_goal_y * state->to_goal_magnitude *
-          pow(to_goal_dist_y, state->to_goal_power);
+          pow(to_goal_dist, state->to_goal_power);
 
     for (int i = 0; i < MAP_H * MAP_W; i++) {
         if (MAP[i] == 'X') {
@@ -192,26 +187,36 @@ void potential_field_control(state_t *state) {
             double dist_sq = pow(state->chaser.x - x, 2) + pow(state->chaser.y - y, 2);
             double to_chaser_x = (state->chaser.x - x) / sqrt(dist_sq);
             double to_chaser_y = (state->chaser.y - y) / sqrt(dist_sq);
-            double to_obs_dist = sqrt(dist_sq_robots) - (robot_r + wall_r);
+            double to_obs_dist = sqrt(dist_sq) - (robot_r + wall_r);
             to_obs_dist = fmax(0.1, to_obs_dist);
             fx += to_chaser_x * state->avoid_obs_magnitude *
                   pow(to_obs_dist, state->avoid_obs_power);
             fy += to_chaser_y * state->avoid_obs_magnitude *
                   pow(to_obs_dist, state->avoid_obs_power);
+            //printf("fx, fy: %lf, %lf\n", fx, fy);
         }
     }
 
     double target_theta = atan2(-fy, fx);
     double theta_error = target_theta - state->chaser.theta;
-    if (theta_error > M_PI) { //FIX THIS MAYBE?
-        theta_error = M_PI - theta_error;
-    } else if (theta_error < -M_PI) {
-        theta_error = -M_PI - theta_error;
+
+    //printf("chaser theta, target theta, theta error: %lf, %lf, %lf\n", state->chaser.theta, target_theta, theta_error);
+    while (theta_error > M_PI) {
+        theta_error -= 2 * M_PI;
+    }
+    while (theta_error < -M_PI) {
+        theta_error += 2 * M_PI;
     }
     double ang_vel = 0.4 * theta_error;
-    state->chaser.ang_vel = constrain(ang_vel, -M_PI / 16, M_PI / 16);
+    // printf("ang vel: %lf\n", ang_vel);
+    // printf("theta, ang vel, fwd vel: %lf, %lf, %lf\n", target_theta, state->chaser.ang_vel, state->chaser.fwd_vel);
+
+    ang_vel = (ang_vel < -M_PI / 16) ? -M_PI / 16 : ang_vel;
+    ang_vel = (ang_vel > M_PI / 16) ? M_PI / 16 : ang_vel;
+    state->chaser.ang_vel = ang_vel;
 
     state->chaser.fwd_vel = fmin(state->max_velocity, state->chaser.fwd_vel + 2.0);
+    //printf("theta, ang vel, fwd vel: %lf, %lf, %lf\n", target_theta, state->chaser.ang_vel, state->chaser.fwd_vel);
 }
 
 void update_parameters(state_t *state, bool action_is_up) {
@@ -268,9 +273,10 @@ void reset_simulation(state_t *state) {
     state->chaser.x = WIDTH / 2;
     state->chaser.y = HEIGHT / 2;
     state->runner.theta = 0;
-    // state->runner.x = WIDTH / 2;
-    // state->runner.y = HEIGHT / 2;
-    state->initial_runner_idx = robot_to_next_idx(state->initial_runner_idx);
+    state->timestep = 0;
+    state->runner.x = ((state->initial_runner_idx % MAP_W) + 0.5) * BLOCK_SIZE;
+    state->runner.y = ((state->initial_runner_idx / MAP_W) + 0.5) * BLOCK_SIZE;
+    //state->initial_runner_idx = robot_to_next_idx(state->initial_runner_idx);
 
     state->runner.fwd_vel = 0;
     state->runner.ang_vel = 0;
@@ -285,6 +291,7 @@ void reset_simulation(state_t *state) {
 //Threading/IO
 void reset_terminal(void) {
     tcsetattr(STDIN_FILENO, TCSANOW, &original_termios);
+    printf("\e[?25h");
 }
 
 void *io_thread(void *user) {
@@ -309,24 +316,15 @@ void *io_thread(void *user) {
             c = getc(stdin);
             if (c == 'A') { //up
                 update_parameters(state, 1);
-                //printf("A");
             } else if (c == 'B') { //down
                 update_parameters(state, 0);
-                //printf("B");
             } else if (c == 'D') { //left
                 state->current_parameter--;
-                if (state->current_parameter < 1) {
-                    state->current_parameter = 1; //OR 7?! USE % maybe?
-                }
-                //printf("C");
+                state->current_parameter = constrain(state->current_parameter, 1, 7);
             } else if (c == 'C') { // right
                 state->current_parameter++;
-                if (state->current_parameter > 7) {
-                    state->current_parameter = 7; //OR 1?! USE % maybe?
-                }
-                //printf("D");
+                state->current_parameter = constrain(state->current_parameter, 1, 7);
             } else {
-                //printf("Continue");
                 continue;
             }
         }

@@ -63,6 +63,7 @@ typedef struct state {
     int avoid_obs_power; //[-3,3]
     int max_velocity; //[1,12]
     int current_parameter;
+    int timestep;
 } state_t;
 
 //Vector/Init/Low-level Operations

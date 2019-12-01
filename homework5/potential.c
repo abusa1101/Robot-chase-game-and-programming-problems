@@ -21,13 +21,13 @@ int main(int argc, char **argv) {
 
     image_server_start("8000");
     gx_draw_game(&bmp, &state);
-
+    state.timestep = 0;
     while (true) {
-        //printf("8");
+        state.timestep++;
         chaser_moves(&state);
         runner_walks(&state);
         if (robots_collision(&state.chaser, &state.runner)) {
-            printf("reset");
+            printf("\e[2K\rRunner caught on step %d\n", state.timestep);
             reset_simulation(&state); //when chaser catches runner
         }
         gx_draw_game(&bmp, &state); //update gx
@@ -43,7 +43,6 @@ int main(int argc, char **argv) {
         printf("%s%d%s ", (parameter == 6) ? HIGHLIGHT : "", state.avoid_obs_power, CLEAR_HIGHLIGHT);
         printf("%s%d%s", (parameter == 7) ? HIGHLIGHT : "", state.max_velocity, CLEAR_HIGHLIGHT);
         fflush(stdout);
-        printf("\e[?25h");
     }
     free(bmp.data);
     return 0;
