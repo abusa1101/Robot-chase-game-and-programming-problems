@@ -74,8 +74,8 @@ double max(double a, double b);
 double min(double a, double b);
 int constrain(int val, int LL, int UL);
 void bmp_init(bitmap_t *bmp);
-int give_robot_idx(double x, double y);
-int move_to_robot_idx(int current_idx, bool is_next);
+// int give_robot_idx(double x, double y);
+// int move_to_robot_idx(int current_idx, bool is_next);
 int robot_to_next_idx(int idx);
 
 //GX Functions

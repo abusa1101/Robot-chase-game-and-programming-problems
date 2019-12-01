@@ -68,31 +68,11 @@ void bmp_init(bitmap_t *bmp) {
     bmp->data = calloc(bmp->width * bmp->height, sizeof(color_bgr_t));
 }
 
-int give_robot_idx(double x, double y) {
-    int idx = (int)y * MAP_W + (int)x;
-    return idx;
-}
-
-int move_to_robot_idx(int current_idx, bool is_next) {
-    if (MAP[current_idx] == 'X' && is_next) {
-        while (MAP[current_idx] == 'X') {
-            current_idx++;
-            current_idx = constrain(current_idx, 1, 60);
-        }
-    } else if (MAP[current_idx] == 'X' && !is_next) {
-        while (MAP[current_idx] == 'X') {
-            current_idx--;
-            current_idx = constrain(current_idx, 1, 60); //FIX THIS NUMBER 60 LATER
-        }
-    }
-    return current_idx;
-}
-
 int robot_to_next_idx(int idx) {
     do {
         idx++;
         idx = constrain(idx, 17, 175);
-    } while(MAP[idx] == 'X');
+    } while (MAP[idx] == 'X');
 
     return idx;
 }
