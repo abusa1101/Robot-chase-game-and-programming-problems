@@ -106,8 +106,8 @@ void init_values(state_t *state) {
     state->chaser.x = WIDTH / 2;
     state->chaser.y = HEIGHT / 2;
     state->runner.theta = 0;
-    state->runner.x = 0;
-    state->runner.y = 0;
+    // state->runner.x = 0;
+    // state->runner.y = 0;
     state->initial_runner_idx = 17;
     state->delay_every = 1;
     state->to_goal_magnitude = 50.0;
@@ -115,6 +115,7 @@ void init_values(state_t *state) {
     state->avoid_obs_magnitude = 1.0;
     state->avoid_obs_power = -2;
     state->max_velocity = 12;
+    state->current_parameter = 1;
 }
 
 void runner_walks(state_t *state) {
@@ -206,20 +207,20 @@ void update_parameters(state_t *state, bool action_is_up) {
             state->initial_runner_idx = move_to_robot_idx(start_idx, 1); //is_next = 1, !is_next = 0
         } else if (state->current_parameter == 2) {
             state->delay_every += 1;
-            constrain(state->delay_every, 1, 10000000); //inf basically- FIX do we need this?
+            state->delay_every = constrain(state->delay_every, 1, 10000000); //inf basically- FIX do we need this?
         } else if (state->current_parameter == 3) {
             state->to_goal_magnitude *= 2;
         } else if (state->current_parameter == 4) {
             state->to_goal_power += 1;
-            constrain(state->to_goal_power, -3, 3);
+            state->to_goal_power = constrain(state->to_goal_power, -3, 3);
         } else if (state->current_parameter == 5) {
             state->avoid_obs_magnitude *= 2;
         } else if (state->current_parameter == 6) {
             state->avoid_obs_power += 1;
-            constrain(state->avoid_obs_power, -3, 3);
+            state->avoid_obs_power = constrain(state->avoid_obs_power, -3, 3);
         } else if (state->current_parameter == 7) {
             state->max_velocity += 1;
-            constrain(state->max_velocity, 1, 12);
+            state->max_velocity = constrain(state->max_velocity, 1, 12);
         } else {
             printf("UP Error: No such parameter %d (> 7). Check IO_thread\n", state->current_parameter);
         }
@@ -229,20 +230,20 @@ void update_parameters(state_t *state, bool action_is_up) {
             state->initial_runner_idx = move_to_robot_idx(start_idx, 0);
         } else if (state->current_parameter == 2) {
             state->delay_every -= 1;
-            constrain(state->delay_every, 1, 10000000); //inf basically
+            state->delay_every = constrain(state->delay_every, 1, 10000000); //inf basically
         } else if (state->current_parameter == 3) {
             state->to_goal_magnitude /= 2;
         } else if (state->current_parameter == 4) {
             state->to_goal_power -= 1;
-            constrain(state->to_goal_power, -3, 3);
+            state->to_goal_power = constrain(state->to_goal_power, -3, 3);
         } else if (state->current_parameter == 5) {
             state->avoid_obs_magnitude /= 2;
         } else if (state->current_parameter == 6) {
             state->avoid_obs_power -= 1;
-            constrain(state->avoid_obs_power, -3, 3);
+            state->avoid_obs_power = constrain(state->avoid_obs_power, -3, 3);
         } else if (state->current_parameter == 7) {
             state->max_velocity -= 1;
-            constrain(state->max_velocity, 1, 12);
+            state->max_velocity = constrain(state->max_velocity, 1, 12);
         } else {
             printf("DOWN Error: No such parameter %d (< 7). Check IO_thread\n", state->current_parameter);
         }
@@ -251,18 +252,23 @@ void update_parameters(state_t *state, bool action_is_up) {
 
 void reset_simulation(state_t *state) {
     srand(0);
-    init_values(state);
-    state->initial_runner_idx = give_robot_idx(state->runner.x, state->runner.y);
+    state->chaser.theta = 0;
+    state->chaser.x = WIDTH / 2;
+    state->chaser.y = HEIGHT / 2;
+    state->runner.theta = 0;
+    state->runner.x = WIDTH / 2;
+    state->runner.y = HEIGHT / 2;
+    int start_idx = give_robot_idx(state->runner.x, state->runner.y);
+    state->initial_runner_idx = move_to_robot_idx(start_idx, 1);
 
     state->runner.fwd_vel = 0;
     state->runner.ang_vel = 0;
     state->runner.theta = 0;
-
     state->chaser.fwd_vel = 0;
     state->chaser.ang_vel = 0;
     state->chaser.theta = 0;
 
-    state->current_parameter = 1;
+    // state->current_parameter = 1;
 }
 
 //Threading/IO
@@ -271,7 +277,7 @@ void reset_terminal(void) {
 }
 
 void *io_thread(void *user) {
-    //printf("\e[?25l");
+    printf("\e[?25l");
     state_t *state = user;
     tcgetattr(0, &original_termios);
     atexit(reset_terminal);
@@ -291,22 +297,25 @@ void *io_thread(void *user) {
         if (c == '\e' && getc(stdin) == '[') {
             c = getc(stdin);
             if (c == 'A') { //up
-                //state->user_action = 1;
                 update_parameters(state, 1);
+                //printf("A");
             } else if (c == 'B') { //down
-                //state->user_action = 4;
                 update_parameters(state, 0);
-            } else if (c == 'C') { //left
+                //printf("B");
+            } else if (c == 'D') { //left
                 state->current_parameter--;
                 if (state->current_parameter < 1) {
                     state->current_parameter = 1; //OR 7?! USE % maybe?
                 }
-            } else if (c == 'D') { // right
+                //printf("C");
+            } else if (c == 'C') { // right
                 state->current_parameter++;
                 if (state->current_parameter > 7) {
                     state->current_parameter = 7; //OR 1?! USE % maybe?
                 }
+                //printf("D");
             } else {
+                //printf("Continue");
                 continue;
             }
         }

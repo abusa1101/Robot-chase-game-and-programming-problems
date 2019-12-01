@@ -23,26 +23,26 @@ int main(int argc, char **argv) {
     gx_draw_game(&bmp, &state);
 
     while (true) {
-        printf("8");
-        // chaser_moves(&state);
+        chaser_moves(&state);
         runner_walks(&state);
-        // if (robots_collision(&state.chaser, &state.runner)) {
-        //     printf("reset");
-        //     reset_simulation(&state); //when chaser catches runner
-        // }
+        if (robots_collision(&state.chaser, &state.runner)) {
+            printf("reset");
+            reset_simulation(&state); //when chaser catches runner
+        }
         gx_draw_game(&bmp, &state); //update gx
         serving_img(bmp, &state); //delay 40ms and all
 
-        // printf("\r");
-        // printf("%s%d%s", HIGHLIGHT, state.initial_runner_idx, CLEAR_HIGHLIGHT);
-        // printf("%s%d%s", HIGHLIGHT, state.delay_every, CLEAR_HIGHLIGHT);
-        // printf("%s%8.2f%s", HIGHLIGHT, state.to_goal_magnitude, CLEAR_HIGHLIGHT);
-        // printf("%s%d%s", HIGHLIGHT, state.to_goal_power, CLEAR_HIGHLIGHT);
-        // printf("%s%8.2f%s", HIGHLIGHT, state.avoid_obs_magnitude, CLEAR_HIGHLIGHT);
-        // printf("%s%d%s", HIGHLIGHT, state.avoid_obs_power, CLEAR_HIGHLIGHT);
-        // printf("%s%d%s", HIGHLIGHT, state.max_velocity, CLEAR_HIGHLIGHT);
-        // fflush(stdout);
-        //printf("\e[?25h");
+        int parameter = state.current_parameter;
+        printf("\r");
+        printf("%s%d%s ", (parameter == 1) ? HIGHLIGHT : "", state.initial_runner_idx, CLEAR_HIGHLIGHT);
+        printf("%s%d%s ", (parameter == 2) ? HIGHLIGHT : "", state.delay_every, CLEAR_HIGHLIGHT);
+        printf("%s%8.2f%s ", (parameter == 3) ? HIGHLIGHT : "", state.to_goal_magnitude, CLEAR_HIGHLIGHT);
+        printf("%s%d%s ", (parameter == 4) ? HIGHLIGHT : "", state.to_goal_power, CLEAR_HIGHLIGHT);
+        printf("%s%8.2f%s ", (parameter == 5) ? HIGHLIGHT : "", state.avoid_obs_magnitude, CLEAR_HIGHLIGHT);
+        printf("%s%d%s ", (parameter == 6) ? HIGHLIGHT : "", state.avoid_obs_power, CLEAR_HIGHLIGHT);
+        printf("%s%d%s", (parameter == 7) ? HIGHLIGHT : "", state.max_velocity, CLEAR_HIGHLIGHT);
+        fflush(stdout);
+        printf("\e[?25h");
     }
     free(bmp.data);
     return 0;
