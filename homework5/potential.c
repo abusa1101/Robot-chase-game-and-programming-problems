@@ -23,6 +23,7 @@ int main(int argc, char **argv) {
     gx_draw_game(&bmp, &state);
 
     while (true) {
+        //printf("8");
         chaser_moves(&state);
         runner_walks(&state);
         if (robots_collision(&state.chaser, &state.runner)) {

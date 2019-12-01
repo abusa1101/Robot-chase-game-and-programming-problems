@@ -88,6 +88,20 @@ int move_to_robot_idx(int current_idx, bool is_next) {
     return current_idx;
 }
 
+int robot_to_next_idx(int idx) {
+    //int idx = (int)y * MAP_W + (int)x;
+    if (MAP[idx] == 'X') {
+        while (MAP[idx] == 'X') {
+            idx++;
+            idx = constrain(idx, 17, 175); //is this necessary?
+        }
+    } else {
+        idx++;
+    }
+
+    return idx;
+}
+
 void serving_img(bitmap_t bmp, state_t *state) {
     size_t bmp_size = bmp_calculate_size(&bmp);
     uint8_t *serialized_bmp = malloc(bmp_size);
@@ -203,8 +217,7 @@ void potential_field_control(state_t *state) {
 void update_parameters(state_t *state, bool action_is_up) {
     if (action_is_up) {
         if (state->current_parameter == 1) {
-            int start_idx = give_robot_idx(state->runner.x, state->runner.y);
-            state->initial_runner_idx = move_to_robot_idx(start_idx, 1); //is_next = 1, !is_next = 0
+            state->initial_runner_idx = robot_to_next_idx(state->initial_runner_idx);
         } else if (state->current_parameter == 2) {
             state->delay_every += 1;
             state->delay_every = constrain(state->delay_every, 1, 10000000); //inf basically- FIX do we need this?
@@ -226,8 +239,7 @@ void update_parameters(state_t *state, bool action_is_up) {
         }
     } else { //action = down
         if (state->current_parameter == 1) {
-            int start_idx = give_robot_idx(state->runner.x, state->runner.y);
-            state->initial_runner_idx = move_to_robot_idx(start_idx, 0);
+            state->initial_runner_idx = robot_to_next_idx(state->initial_runner_idx);
         } else if (state->current_parameter == 2) {
             state->delay_every -= 1;
             state->delay_every = constrain(state->delay_every, 1, 10000000); //inf basically
@@ -256,10 +268,9 @@ void reset_simulation(state_t *state) {
     state->chaser.x = WIDTH / 2;
     state->chaser.y = HEIGHT / 2;
     state->runner.theta = 0;
-    state->runner.x = WIDTH / 2;
-    state->runner.y = HEIGHT / 2;
-    int start_idx = give_robot_idx(state->runner.x, state->runner.y);
-    state->initial_runner_idx = move_to_robot_idx(start_idx, 1);
+    // state->runner.x = WIDTH / 2;
+    // state->runner.y = HEIGHT / 2;
+    state->initial_runner_idx = robot_to_next_idx(state->initial_runner_idx);
 
     state->runner.fwd_vel = 0;
     state->runner.ang_vel = 0;
