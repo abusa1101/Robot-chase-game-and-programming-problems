@@ -257,7 +257,7 @@ void gx_draw_game(bitmap_t *bmp, state_t *state) {
     color_bgr_t color_sq = {0, 0, 0};
     for (int i = 0; i < MAP_H * MAP_W; i++) {
         if (MAP[i] == 'X') {
-            wall(bmp, color_sq, (i % MAP_W) * BLOCK_SIZE, (i / MAP_W) * BLOCK_SIZE);
+            wall(bmp, color_sq, (double)(i % MAP_W) * BLOCK_SIZE, (double)(i / MAP_W) * BLOCK_SIZE);
         }
     }
     gx_draw_chaser(bmp, state);
