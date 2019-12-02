@@ -77,8 +77,8 @@ bool tile_collision(robot_t *robot, double tile_x, double tile_y) {
 }
 
 bool resolve_tile_collision(robot_t *robot) {
-    int map_x = (robot->x * MAP_W / WIDTH);
-    int map_y = (robot->y * MAP_H / HEIGHT);
+    int map_x = (int)(robot->x / BLOCK_SIZE);
+    int map_y = (int)(robot->y / BLOCK_SIZE);
     bool in_collision = true;
     bool had_collision = false;
     while (in_collision) {
