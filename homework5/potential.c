@@ -41,7 +41,7 @@ int main(int argc, char **argv) {
             gx_draw_game(&bmp, &state); //update gx
             serving_img(bmp, &state); //delay 40ms and all
         }
-        //printf("x,y = %lf, %lf |t = %lf |f,a = %lf, %lf\n", state.runner.x, state.runner.y, state.runner.theta, state.runner.fwd_vel, state.runner.ang_vel);
+
         int parameter = state.current_parameter;
         printf("\r");
         printf("%s%8.2d%s ", (parameter == 1) ? HIGHLIGHT : "",
