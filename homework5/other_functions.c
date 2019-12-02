@@ -116,12 +116,6 @@ void runner_walks(state_t *state) {
     state->runner.theta += state->runner.ang_vel;
     state->runner.ang_vel *= 0.8;
     move(state, &state->runner);
-    // double fwd_vel = fmin(state->max_velocity, state->runner.fwd_vel);
-    // //printf("fwd_vel: %lf\n", fwd_vel);
-    // double xdist = fwd_vel * cos(state->runner.theta);
-    // double ydist = fwd_vel * -sin(state->runner.theta);
-    // state->runner.x += xdist;
-    // state->runner.y += ydist;
 }
 
 void move(state_t *state, robot_t *robot) {
@@ -250,16 +244,12 @@ void reset_simulation(state_t *state) {
     state->timestep = 0;
     state->runner.x = ((state->initial_runner_idx % MAP_W) + 0.5) * BLOCK_SIZE;
     state->runner.y = ((state->initial_runner_idx / MAP_W) + 0.5) * BLOCK_SIZE;
-    //state->initial_runner_idx = robot_to_next_idx(state->initial_runner_idx);
-
     state->runner.fwd_vel = 0;
     state->runner.ang_vel = 0;
     state->runner.theta = 0;
     state->chaser.fwd_vel = 0;
     state->chaser.ang_vel = 0;
     state->chaser.theta = 0;
-
-    //state->current_parameter = 1;
 }
 
 //Threading/IO
