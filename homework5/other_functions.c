@@ -136,7 +136,7 @@ void chaser_moves(state_t *state) {
 
 //Potential Field
 void potential_field_control(state_t *state) {
-    double robot_r = sqrt(pow((double)(ROB_W / 2), 2) + pow((double)(ROB_L / 2), 2));
+    double robot_r = sqrt(pow((ROB_W / 2.0), 2) + pow((ROB_L / 2.0), 2));
     double wall_r = BLOCK_SIZE / sqrt(2);
     double fx = 0.0; //forces on robot
     double fy = 0.0;

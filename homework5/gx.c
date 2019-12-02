@@ -118,7 +118,7 @@ void gx_round(vector_xy_t *pathpoints) {
 
 void gx_fill(bitmap_t *bmp, color_bgr_t color, vector_xy_t *pathpoints) {
     assert(bmp->height > 0);
-    
+
     int x0[bmp->height];
     int x1[bmp->height];
     for (int i = 0; i < bmp->height; i++) {
@@ -184,12 +184,12 @@ void gx_draw_line(bitmap_t *bmp, color_bgr_t color, int x0, int y0, int x1, int 
 
 void gx_draw(bitmap_t *bmp, color_bgr_t color, vector_xy_t *pathpoints) {
     for (int i = 0; i < pathpoints->size - 1; i++) {
-        gx_draw_line(bmp, color, pathpoints->data[i].x, pathpoints->data[i].y,
-                     pathpoints->data[i + 1].x, pathpoints->data[i + 1].y);
+        gx_draw_line(bmp, color, (int)pathpoints->data[i].x, (int)pathpoints->data[i].y,
+                     (int)pathpoints->data[i + 1].x, (int)pathpoints->data[i + 1].y);
     }
-    gx_draw_line(bmp, color, pathpoints->data[pathpoints->size - 1].x,
-                 pathpoints->data[pathpoints->size - 1].y,
-                 pathpoints->data[0].x, pathpoints->data[0].y);
+    gx_draw_line(bmp, color, (int)pathpoints->data[pathpoints->size - 1].x,
+                 (int)pathpoints->data[pathpoints->size - 1].y,
+                 (int)pathpoints->data[0].x, (int)pathpoints->data[0].y);
     //vector_free(pathpoints);
 }
 
@@ -257,7 +257,7 @@ void gx_draw_game(bitmap_t *bmp, state_t *state) {
     color_bgr_t color_sq = {0, 0, 0};
     for (int i = 0; i < MAP_H * MAP_W; i++) {
         if (MAP[i] == 'X') {
-            wall(bmp, color_sq, (i % MAP_W) * BLOCK_SIZE, (int)(i / MAP_W) * BLOCK_SIZE);
+            wall(bmp, color_sq, (i % MAP_W) * BLOCK_SIZE, (i / MAP_W) * BLOCK_SIZE);
         }
     }
     gx_draw_chaser(bmp, state);
