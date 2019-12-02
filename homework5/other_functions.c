@@ -195,6 +195,7 @@ void update_parameters(state_t *state, bool action_is_up) {
         } else if (state->current_parameter == 2) {
             state->delay_every += 1;
             state->delay_every = constrain(state->delay_every, 1, 10000000);
+        } else if (state->current_parameter == 2) {
             state->to_goal_magnitude *= 2;
         } else if (state->current_parameter == 4) {
             state->to_goal_power += 1;
