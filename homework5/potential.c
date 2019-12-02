@@ -35,13 +35,20 @@ int main(int argc, char **argv) {
 
         int parameter = state.current_parameter;
         printf("\r");
-        printf("%s%8.2d%s ", (parameter == 1) ? HIGHLIGHT : "", state.initial_runner_idx, CLEAR_HIGHLIGHT);
-        printf("%s%8.2d%s ", (parameter == 2) ? HIGHLIGHT : "", state.delay_every, CLEAR_HIGHLIGHT);
-        printf("%s%8.2f%s ", (parameter == 3) ? HIGHLIGHT : "", state.to_goal_magnitude, CLEAR_HIGHLIGHT);
-        printf("%s%8.2d%s ", (parameter == 4) ? HIGHLIGHT : "", state.to_goal_power, CLEAR_HIGHLIGHT);
-        printf("%s%8.2f%s ", (parameter == 5) ? HIGHLIGHT : "", state.avoid_obs_magnitude, CLEAR_HIGHLIGHT);
-        printf("%s%8.2d%s ", (parameter == 6) ? HIGHLIGHT : "", state.avoid_obs_power, CLEAR_HIGHLIGHT);
-        printf("%s%8.2d%s", (parameter == 7) ? HIGHLIGHT : "", state.max_velocity, CLEAR_HIGHLIGHT);
+        printf("%s%8.2d%s ", (parameter == 1) ? HIGHLIGHT : "",
+               state.initial_runner_idx, CLEAR_HIGHLIGHT);
+        printf("%s%8.2d%s ", (parameter == 2) ? HIGHLIGHT : "",
+               state.delay_every, CLEAR_HIGHLIGHT);
+        printf("%s%8.2f%s ", (parameter == 3) ? HIGHLIGHT : "",
+               state.to_goal_magnitude, CLEAR_HIGHLIGHT);
+        printf("%s%8.2d%s ", (parameter == 4) ? HIGHLIGHT : "",
+               state.to_goal_power, CLEAR_HIGHLIGHT);
+        printf("%s%8.2f%s ", (parameter == 5) ? HIGHLIGHT : "",
+               state.avoid_obs_magnitude, CLEAR_HIGHLIGHT);
+        printf("%s%8.2d%s ", (parameter == 6) ? HIGHLIGHT : "",
+               state.avoid_obs_power, CLEAR_HIGHLIGHT);
+        printf("%s%8.2d%s", (parameter == 7) ? HIGHLIGHT : "",
+               state.max_velocity, CLEAR_HIGHLIGHT);
         fflush(stdout);
     }
     free(bmp.data);

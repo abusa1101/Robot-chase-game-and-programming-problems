@@ -152,7 +152,7 @@ void potential_field_control(state_t *state) {
     double to_goal_x = (state->runner.x - state->chaser.x) / sqrt(dist_sq_robots);
     double to_goal_y = (state->runner.y - state->chaser.y) / sqrt(dist_sq_robots);
     double to_goal_dist = sqrt(pow(state->runner.x - state->chaser.x, 2) +
-                               pow(state->runner.y - state->chaser.y, 2)); //dist from chaser to runner
+                               pow(state->runner.y - state->chaser.y, 2));
 
     fx += to_goal_x * state->to_goal_magnitude *
           pow(to_goal_dist, state->to_goal_power);
@@ -179,8 +179,6 @@ void potential_field_control(state_t *state) {
 
     double target_theta = atan2(-fy, fx);
     double theta_error = target_theta - state->chaser.theta;
-
-    //printf("chaser theta, target theta, theta error: %lf, %lf, %lf\n", state->chaser.theta, target_theta, theta_error);
     while (theta_error > M_PI) {
         theta_error -= 2 * M_PI;
     }
@@ -189,14 +187,11 @@ void potential_field_control(state_t *state) {
     }
     double ang_vel = 0.4 * theta_error;
     // printf("ang vel: %lf\n", ang_vel);
-    // printf("theta, ang vel, fwd vel: %lf, %lf, %lf\n", target_theta, state->chaser.ang_vel, state->chaser.fwd_vel);
-
     ang_vel = (ang_vel < -M_PI / 16) ? -M_PI / 16 : ang_vel;
     ang_vel = (ang_vel > M_PI / 16) ? M_PI / 16 : ang_vel;
     state->chaser.ang_vel = ang_vel;
 
     state->chaser.fwd_vel = fmin(state->max_velocity, state->chaser.fwd_vel + 2.0);
-    //printf("theta, ang vel, fwd vel: %lf, %lf, %lf\n", target_theta, state->chaser.ang_vel, state->chaser.fwd_vel);
 }
 
 void update_parameters(state_t *state, bool action_is_up) {
@@ -205,8 +200,7 @@ void update_parameters(state_t *state, bool action_is_up) {
             state->initial_runner_idx = robot_to_next_idx(state->initial_runner_idx);
         } else if (state->current_parameter == 2) {
             state->delay_every += 1;
-            state->delay_every = constrain(state->delay_every, 1, 10000000); //inf basically- FIX do we need this?
-        } else if (state->current_parameter == 3) {
+            state->delay_every = constrain(state->delay_every, 1, 10000000);
             state->to_goal_magnitude *= 2;
         } else if (state->current_parameter == 4) {
             state->to_goal_power += 1;
@@ -220,7 +214,7 @@ void update_parameters(state_t *state, bool action_is_up) {
             state->max_velocity += 1;
             state->max_velocity = constrain(state->max_velocity, 1, 12);
         } else {
-            printf("UP Error: No such parameter %d (> 7). Check IO_thread\n", state->current_parameter);
+            printf("UP Error: %d Check IO_thread\n", state->current_parameter);
         }
     } else { //action = down
         if (state->current_parameter == 1) {
@@ -242,7 +236,7 @@ void update_parameters(state_t *state, bool action_is_up) {
             state->max_velocity -= 1;
             state->max_velocity = constrain(state->max_velocity, 1, 12);
         } else {
-            printf("DOWN Error: No such parameter %d (< 7). Check IO_thread\n", state->current_parameter);
+            printf("DOWN Error: %d Check IO_thread\n", state->current_parameter);
         }
     }
 }
