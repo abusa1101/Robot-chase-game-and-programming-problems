@@ -23,15 +23,26 @@ int main(int argc, char **argv) {
     gx_draw_game(&bmp, &state);
     state.timestep = 0;
     while (true) {
-        state.timestep++;
+
         chaser_moves(&state);
         runner_walks(&state);
+
+        if (resolve_tile_collision(&state.chaser)) {
+            state.chaser.fwd_vel *= 0.25;
+        }
+        if (resolve_tile_collision(&state.runner)) {
+            state.runner.fwd_vel *= 0.25;
+        }
         if (robots_collision(&state.chaser, &state.runner)) {
             printf("\e[2K\rRunner caught on step %d\n", state.timestep);
             reset_simulation(&state); //when chaser catches runner
+            continue;
         }
-        gx_draw_game(&bmp, &state); //update gx
-        serving_img(bmp, &state); //delay 40ms and all
+        
+        if (state.timestep % state.delay_every == 0) {
+            gx_draw_game(&bmp, &state); //update gx
+            serving_img(bmp, &state); //delay 40ms and all
+        }
 
         int parameter = state.current_parameter;
         printf("\r");
@@ -50,6 +61,8 @@ int main(int argc, char **argv) {
         printf("%s%8.2d%s", (parameter == 7) ? HIGHLIGHT : "",
                state.max_velocity, CLEAR_HIGHLIGHT);
         fflush(stdout);
+
+        state.timestep++;
     }
     free(bmp.data);
     return 0;

@@ -47,13 +47,7 @@ double max(double a, double b) {
 }
 
 double min(double a, double b) {
-    double c;
-    if (a <= b) {
-        c = a;
-    } else {
-        c = b;
-    }
-    return c;
+    return a < b ? a : b;
 }
 
 int constrain(int val, int LL, int UL) {
@@ -68,12 +62,18 @@ void bmp_init(bitmap_t *bmp) {
     bmp->data = calloc(bmp->width * bmp->height, sizeof(color_bgr_t));
 }
 
-int robot_to_next_idx(int idx) {
-    do {
-        idx++;
-        idx = constrain(idx, 17, 175);
-    } while (MAP[idx] == 'X');
-
+int change_robot_idx(int idx, bool is_next) {
+    if (is_next) {
+        do {
+            idx++;
+            idx = constrain(idx, 17, 175);
+        } while (MAP[idx] == 'X');
+    } else {
+        do {
+            idx--;
+            idx = constrain(idx, 17, 175);
+        } while (MAP[idx] == 'X');
+    }
     return idx;
 }
 
@@ -117,9 +117,7 @@ void runner_walks(state_t *state) {
     state->runner.theta += state->runner.ang_vel;
     state->runner.ang_vel *= 0.8;
     move(state, &state->runner);
-    if (resolve_tile_collision(&state->runner)) {
-        state->runner.fwd_vel *= 0.25;
-    }
+
 }
 
 void move(state_t *state, robot_t *robot) {
@@ -135,9 +133,7 @@ void chaser_moves(state_t *state) {
     state->chaser.theta += state->chaser.ang_vel;
     state->chaser.ang_vel *= 0.8;
     move(state, &state->chaser);
-    if (resolve_tile_collision(&state->chaser)) {
-        state->chaser.fwd_vel *= 0.25;
-    }
+
 }
 
 //Potential Field
@@ -197,7 +193,7 @@ void potential_field_control(state_t *state) {
 void update_parameters(state_t *state, bool action_is_up) {
     if (action_is_up) {
         if (state->current_parameter == 1) {
-            state->initial_runner_idx = robot_to_next_idx(state->initial_runner_idx);
+            state->initial_runner_idx = change_robot_idx(state->initial_runner_idx, 1);
         } else if (state->current_parameter == 2) {
             state->delay_every += 1;
             state->delay_every = constrain(state->delay_every, 1, 10000000);
@@ -218,7 +214,7 @@ void update_parameters(state_t *state, bool action_is_up) {
         }
     } else { //action = down
         if (state->current_parameter == 1) {
-            state->initial_runner_idx = robot_to_next_idx(state->initial_runner_idx);
+            state->initial_runner_idx = change_robot_idx(state->initial_runner_idx, 0);
         } else if (state->current_parameter == 2) {
             state->delay_every -= 1;
             state->delay_every = constrain(state->delay_every, 1, 10000000); //inf basically
