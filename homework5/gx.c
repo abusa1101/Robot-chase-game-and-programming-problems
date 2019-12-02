@@ -5,6 +5,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include <math.h>
+#include <assert.h>
 
 //GX Functions
 vector_xy_t *gx_rect(double width, double height) {
@@ -116,6 +117,8 @@ void gx_round(vector_xy_t *pathpoints) {
 }
 
 void gx_fill(bitmap_t *bmp, color_bgr_t color, vector_xy_t *pathpoints) {
+    assert(bmp->height > 0);
+    
     int x0[bmp->height];
     int x1[bmp->height];
     for (int i = 0; i < bmp->height; i++) {

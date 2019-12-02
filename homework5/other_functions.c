@@ -239,8 +239,8 @@ void update_parameters(state_t *state, bool action_is_up) {
 void reset_simulation(state_t *state) {
     srand(0);
     state->chaser.theta = 0;
-    state->chaser.x = (double)WIDTH / 2;
-    state->chaser.y = (double)HEIGHT / 2;
+    state->chaser.x = WIDTH / 2.0;
+    state->chaser.y = HEIGHT / 2.0;
     state->timestep = 0;
     give_runner_pos(state, state->initial_runner_idx);
     // state->runner.x = (double)((state->initial_runner_idx % MAP_W) + 0.5) * BLOCK_SIZE;
