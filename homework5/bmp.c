@@ -4,22 +4,23 @@
 #include <string.h>
 
 size_t bmp_calculate_size(bitmap_t *bmp) {
-    size_t size = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER) + 921600;
+    size_t size = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER) +
+                  bmp->width * bmp->height * sizeof(color_bgr_t);
     return size;
 }
 
 void bmp_serialize(bitmap_t *bmp, uint8_t *data) {
     BITMAPFILEHEADER file_header = {0};
     file_header.bfType = 0x4d42;
-    file_header.bfSize = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER) + 921600;
+    file_header.bfSize = bmp_calculate_size(bmp);
     file_header.bfOffBits = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER);
     file_header.bfReserved1 = 0;
     file_header.bfReserved2 = 0;
 
     BITMAPINFOHEADER info_header = {0};
     info_header.biSize = sizeof(BITMAPINFOHEADER);
-    info_header.biWidth = 640;
-    info_header.biHeight = 480;
+    info_header.biWidth = bmp->width;
+    info_header.biHeight = bmp->height;
     info_header.biPlanes = 1;
     info_header.biBitCount = 24;
     info_header.biCompression = 0;

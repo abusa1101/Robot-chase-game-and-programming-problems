@@ -241,10 +241,9 @@ void reset_simulation(state_t *state) {
     state->chaser.theta = 0;
     state->chaser.x = WIDTH / 2;
     state->chaser.y = HEIGHT / 2;
-    //state->runner.theta = 0;
     state->timestep = 0;
-    state->runner.x = ((state->initial_runner_idx % MAP_W) + 0.5) * BLOCK_SIZE;
-    state->runner.y = ((state->initial_runner_idx / MAP_W) + 0.5) * BLOCK_SIZE;
+    state->runner.x = ((double)(state->initial_runner_idx % MAP_W) + 0.5) * BLOCK_SIZE;
+    state->runner.y = ((double)(state->initial_runner_idx / MAP_W) + 0.5) * BLOCK_SIZE;
     state->runner.fwd_vel = 0;
     state->runner.ang_vel = 0;
     state->runner.theta = 0;
