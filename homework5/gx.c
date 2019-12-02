@@ -241,9 +241,9 @@ void give_runner_pos(state_t *state, int run_index) {
 }
 
 void gx_draw_runner(bitmap_t *bmp, state_t *state, int run_index) {
-    if (run_index != -1) {
-        give_runner_pos(state, run_index);
-    }
+    // if (run_index != -1) {
+    //     give_runner_pos(state, run_index);
+    // }
     color_bgr_t color_runner = {0, 255, 0};
     vector_xy_t *points = gx_robot(ROB_W, ROB_L);
     gx_rot(state->runner.theta, points);

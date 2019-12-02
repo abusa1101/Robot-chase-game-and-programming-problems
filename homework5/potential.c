@@ -23,7 +23,6 @@ int main(int argc, char **argv) {
     gx_draw_game(&bmp, &state);
     state.timestep = 0;
     while (true) {
-
         chaser_moves(&state);
         runner_walks(&state);
 
@@ -38,29 +37,28 @@ int main(int argc, char **argv) {
             reset_simulation(&state); //when chaser catches runner
             continue;
         }
-        
         if (state.timestep % state.delay_every == 0) {
             gx_draw_game(&bmp, &state); //update gx
             serving_img(bmp, &state); //delay 40ms and all
         }
-
+        printf("x,y = %lf, %lf |t = %lf |f,a = %lf, %lf\n", state.runner.x, state.runner.y, state.runner.theta, state.runner.fwd_vel, state.runner.ang_vel);
         int parameter = state.current_parameter;
-        printf("\r");
-        printf("%s%8.2d%s ", (parameter == 1) ? HIGHLIGHT : "",
-               state.initial_runner_idx, CLEAR_HIGHLIGHT);
-        printf("%s%8.2d%s ", (parameter == 2) ? HIGHLIGHT : "",
-               state.delay_every, CLEAR_HIGHLIGHT);
-        printf("%s%8.2f%s ", (parameter == 3) ? HIGHLIGHT : "",
-               state.to_goal_magnitude, CLEAR_HIGHLIGHT);
-        printf("%s%8.2d%s ", (parameter == 4) ? HIGHLIGHT : "",
-               state.to_goal_power, CLEAR_HIGHLIGHT);
-        printf("%s%8.2f%s ", (parameter == 5) ? HIGHLIGHT : "",
-               state.avoid_obs_magnitude, CLEAR_HIGHLIGHT);
-        printf("%s%8.2d%s ", (parameter == 6) ? HIGHLIGHT : "",
-               state.avoid_obs_power, CLEAR_HIGHLIGHT);
-        printf("%s%8.2d%s", (parameter == 7) ? HIGHLIGHT : "",
-               state.max_velocity, CLEAR_HIGHLIGHT);
-        fflush(stdout);
+        // printf("\r");
+        // printf("%s%8.2d%s ", (parameter == 1) ? HIGHLIGHT : "",
+        //        state.initial_runner_idx, CLEAR_HIGHLIGHT);
+        // printf("%s%8.2d%s ", (parameter == 2) ? HIGHLIGHT : "",
+        //        state.delay_every, CLEAR_HIGHLIGHT);
+        // printf("%s%8.2f%s ", (parameter == 3) ? HIGHLIGHT : "",
+        //        state.to_goal_magnitude, CLEAR_HIGHLIGHT);
+        // printf("%s%8.2d%s ", (parameter == 4) ? HIGHLIGHT : "",
+        //        state.to_goal_power, CLEAR_HIGHLIGHT);
+        // printf("%s%8.2f%s ", (parameter == 5) ? HIGHLIGHT : "",
+        //        state.avoid_obs_magnitude, CLEAR_HIGHLIGHT);
+        // printf("%s%8.2d%s ", (parameter == 6) ? HIGHLIGHT : "",
+        //        state.avoid_obs_power, CLEAR_HIGHLIGHT);
+        // printf("%s%8.2d%s", (parameter == 7) ? HIGHLIGHT : "",
+        //        state.max_velocity, CLEAR_HIGHLIGHT);
+        // fflush(stdout);
 
         state.timestep++;
     }

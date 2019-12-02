@@ -94,10 +94,9 @@ void init_values(state_t *state) {
     state->chaser.theta = 0;
     state->chaser.x = WIDTH / 2;
     state->chaser.y = HEIGHT / 2;
-    state->runner.theta = 0;
-    // state->runner.x = 0;
-    // state->runner.y = 0;
+    //state->runner.theta = 0;
     state->initial_runner_idx = 17;
+    give_runner_pos(state, state->initial_runner_idx);
     state->delay_every = 1;
     state->to_goal_magnitude = 50.0;
     state->to_goal_power = 0;
@@ -117,11 +116,17 @@ void runner_walks(state_t *state) {
     state->runner.theta += state->runner.ang_vel;
     state->runner.ang_vel *= 0.8;
     move(state, &state->runner);
-
+    // double fwd_vel = fmin(state->max_velocity, state->runner.fwd_vel);
+    // //printf("fwd_vel: %lf\n", fwd_vel);
+    // double xdist = fwd_vel * cos(state->runner.theta);
+    // double ydist = fwd_vel * -sin(state->runner.theta);
+    // state->runner.x += xdist;
+    // state->runner.y += ydist;
 }
 
 void move(state_t *state, robot_t *robot) {
-    double fwd_vel = min(state->max_velocity, robot->fwd_vel);
+    double fwd_vel = fmin(state->max_velocity, robot->fwd_vel);
+    //printf("fwd_vel: %lf\n", fwd_vel);
     double xdist = fwd_vel * cos(robot->theta);
     double ydist = fwd_vel * -sin(robot->theta);
     robot->x += xdist;
@@ -133,7 +138,6 @@ void chaser_moves(state_t *state) {
     state->chaser.theta += state->chaser.ang_vel;
     state->chaser.ang_vel *= 0.8;
     move(state, &state->chaser);
-
 }
 
 //Potential Field
@@ -242,7 +246,7 @@ void reset_simulation(state_t *state) {
     state->chaser.theta = 0;
     state->chaser.x = WIDTH / 2;
     state->chaser.y = HEIGHT / 2;
-    state->runner.theta = 0;
+    //state->runner.theta = 0;
     state->timestep = 0;
     state->runner.x = ((state->initial_runner_idx % MAP_W) + 0.5) * BLOCK_SIZE;
     state->runner.y = ((state->initial_runner_idx / MAP_W) + 0.5) * BLOCK_SIZE;
@@ -255,7 +259,7 @@ void reset_simulation(state_t *state) {
     state->chaser.ang_vel = 0;
     state->chaser.theta = 0;
 
-    // state->current_parameter = 1;
+    //state->current_parameter = 1;
 }
 
 //Threading/IO
