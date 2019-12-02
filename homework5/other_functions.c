@@ -136,7 +136,7 @@ void chaser_moves(state_t *state) {
 
 //Potential Field
 void potential_field_control(state_t *state) {
-    double robot_r = sqrt(pow(((double)ROB_W / 2), 2) + pow(((double)ROB_L / 2), 2));
+    double robot_r = sqrt(pow((double)(ROB_W / 2), 2) + pow((double)(ROB_L / 2), 2));
     double wall_r = BLOCK_SIZE / sqrt(2);
     double fx = 0.0; //forces on robot
     double fy = 0.0;
@@ -242,8 +242,9 @@ void reset_simulation(state_t *state) {
     state->chaser.x = (double)WIDTH / 2;
     state->chaser.y = (double)HEIGHT / 2;
     state->timestep = 0;
-    state->runner.x = ((state->initial_runner_idx % (double)MAP_W) + 0.5) * (double)BLOCK_SIZE;
-    state->runner.y = ((state->initial_runner_idx / (double)MAP_W) + 0.5) * (double)BLOCK_SIZE;
+    give_runner_pos(state, state->initial_runner_idx);
+    // state->runner.x = (double)((state->initial_runner_idx % MAP_W) + 0.5) * BLOCK_SIZE;
+    // state->runner.y = (double)((state->initial_runner_idx / MAP_W) + 0.5) * BLOCK_SIZE;
     state->runner.fwd_vel = 0;
     state->runner.ang_vel = 0;
     state->runner.theta = 0;
