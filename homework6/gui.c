@@ -7,7 +7,8 @@
 #include "image_server.h"
 #include "bmp.h"
 #include "all_functions.h"
-#include "l2g_t.h"
+#include "lcmtypes/settings_t.h"
+#include "lcmtypes/reset_t.h"
 
 #define HIGHLIGHT "\e[7m"
 #define CLEAR_HIGHLIGHT "\e[0m"
@@ -31,8 +32,8 @@ void serving_img(bitmap_t bmp, state_t *state) {
 
 void publish_rate(double start_time) {
     int seconds = 0;
-    long nanoseconds = SLEEP_40 * 1000 * 1000; //FIX THIS- HOW TO USE DELAY_START?
-    nanoseconds -= (long)((seconds_now() - start) * pow(10,9));
+    long nanoseconds = SLEEP_40 * 1000 * 1000;
+    nanoseconds -= ((seconds_now() - start_time) * pow(10, 9));
     struct timespec interval = {seconds, nanoseconds};
     nanosleep(&interval, NULL);
 }
@@ -57,44 +58,28 @@ void print_interface(state_t *state) {
     fflush(stdout);
 }
 
-void *io_thread(void *user) {
-    printf("\e[?25l");
-    tcgetattr(0, &original_termios);
-    atexit(reset_terminal);
-    struct termios new_termios;
-    memcpy(&new_termios, &original_termios, sizeof(new_termios));
-    new_termios.c_lflag &= ~(ECHO | ICANON);
-    tcsetattr(STDIN_FILENO, TCSANOW, &new_termios);
+void on_world_t(const lcm_recv_buf_t *rbuf, const char *channel,
+            const world_t *msg, void *userdata) {
+    world_t *msg = userdata;
+    //printf("%.2f %.2f %.2f\n", lcm_message->l2g[0], lcm_message->l2g[1], lcm_message->l2g[2]);
+}
 
-    state_t *state = user;
-    while (true) {
-        int c = getc(stdin);
-        if (c == 'q') {
-            exit(0);
-        }
-        if (c == 'r') {
-            reset_t reset_message;
-            reset_message->initial_runner_idx = state.initial_runner_idx;
-            reset_t_publish(state->lcm, "RESET_abusa", &reset_message);
-            reset_simulation(state); //when r is pressed
-        }
-        if (c == '\e' && getc(stdin) == '[') {
-            c = getc(stdin);
-            if (c == 'A') { //up
-                update_parameters(state, 1);
-            } else if (c == 'B') { //down
-                update_parameters(state, 0);
-            } else if (c == 'D') { //left
-                state->current_parameter--;
-                state->current_parameter = constrain(state->current_parameter, 1, 7);
-            } else if (c == 'C') { // right
-                state->current_parameter++;
-                state->current_parameter = constrain(state->current_parameter, 1, 7);
-            } else {
-                continue;
-            }
-        }
-    }
+void on_settings_t(const lcm_recv_buf_t *rbuf, const char *channel,
+            const settings_t *msg, void *userdata) {
+    settings_t *msg = userdata;
+    //printf("%.2f %.2f %.2f\n", lcm_message->l2g[0], lcm_message->l2g[1], lcm_message->l2g[2]);
+}
+
+void on_reset_t(const lcm_recv_buf_t *rbuf, const char *channel,
+            const reset_t *msg, void *userdata) {
+    reset_t *msg = userdata;
+    //printf("%.2f %.2f %.2f\n", lcm_message->l2g[0], lcm_message->l2g[1], lcm_message->l2g[2]);
+}
+
+void on_agent_t(const lcm_recv_buf_t *rbuf, const char *channel,
+            const agent_t *msg, void *userdata) {
+    agent_t *msg = userdata;
+    //printf("%.2f %.2f %.2f\n", lcm_message->l2g[0], lcm_message->l2g[1], lcm_message->l2g[2]);
 }
 
 int main(void) {
@@ -105,14 +90,17 @@ int main(void) {
     state.lcm = lcm_create(NULL);
     init_values(&state);
 
-    settings_t_subscription_t *world_sub = settings_t_subscribe(state.lcm, "WORLD_abusa", on_settings_t, &state_message);
+    world_t_subscription_t *world_sub = world_t_subscribe(state.lcm, "WORLD_abusa", on_world_t, &state.world_message);
+    settings_t_subscription_t *settings_sub = settings_t_subscribe(state.lcm, "SETTINGS_abusa", on_settings_t, &state.settings_message);
+    reset_t_subscription_t *reset_sub = reset_t_subscribe(state.lcm, "RESET_abusa", on_reset_t, &state.reset_message);
+    agent_t_subscription_t *agent_sub = agent_t_subscribe(state.lcm, "AGENT_abusa", on_agent_t, &state.agent_message);
 
     pthread_t chaser_thread;
     pthread_create(&chaser_thread, NULL, io_thread, &state);
     image_server_start("8000");
     //gx_draw_game(&bmp, &state);
     while (true) {
-        lcm_handle_async(lcm);
+        lcm_handle_async(state.lcm);
         double start_time = seconds_now();
 
         chaser_moves(&state);
@@ -130,7 +118,6 @@ int main(void) {
         }
         print_interface(&state);
 
-        settings_t state_message;
         state_message.initial_runner_idx = state.initial_runner_idx;
         state_message.delay_every = state.delay_every;
         state_message.to_goal_magnitude = state.to_goal_magnitude;
@@ -138,13 +125,14 @@ int main(void) {
         state_message.avoid_obs_magnitude = state.avoid_obs_magnitude;
         state_message.avoid_obs_power = state.avoid_obs_power;
         state_message.max_velocity = state.max_velocity;
+
         gx_draw_game(&bmp, &state); //update gx
         serving_img(bmp, &state); //delay 40ms and all
         settings_t_publish(state.lcm, "SETTINGS_abusa", &state_message);
         publish_rate(start_time);
     }
     free(bmp.data);
-    l2g_t_unsubscribe(state.lcm, world_sub);
+    settings_t_unsubscribe(state.lcm, world_sub);
     lcm_destroy(state.lcm);
     return 0;
 }

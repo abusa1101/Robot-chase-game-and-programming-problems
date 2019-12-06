@@ -249,7 +249,6 @@ void reset_terminal(void) {
 
 void *io_thread(void *user) {
     printf("\e[?25l");
-
     tcgetattr(0, &original_termios);
     atexit(reset_terminal);
     struct termios new_termios;
@@ -264,6 +263,9 @@ void *io_thread(void *user) {
             exit(0);
         }
         if (c == 'r') {
+            reset_t reset_message;
+            reset_message->initial_runner_idx = state.initial_runner_idx;
+            reset_t_publish(state->lcm, "RESET_abusa", &reset_message);
             reset_simulation(state); //when r is pressed
         }
         if (c == '\e' && getc(stdin) == '[') {
