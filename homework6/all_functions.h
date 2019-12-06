@@ -64,6 +64,7 @@ typedef struct state {
     int max_velocity; //[1,12]
     int current_parameter;
     int timestep;
+    lcm_t *lcm;
 } state_t;
 
 //Vector/Init/Low-level Operations

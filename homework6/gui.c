@@ -21,98 +21,44 @@ double seconds_now(void) {
     return now.tv_sec + now.tv_nsec / 1000000000.0;
 }
 
-void on_l2g(const lcm_recv_buf_t *rbuf, const char *channel,
-            const l2g_t *msg, void *userdata) {
-    settings_t *state_message = userdata;
-    //printf("%.2f %.2f %.2f\n", lcm_message->l2g[0], lcm_message->l2g[1], lcm_message->l2g[2]);
+void serving_img(bitmap_t bmp, state_t *state) {
+    size_t bmp_size = bmp_calculate_size(&bmp);
+    uint8_t *serialized_bmp = malloc(bmp_size);
+    bmp_serialize(&bmp, serialized_bmp);
+    image_server_set_data(bmp_size, serialized_bmp);
+    free(serialized_bmp);
 }
 
-struct settings_t {
-    int64_t utime;
-    int32_t initial_runner_idx;
-    int32_t delay_every;
-    double to_goal_magnitude;
-    int32_t to_goal_power;
-    double avoid_obs_magnitude;
-    int32_t avoid_obs_power;
-    double max_vel;
+void publish_rate(double start_time) {
+    int seconds = 0;
+    long nanoseconds = SLEEP_40 * 1000 * 1000; //FIX THIS- HOW TO USE DELAY_START?
+    nanoseconds -= (long)((seconds_now() - start) * pow(10,9));
+    struct timespec interval = {seconds, nanoseconds};
+    nanosleep(&interval, NULL);
 }
 
-struct reset_t {
-    int64_t utime;
-    int32_t initial_runner_idx;
-}
-
-int main(void) {
-    lcm_t *lcm = lcm_create(NULL);
-    settings_t state_message;
-    state_message.utime = 0;
-
-    //subscribe to world
-    l2g_t_subscription_t *l2g_sub = l2g_t_subscribe(lcm, "SubscribeToWorld_abusa", on_l2g, &state_message);
-    l2g_t_publish(lcm, "SETTINGS_abusa", &message);
-
-    double start = seconds_now();
-    while (seconds_now() - start < 0.5) {
-        lcm_handle_async(lcm);
-    }
-
-    bitmap_t bmp = {0};
-    bmp_init(&bmp);
-    state_t state = {0};
-    init_values(&state);
-    pthread_t chaser_thread;
-    pthread_create(&chaser_thread, NULL, io_thread, &state);
-    image_server_start("8000");
-    gx_draw_game(&bmp, &state);
-    state.timestep = 0;
-    while (true) {
-        chaser_moves(&state);
-        runner_walks(&state);
-        if (resolve_tile_collision(&state.chaser)) {
-            state.chaser.fwd_vel *= 0.25;
-        }
-        if (resolve_tile_collision(&state.runner)) {
-            state.runner.fwd_vel *= 0.25;
-        }
-        if (robots_collision(&state.chaser, &state.runner)) {
-            printf("\e[2K\rRunner caught on step %d\n", state.timestep);
-            reset_simulation(&state); //when chaser catches runner
-            continue;
-        }
-        if (state.timestep % state.delay_every == 0) {
-            gx_draw_game(&bmp, &state); //update gx
-            serving_img(bmp, &state); //delay 40ms and all
-        }
-        int parameter = state.current_parameter;
-        printf("\r");
-        printf("%s%8.2d%s ", (parameter == 1) ? HIGHLIGHT : "",
-               state.initial_runner_idx, CLEAR_HIGHLIGHT);
-        printf("%s%8.2d%s ", (parameter == 2) ? HIGHLIGHT : "",
-               state.delay_every, CLEAR_HIGHLIGHT);
-        printf("%s%8.2f%s ", (parameter == 3) ? HIGHLIGHT : "",
-               state.to_goal_magnitude, CLEAR_HIGHLIGHT);
-        printf("%s%8.2d%s ", (parameter == 4) ? HIGHLIGHT : "",
-               state.to_goal_power, CLEAR_HIGHLIGHT);
-        printf("%s%8.2f%s ", (parameter == 5) ? HIGHLIGHT : "",
-               state.avoid_obs_magnitude, CLEAR_HIGHLIGHT);
-        printf("%s%8.2d%s ", (parameter == 6) ? HIGHLIGHT : "",
-               state.avoid_obs_power, CLEAR_HIGHLIGHT);
-        printf("%s%8.2d%s", (parameter == 7) ? HIGHLIGHT : "",
-               state.max_velocity, CLEAR_HIGHLIGHT);
-        fflush(stdout);
-        state.timestep++;
-    }
-    free(bmp.data);
-
-    l2g_t_unsubscribe(lcm, l2g_sub);
-    lcm_destroy(lcm);
-    return 0;
+void print_interface(state_t *state) {
+    int parameter = state->current_parameter;
+    printf("\r");
+    printf("%s%8.2d%s ", (parameter == 1) ? HIGHLIGHT : "",
+           state->initial_runner_idx, CLEAR_HIGHLIGHT);
+    printf("%s%8.2d%s ", (parameter == 2) ? HIGHLIGHT : "",
+           state->delay_every, CLEAR_HIGHLIGHT);
+    printf("%s%8.2f%s ", (parameter == 3) ? HIGHLIGHT : "",
+           state->to_goal_magnitude, CLEAR_HIGHLIGHT);
+    printf("%s%8.2d%s ", (parameter == 4) ? HIGHLIGHT : "",
+           state->to_goal_power, CLEAR_HIGHLIGHT);
+    printf("%s%8.2f%s ", (parameter == 5) ? HIGHLIGHT : "",
+           state->avoid_obs_magnitude, CLEAR_HIGHLIGHT);
+    printf("%s%8.2d%s ", (parameter == 6) ? HIGHLIGHT : "",
+           state->avoid_obs_power, CLEAR_HIGHLIGHT);
+    printf("%s%8.2d%s", (parameter == 7) ? HIGHLIGHT : "",
+           state->max_velocity, CLEAR_HIGHLIGHT);
+    fflush(stdout);
 }
 
 void *io_thread(void *user) {
     printf("\e[?25l");
-
     tcgetattr(0, &original_termios);
     atexit(reset_terminal);
     struct termios new_termios;
@@ -127,7 +73,9 @@ void *io_thread(void *user) {
             exit(0);
         }
         if (c == 'r') {
-            l2g_t_publish(lcm, "RESET_abusa", &message);
+            reset_t reset_message;
+            reset_message->initial_runner_idx = state.initial_runner_idx;
+            reset_t_publish(state->lcm, "RESET_abusa", &reset_message);
             reset_simulation(state); //when r is pressed
         }
         if (c == '\e' && getc(stdin) == '[') {
@@ -147,4 +95,56 @@ void *io_thread(void *user) {
             }
         }
     }
+}
+
+int main(void) {
+    bitmap_t bmp = {0};
+    bmp_init(&bmp);
+
+    state_t state = {0};
+    state.lcm = lcm_create(NULL);
+    init_values(&state);
+
+    settings_t_subscription_t *world_sub = settings_t_subscribe(state.lcm, "WORLD_abusa", on_settings_t, &state_message);
+
+    pthread_t chaser_thread;
+    pthread_create(&chaser_thread, NULL, io_thread, &state);
+    image_server_start("8000");
+    //gx_draw_game(&bmp, &state);
+    while (true) {
+        lcm_handle_async(lcm);
+        double start_time = seconds_now();
+
+        chaser_moves(&state);
+        runner_walks(&state);
+        if (resolve_tile_collision(&state.chaser)) {
+            state.chaser.fwd_vel *= 0.25;
+        }
+        if (resolve_tile_collision(&state.runner)) {
+            state.runner.fwd_vel *= 0.25;
+        }
+        if (robots_collision(&state.chaser, &state.runner)) {
+            //printf("\e[2K\rRunner caught on step %d\n", state.timestep);
+            reset_simulation(&state); //when chaser catches runner
+            continue;
+        }
+        print_interface(&state);
+
+        settings_t state_message;
+        state_message.initial_runner_idx = state.initial_runner_idx;
+        state_message.delay_every = state.delay_every;
+        state_message.to_goal_magnitude = state.to_goal_magnitude;
+        state_message.to_goal_power = state.to_goal_power;
+        state_message.avoid_obs_magnitude = state.avoid_obs_magnitude;
+        state_message.avoid_obs_power = state.avoid_obs_power;
+        state_message.max_velocity = state.max_velocity;
+        gx_draw_game(&bmp, &state); //update gx
+        serving_img(bmp, &state); //delay 40ms and all
+        settings_t_publish(state.lcm, "SETTINGS_abusa", &state_message);
+        publish_rate(start_time);
+    }
+    free(bmp.data);
+    l2g_t_unsubscribe(state.lcm, world_sub);
+    lcm_destroy(state.lcm);
+    return 0;
 }

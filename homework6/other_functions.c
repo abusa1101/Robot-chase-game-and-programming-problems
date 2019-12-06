@@ -77,18 +77,6 @@ int change_robot_idx(int idx, bool is_next) {
     return idx;
 }
 
-void serving_img(bitmap_t bmp, state_t *state) {
-    size_t bmp_size = bmp_calculate_size(&bmp);
-    uint8_t *serialized_bmp = malloc(bmp_size);
-    bmp_serialize(&bmp, serialized_bmp);
-    image_server_set_data(bmp_size, serialized_bmp);
-    free(serialized_bmp);
-    int seconds = 0;
-    long nanoseconds = SLEEP_40 * 1000 * 1000; //FIX THIS- HOW TO USE DELAY_START?
-    struct timespec interval = {seconds, nanoseconds};
-    nanosleep(&interval, NULL);
-}
-
 //Movement
 void init_values(state_t *state) {
     state->chaser.theta = 0;
