@@ -92,10 +92,11 @@ int main(void) {
     pthread_create(&chaser_thread, NULL, io_thread, &state);
     image_server_start("8000");
     //gx_draw_game(&bmp, &state);
+    state.timestep = 0;
     while (true) {
         lcm_handle_async(state.lcm);
         double start_time = seconds_now();
-
+        
         chaser_moves(&state);
         runner_walks(&state);
         if (resolve_tile_collision(&state.chaser)) {
@@ -105,6 +106,7 @@ int main(void) {
             state.runner.fwd_vel *= 0.25;
         }
         if (robots_collision(&state.chaser, &state.runner)) {
+            printf("\e[2K\rRunner caught on step %d\n", state.timestep);
             reset_simulation(&state); //when chaser catches runner
             continue;
         }
@@ -122,6 +124,7 @@ int main(void) {
         serving_img(bmp, &state); //delay 40ms and all
         settings_t_publish(state.lcm, "SETTINGS_abusa", &state.state_message);
         publish_rate(start_time);
+        state.timestep++;
     }
     free(bmp.data);
     agent_t_unsubscribe(state.lcm, agent_sub);

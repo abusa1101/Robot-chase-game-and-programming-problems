@@ -69,6 +69,7 @@ typedef struct state {
     int max_velocity; //[1,12]
     int current_parameter;
     int timestep;
+    int delay_time;
 
     lcm_t *lcm;
     // world_t world_message;
