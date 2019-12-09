@@ -60,7 +60,7 @@ int main(void) {
     init_values(&state);
 
     settings_t state_message;
-    
+
     pthread_t chaser_thread;
     pthread_create(&chaser_thread, NULL, io_thread, &state);
     image_server_start("8000");
@@ -94,7 +94,7 @@ int main(void) {
 
         gx_draw_game(&bmp, &state); //update gx
         serving_img(bmp, &state); //delay 40ms and all
-        settings_t_publish(state.lcm, "SETTINGS_abusa", &state.state_message);
+        settings_t_publish(state.lcm, "SETTINGS_abusa", &state_message);
         publish_rate(start_time);
     }
     free(bmp.data);
