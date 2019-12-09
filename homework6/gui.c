@@ -23,9 +23,9 @@ double seconds_now(void) {
     return now.tv_sec + now.tv_nsec / 1000000000.0;
 }
 
-void publish_rate(state_t *state, double start_time) {
+void publish_rate(double start_time) {
     int seconds = 0;
-    long nanoseconds = state.delay_time * 1000 * 1000;
+    long nanoseconds = SLEEP_40 * 1000 * 1000;
     nanoseconds -= (long)((seconds_now() - start_time) * pow(10, 9));
     struct timespec interval = {seconds, nanoseconds};
     nanosleep(&interval, NULL);
@@ -58,7 +58,7 @@ int main(void) {
     state_t state = {0};
     state.lcm = lcm_create(NULL);
     init_values(&state);
-    state.delay_time = SLEEP_40 / state.delay_every;
+    
     pthread_t chaser_thread;
     pthread_create(&chaser_thread, NULL, io_thread, &state);
     image_server_start("8000");

@@ -23,9 +23,9 @@ double seconds_now(void) {
     return now.tv_sec + now.tv_nsec / 1000000000.0;
 }
 
-void publish_rate(double start_time) {
+void publish_rate(state_t *state, double start_time) {
     int seconds = 0;
-    long nanoseconds = SLEEP_40 * 1000 * 1000;
+    long nanoseconds = state.delay_time * 1000 * 1000;
     nanoseconds -= (long)((seconds_now() - start_time) * pow(10, 9));
     struct timespec interval = {seconds, nanoseconds};
     nanosleep(&interval, NULL);
@@ -51,7 +51,7 @@ void print_interface(state_t *state) {
     fflush(stdout);
 }
 
-void on_world_t(const lcm_recv_buf_t *rbuf, const char *channel,
+//void on_world_t(const lcm_recv_buf_t *rbuf, const char *channel,
             const world_t *msg, void *userdata) {
     world_t *msg = userdata;
     //printf("%.2f %.2f %.2f\n", lcm_message->l2g[0], lcm_message->l2g[1], lcm_message->l2g[2]);
@@ -82,8 +82,9 @@ int main(void) {
     state_t state = {0};
     state.lcm = lcm_create(NULL);
     init_values(&state);
+    state.delay_time = SLEEP_40 / state.delay_every;
 
-    world_t_subscription_t *world_sub = world_t_subscribe(state.lcm, "WORLD_abusa", on_world_t, &state.world_message);
+    //world_t_subscription_t *world_sub = world_t_subscribe(state.lcm, "WORLD_abusa", on_world_t, &state.world_message);
     settings_t_subscription_t *settings_sub = settings_t_subscribe(state.lcm, "SETTINGS_abusa", on_settings_t, &state.settings_message);
     reset_t_subscription_t *reset_sub = reset_t_subscribe(state.lcm, "RESET_abusa", on_reset_t, &state.reset_message);
     agent_t_subscription_t *agent_sub = agent_t_subscribe(state.lcm, "AGENT_abusa", on_agent_t, &state.agent_message);
@@ -96,7 +97,7 @@ int main(void) {
     while (true) {
         lcm_handle_async(state.lcm);
         double start_time = seconds_now();
-        
+
         chaser_moves(&state);
         runner_walks(&state);
         if (resolve_tile_collision(&state.chaser)) {
@@ -130,7 +131,7 @@ int main(void) {
     agent_t_unsubscribe(state.lcm, agent_sub);
     reset_t_unsubscribe(state.lcm, reset_sub);
     settings_t_unsubscribe(state.lcm, settings_sub);
-    world_t_unsubscribe(state.lcm, world_sub);
+    //world_t_unsubscribe(state.lcm, world_sub);
     lcm_destroy(state.lcm);
     return 0;
 }
