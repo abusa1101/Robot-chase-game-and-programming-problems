@@ -17,5 +17,4 @@ lcm-spy: lcmtypes.jar
 lcmtypes/%_t.c: lcmtypes/%_t.lcm
 	lcm-gen -c --c-cpath lcmtypes/ --c-hpath lcmtypes/ $^
 
-LCMTYPES_SOURCE = lcmtypes/settings_t.c lcmtypes/reset_t.c lcmtypes/world_t.c lcmtypes/agent_t.c
-#lcmtypes/action_t.c
+LCMTYPES_SOURCE = lcmtypes/settings_t.c lcmtypes/reset_t.c lcmtypes/world_t.c lcmtypes/agent_t.c lcmtypes/action_t.c

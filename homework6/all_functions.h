@@ -73,6 +73,7 @@ typedef struct state {
     lcm_t *lcm;
     // world_t world_message;
     // agent_t agent_message;
+    settings_t state_message;
     reset_t reset_message;
 } state_t;
 

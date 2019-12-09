@@ -59,8 +59,6 @@ int main(void) {
     state.lcm = lcm_create(NULL);
     init_values(&state);
 
-    settings_t state_message;
-
     pthread_t chaser_thread;
     pthread_create(&chaser_thread, NULL, io_thread, &state);
     image_server_start("8000");
@@ -84,17 +82,17 @@ int main(void) {
         }
         print_interface(&state);
 
-        state_message.initial_runner_idx = state.initial_runner_idx;
-        state_message.delay_every = state.delay_every;
-        state_message.to_goal_magnitude = state.to_goal_magnitude;
-        state_message.to_goal_power = state.to_goal_power;
-        state_message.avoid_obs_magnitude = state.avoid_obs_magnitude;
-        state_message.avoid_obs_power = state.avoid_obs_power;
-        state_message.max_vel = state.max_velocity;
+        state.state_message.initial_runner_idx = state.initial_runner_idx;
+        state.state_message.delay_every = state.delay_every;
+        state.state_message.to_goal_magnitude = state.to_goal_magnitude;
+        state.state_message.to_goal_power = state.to_goal_power;
+        state.state_message.avoid_obs_magnitude = state.avoid_obs_magnitude;
+        state.state_message.avoid_obs_power = state.avoid_obs_power;
+        state.state_message.max_vel = state.max_velocity;
 
         gx_draw_game(&bmp, &state); //update gx
         serving_img(bmp, &state); //delay 40ms and all
-        settings_t_publish(state.lcm, "SETTINGS_abusa", &state_message);
+        settings_t_publish(state.lcm, "SETTINGS_abusa", &state.state_message);
         publish_rate(start_time);
     }
     free(bmp.data);
