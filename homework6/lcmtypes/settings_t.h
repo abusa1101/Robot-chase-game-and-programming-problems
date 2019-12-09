@@ -24,7 +24,7 @@ struct _settings_t
     int32_t    to_goal_power;
     double     avoid_obs_magnitude;
     int32_t    avoid_obs_power;
-    double     max_velocity;
+    double     max_vel;
 };
 
 /**

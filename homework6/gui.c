@@ -90,7 +90,7 @@ int main(void) {
         state_message.to_goal_power = state.to_goal_power;
         state_message.avoid_obs_magnitude = state.avoid_obs_magnitude;
         state_message.avoid_obs_power = state.avoid_obs_power;
-        state_message.max_velocity = state.max_velocity;
+        state_message.max_vel = state.max_velocity;
 
         gx_draw_game(&bmp, &state); //update gx
         serving_img(bmp, &state); //delay 40ms and all
