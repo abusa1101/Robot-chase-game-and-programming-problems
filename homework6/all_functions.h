@@ -10,6 +10,10 @@
 #include <lcm/lcm.h>
 #include "image_server.h"
 #include "bmp.h"
+#include "lcmtypes/settings_t.h"
+#include "lcmtypes/reset_t.h"
+#include "lcm_handle_async.h"
+
 #define M_PI 3.14159265358979323846
 #define WIDTH 640
 #define HEIGHT 480
@@ -68,8 +72,8 @@ typedef struct state {
 
     lcm_t *lcm;
     settings_t state_message;
-    world_t world_message;
-    agent_t agent_message;
+    // world_t world_message;
+    // agent_t agent_message;
     reset_t reset_message;
 } state_t;
 

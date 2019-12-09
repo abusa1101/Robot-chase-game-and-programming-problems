@@ -21,7 +21,7 @@ uint64_t __settings_t_hash_recursive(const __lcm_hash_ptr *p)
     cp.v = __settings_t_get_hash;
     (void) cp;
 
-    uint64_t hash = (uint64_t)0xa5c17cd2bfaee412LL
+    uint64_t hash = (uint64_t)0xb71a7f59e6820c53LL
          + __int32_t_hash_recursive(&cp)
          + __int32_t_hash_recursive(&cp)
          + __double_hash_recursive(&cp)
@@ -69,7 +69,7 @@ int __settings_t_encode_array(void *buf, int offset, int maxlen, const settings_
         thislen = __int32_t_encode_array(buf, offset + pos, maxlen - pos, &(p[element].avoid_obs_power), 1);
         if (thislen < 0) return thislen; else pos += thislen;
 
-        thislen = __double_encode_array(buf, offset + pos, maxlen - pos, &(p[element].max_vel), 1);
+        thislen = __double_encode_array(buf, offset + pos, maxlen - pos, &(p[element].max_velocity), 1);
         if (thislen < 0) return thislen; else pos += thislen;
 
     }
@@ -107,7 +107,7 @@ int __settings_t_encoded_array_size(const settings_t *p, int elements)
 
         size += __int32_t_encoded_array_size(&(p[element].avoid_obs_power), 1);
 
-        size += __double_encoded_array_size(&(p[element].max_vel), 1);
+        size += __double_encoded_array_size(&(p[element].max_velocity), 1);
 
     }
     return size;
@@ -142,7 +142,7 @@ int __settings_t_decode_array(const void *buf, int offset, int maxlen, settings_
         thislen = __int32_t_decode_array(buf, offset + pos, maxlen - pos, &(p[element].avoid_obs_power), 1);
         if (thislen < 0) return thislen; else pos += thislen;
 
-        thislen = __double_decode_array(buf, offset + pos, maxlen - pos, &(p[element].max_vel), 1);
+        thislen = __double_decode_array(buf, offset + pos, maxlen - pos, &(p[element].max_velocity), 1);
         if (thislen < 0) return thislen; else pos += thislen;
 
     }
@@ -166,7 +166,7 @@ int __settings_t_decode_array_cleanup(settings_t *p, int elements)
 
         __int32_t_decode_array_cleanup(&(p[element].avoid_obs_power), 1);
 
-        __double_decode_array_cleanup(&(p[element].max_vel), 1);
+        __double_decode_array_cleanup(&(p[element].max_velocity), 1);
 
     }
     return 0;
@@ -210,7 +210,7 @@ int __settings_t_clone_array(const settings_t *p, settings_t *q, int elements)
 
         __int32_t_clone_array(&(p[element].avoid_obs_power), &(q[element].avoid_obs_power), 1);
 
-        __double_clone_array(&(p[element].max_vel), &(q[element].max_vel), 1);
+        __double_clone_array(&(p[element].max_velocity), &(q[element].max_velocity), 1);
 
     }
     return 0;

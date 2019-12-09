@@ -9,6 +9,9 @@
 #include <termios.h>
 #include "bmp.h"
 #include "all_functions.h"
+#include "lcmtypes/settings_t.h"
+#include "lcmtypes/reset_t.h"
+#include "lcm_handle_async.h"
 
 struct termios original_termios;
 
@@ -75,6 +78,14 @@ int change_robot_idx(int idx, bool is_next) {
         } while (MAP[idx] == 'X');
     }
     return idx;
+}
+
+void serving_img(bitmap_t bmp, state_t *state) {
+    size_t bmp_size = bmp_calculate_size(&bmp);
+    uint8_t *serialized_bmp = malloc(bmp_size);
+    bmp_serialize(&bmp, serialized_bmp);
+    image_server_set_data(bmp_size, serialized_bmp);
+    free(serialized_bmp);
 }
 
 //Movement
@@ -263,9 +274,8 @@ void *io_thread(void *user) {
             exit(0);
         }
         if (c == 'r') {
-            reset_t reset_message;
-            reset_message->initial_runner_idx = state.initial_runner_idx;
-            reset_t_publish(state->lcm, "RESET_abusa", &reset_message);
+            state->reset_message.initial_runner_idx = state->initial_runner_idx;
+            reset_t_publish(state->lcm, "RESET_abusa", &state->reset_message);
             reset_simulation(state); //when r is pressed
         }
         if (c == '\e' && getc(stdin) == '[') {

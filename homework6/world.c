@@ -51,29 +51,29 @@ void print_interface(state_t *state) {
     fflush(stdout);
 }
 
-// void on_world_t(const lcm_recv_buf_t *rbuf, const char *channel,
-//             const world_t *msg, void *userdata) {
-//     world_t *msg = userdata;
-//     //printf("%.2f %.2f %.2f\n", lcm_message->l2g[0], lcm_message->l2g[1], lcm_message->l2g[2]);
-// }
-//
-// void on_settings_t(const lcm_recv_buf_t *rbuf, const char *channel,
-//             const settings_t *msg, void *userdata) {
-//     settings_t *msg = userdata;
-//     //printf("%.2f %.2f %.2f\n", lcm_message->l2g[0], lcm_message->l2g[1], lcm_message->l2g[2]);
-// }
-//
-// void on_reset_t(const lcm_recv_buf_t *rbuf, const char *channel,
-//             const reset_t *msg, void *userdata) {
-//     reset_t *msg = userdata;
-//     //printf("%.2f %.2f %.2f\n", lcm_message->l2g[0], lcm_message->l2g[1], lcm_message->l2g[2]);
-// }
-//
-// void on_agent_t(const lcm_recv_buf_t *rbuf, const char *channel,
-//             const agent_t *msg, void *userdata) {
-//     agent_t *msg = userdata;
-//     //printf("%.2f %.2f %.2f\n", lcm_message->l2g[0], lcm_message->l2g[1], lcm_message->l2g[2]);
-// }
+void on_world_t(const lcm_recv_buf_t *rbuf, const char *channel,
+            const world_t *msg, void *userdata) {
+    world_t *msg = userdata;
+    //printf("%.2f %.2f %.2f\n", lcm_message->l2g[0], lcm_message->l2g[1], lcm_message->l2g[2]);
+}
+
+void on_settings_t(const lcm_recv_buf_t *rbuf, const char *channel,
+            const settings_t *msg, void *userdata) {
+    settings_t *msg = userdata;
+    //printf("%.2f %.2f %.2f\n", lcm_message->l2g[0], lcm_message->l2g[1], lcm_message->l2g[2]);
+}
+
+void on_reset_t(const lcm_recv_buf_t *rbuf, const char *channel,
+            const reset_t *msg, void *userdata) {
+    reset_t *msg = userdata;
+    //printf("%.2f %.2f %.2f\n", lcm_message->l2g[0], lcm_message->l2g[1], lcm_message->l2g[2]);
+}
+
+void on_agent_t(const lcm_recv_buf_t *rbuf, const char *channel,
+            const agent_t *msg, void *userdata) {
+    agent_t *msg = userdata;
+    //printf("%.2f %.2f %.2f\n", lcm_message->l2g[0], lcm_message->l2g[1], lcm_message->l2g[2]);
+}
 
 int main(void) {
     bitmap_t bmp = {0};
@@ -82,11 +82,11 @@ int main(void) {
     state_t state = {0};
     state.lcm = lcm_create(NULL);
     init_values(&state);
-    settings_t state_message;
-    // world_t_subscription_t *world_sub = world_t_subscribe(state.lcm, "WORLD_abusa", on_world_t, &state.world_message);
-    // settings_t_subscription_t *settings_sub = settings_t_subscribe(state.lcm, "SETTINGS_abusa", on_settings_t, &state.settings_message);
-    // reset_t_subscription_t *reset_sub = reset_t_subscribe(state.lcm, "RESET_abusa", on_reset_t, &state.reset_message);
-    // agent_t_subscription_t *agent_sub = agent_t_subscribe(state.lcm, "AGENT_abusa", on_agent_t, &state.agent_message);
+
+    world_t_subscription_t *world_sub = world_t_subscribe(state.lcm, "WORLD_abusa", on_world_t, &state.world_message);
+    settings_t_subscription_t *settings_sub = settings_t_subscribe(state.lcm, "SETTINGS_abusa", on_settings_t, &state.settings_message);
+    reset_t_subscription_t *reset_sub = reset_t_subscribe(state.lcm, "RESET_abusa", on_reset_t, &state.reset_message);
+    agent_t_subscription_t *agent_sub = agent_t_subscribe(state.lcm, "AGENT_abusa", on_agent_t, &state.agent_message);
 
     pthread_t chaser_thread;
     pthread_create(&chaser_thread, NULL, io_thread, &state);
@@ -105,7 +105,6 @@ int main(void) {
             state.runner.fwd_vel *= 0.25;
         }
         if (robots_collision(&state.chaser, &state.runner)) {
-            //printf("\e[2K\rRunner caught on step %d\n", state.timestep);
             reset_simulation(&state); //when chaser catches runner
             continue;
         }
@@ -121,11 +120,14 @@ int main(void) {
 
         gx_draw_game(&bmp, &state); //update gx
         serving_img(bmp, &state); //delay 40ms and all
-        settings_t_publish(state.lcm, "SETTINGS_abusa", &state_message);
+        settings_t_publish(state.lcm, "SETTINGS_abusa", &state.state_message);
         publish_rate(start_time);
     }
     free(bmp.data);
-    //settings_t_unsubscribe(state.lcm, world_sub);
+    agent_t_unsubscribe(state.lcm, agent_sub);
+    reset_t_unsubscribe(state.lcm, reset_sub);
+    settings_t_unsubscribe(state.lcm, settings_sub);
+    world_t_unsubscribe(state.lcm, world_sub);
     lcm_destroy(state.lcm);
     return 0;
 }
