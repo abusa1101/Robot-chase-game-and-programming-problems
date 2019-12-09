@@ -59,6 +59,8 @@ int main(void) {
     state.lcm = lcm_create(NULL);
     init_values(&state);
 
+    settings_t state_message;
+    
     pthread_t chaser_thread;
     pthread_create(&chaser_thread, NULL, io_thread, &state);
     image_server_start("8000");

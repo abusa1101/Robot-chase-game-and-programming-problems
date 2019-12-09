@@ -60,8 +60,8 @@ typedef struct state {
     int user_action;
     robot_t runner;
     robot_t chaser;
-    int initial_runner_idx; // initially 17
-    int delay_every; // must be >= 1
+    int initial_runner_idx; //initially 17
+    int delay_every; //must be >= 1
     double to_goal_magnitude;
     int to_goal_power; //[-3,3]
     double avoid_obs_magnitude;
@@ -71,7 +71,6 @@ typedef struct state {
     int timestep;
 
     lcm_t *lcm;
-    settings_t state_message;
     // world_t world_message;
     // agent_t agent_message;
     reset_t reset_message;
@@ -85,8 +84,6 @@ double max(double a, double b);
 double min(double a, double b);
 int constrain(int val, int LL, int UL);
 void bmp_init(bitmap_t *bmp);
-// int give_robot_idx(double x, double y);
-// int move_to_robot_idx(int current_idx, bool is_next);
 int change_robot_idx(int idx, bool is_next);
 
 //GX Functions
