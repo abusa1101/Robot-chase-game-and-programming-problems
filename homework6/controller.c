@@ -52,6 +52,13 @@ void on_world_t(const lcm_recv_buf_t *rbuf, const char *channel,
     state_t *state = userdata;
     state->chaser = msg->chaser;
     state->runner = msg->runner;
+
+    potential_field_control(state);
+    
+    action_t action_message;
+    action_message.vel = state.chaser.vel;
+    action_message.ang_vel = state.chaser.ang_vel;
+    action_t_publish(state.lcm, "ACTION_abusa", &action_message);
 }
 
 int main(int argc, char **argv) {
@@ -68,24 +75,24 @@ int main(int argc, char **argv) {
         lcm_handle(state.lcm);
         double start_time = seconds_now();
 
-        chaser_moves(&state);
-        runner_walks(&state);
-        if (resolve_tile_collision(&state.chaser)) {
-            state.chaser.vel *= 0.25;
-        }
-        if (resolve_tile_collision(&state.runner)) {
-            state.runner.vel *= 0.25;
-        }
-        if (robots_collision(&state.chaser, &state.runner)) {
-            printf("\e[2K\rRunner caught on step %d\n", state.timestep);
-            reset_simulation(&state); //when chaser catches runner
-            continue;
-        }
+        // chaser_moves(&state);
+        // runner_walks(&state);
+        // if (resolve_tile_collision(&state.chaser)) {
+        //     state.chaser.vel *= 0.25;
+        // }
+        // if (resolve_tile_collision(&state.runner)) {
+        //     state.runner.vel *= 0.25;
+        // }
+        // if (robots_collision(&state.chaser, &state.runner)) {
+        //     printf("\e[2K\rRunner caught on step %d\n", state.timestep);
+        //     reset_simulation(&state); //when chaser catches runner
+        //     continue;
+        // }
 
-        action_t action_message;
-        action_message.vel = state.chaser.vel;
-        action_message.ang_vel = state.chaser.ang_vel;
-        action_t_publish(state.lcm, "ACTION_abusa", &action_message);
+        // action_t action_message;
+        // action_message.vel = state.chaser.vel;
+        // action_message.ang_vel = state.chaser.ang_vel;
+        // action_t_publish(state.lcm, "ACTION_abusa", &action_message);
         publish_rate(&state, start_time);
 
         state.timestep++;
