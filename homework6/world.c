@@ -65,7 +65,6 @@ void on_action_t(const lcm_recv_buf_t *rbuf, const char *channel,
     ang_vel = (ang_vel < -M_PI / 16) ? -M_PI / 16 : ang_vel;
     ang_vel = (ang_vel > M_PI / 16) ? M_PI / 16 : ang_vel;
     state->chaser.ang_vel = ang_vel;
-    //state->chaser_message.ang_vel = constrain_lf(msg->ang_vel, -M_PI / 16, M_PI / 16);
 }
 
 int main(void) {
