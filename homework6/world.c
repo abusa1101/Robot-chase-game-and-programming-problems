@@ -53,25 +53,17 @@ void print_interface(state_t *state) {
 
 void robot_init(state_t *state) {
     state->chaser.theta = 0;
-    //state->runner.theta = 0;
     state->chaser.is_runner = false;
     state->runner.is_runner = true;
     state->chaser.x = (double)WIDTH / 2;
     state->chaser.y = (double)HEIGHT / 2;
     state->settings_message.initial_runner_idx = 17;
-    //give_runner_pos(state, state->settings_message.initial_runner_idx);
     state->settings_message.delay_every = 1;
     state->settings_message.to_goal_magnitude = 50.0;
     state->settings_message.to_goal_power = 0;
     state->settings_message.avoid_obs_magnitude = 1.0;
     state->settings_message.avoid_obs_power = -2;
     state->settings_message.max_vel = 12;
-    // boolean is_runner;
-    // double x;
-    // double y;
-    // double theta;
-    // double vel;
-    // double ang_vel;
 }
 
 void on_settings_t(const lcm_recv_buf_t *rbuf, const char *channel,
@@ -106,7 +98,7 @@ int main(void) {
 
     state_t state = {0};
     state.lcm = lcm_create(NULL);
-    //init_values(&state);
+    init_values(&state);
     robot_init(&state);
 
     settings_t_subscribe(state.lcm, "SETTINGS_abusa", on_settings_t, &state);
