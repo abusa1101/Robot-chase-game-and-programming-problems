@@ -277,8 +277,8 @@ void *io_thread(void *user) {
             exit(0);
         }
         if (c == 'r') {
-            state->reset_message.initial_runner_idx = state->initial_runner_idx;
-            reset_t_publish(state->lcm, "RESET_abusa", &state->reset_message);
+            reset_t reset = {.initial_runner_idx = state->initial_runner_idx};
+            reset_t_publish(state->lcm, "RESET_abusa", &reset);
             reset_simulation(state); //when r is pressed
         }
         if (c == '\e' && getc(stdin) == '[') {

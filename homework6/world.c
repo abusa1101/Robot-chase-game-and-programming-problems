@@ -25,30 +25,10 @@ double seconds_now(void) {
 
 void publish_rate(state_t *state, double start_time) {
     int seconds = 0;
-    long nanoseconds = (SLEEP_40 / state->settings_message.delay_every) * 1000 * 1000;
+    long nanoseconds = (SLEEP_40 / state->delay_every) * 1000 * 1000;
     nanoseconds -= (long)((seconds_now() - start_time) * pow(10, 9));
     struct timespec interval = {seconds, nanoseconds};
     nanosleep(&interval, NULL);
-}
-
-void print_interface(state_t *state) {
-    int parameter = state->current_parameter;
-    printf("\r");
-    printf("%s%8.2d%s ", (parameter == 1) ? HIGHLIGHT : "",
-           state->settings_message.initial_runner_idx, CLEAR_HIGHLIGHT);
-    printf("%s%8.2d%s ", (parameter == 2) ? HIGHLIGHT : "",
-           state->settings_message.delay_every, CLEAR_HIGHLIGHT);
-    printf("%s%8.2f%s ", (parameter == 3) ? HIGHLIGHT : "",
-           state->settings_message.to_goal_magnitude, CLEAR_HIGHLIGHT);
-    printf("%s%8.2d%s ", (parameter == 4) ? HIGHLIGHT : "",
-           state->settings_message.to_goal_power, CLEAR_HIGHLIGHT);
-    printf("%s%8.2f%s ", (parameter == 5) ? HIGHLIGHT : "",
-           state->settings_message.avoid_obs_magnitude, CLEAR_HIGHLIGHT);
-    printf("%s%8.2d%s ", (parameter == 6) ? HIGHLIGHT : "",
-           state->settings_message.avoid_obs_power, CLEAR_HIGHLIGHT);
-    printf("%s%8.2f%s", (parameter == 7) ? HIGHLIGHT : "",
-           state->settings_message.max_vel, CLEAR_HIGHLIGHT);
-    fflush(stdout);
 }
 
 void robot_init(state_t *state) {
@@ -57,25 +37,26 @@ void robot_init(state_t *state) {
     state->runner.is_runner = true;
     state->chaser.x = (double)WIDTH / 2;
     state->chaser.y = (double)HEIGHT / 2;
-    state->settings_message.initial_runner_idx = 17;
-    state->settings_message.delay_every = 1;
-    state->settings_message.to_goal_magnitude = 50.0;
-    state->settings_message.to_goal_power = 0;
-    state->settings_message.avoid_obs_magnitude = 1.0;
-    state->settings_message.avoid_obs_power = -2;
-    state->settings_message.max_vel = 12;
+    state->initial_runner_idx = 17;
+    state->delay_every = 1;
+    state->to_goal_magnitude = 50.0;
+    state->to_goal_power = 0;
+    state->avoid_obs_magnitude = 1.0;
+    state->avoid_obs_power = -2;
+    state->max_vel = 12;
 }
 
 void on_settings_t(const lcm_recv_buf_t *rbuf, const char *channel,
                    const settings_t *msg, void *userdata) {
     state_t *state = userdata;
-    state->settings_message.delay_every = msg->delay_every;
+    state->delay_every = msg->delay_every;
 }
 
 void on_reset_t(const lcm_recv_buf_t *rbuf, const char *channel,
                 const reset_t *msg, void *userdata) {
     state_t *state = userdata;
-    state->reset_message.initial_runner_idx = msg->initial_runner_idx;
+    state->initial_runner_idx = msg->initial_runner_idx;
+    reset_simulation(state);
 }
 
 void on_action_t(const lcm_recv_buf_t *rbuf, const char *channel,
@@ -123,14 +104,6 @@ int main(void) {
             reset_simulation(&state); //when chaser catches runner
             continue;
         }
-        print_interface(&state);
-        state.settings_message.initial_runner_idx = state.initial_runner_idx;
-        state.settings_message.delay_every = state.delay_every;
-        state.settings_message.to_goal_magnitude = state.to_goal_magnitude;
-        state.settings_message.to_goal_power = state.to_goal_power;
-        state.settings_message.avoid_obs_magnitude = state.avoid_obs_magnitude;
-        state.settings_message.avoid_obs_power = state.avoid_obs_power;
-        state.settings_message.max_vel = state.max_vel;
         gx_draw_game(&bmp, &state); //update gx
         serving_img(bmp, &state); //delay 40ms and all
 

@@ -76,9 +76,9 @@ typedef struct state {
     lcm_t *lcm;
     // agent_t runner_message;
     // agent_t chaser_message;
-    action_t action_message;
-    settings_t settings_message;
-    reset_t reset_message;
+    // action_t action_message;
+    // settings_t settings_message;
+    // reset_t reset_message;
 } state_t;
 
 //Vector/Init/Low-level Operations
