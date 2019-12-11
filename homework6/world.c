@@ -91,7 +91,7 @@ int main(void) {
         lcm_handle_async(state.lcm);
         double start_time = seconds_now();
 
-        chaser_moves(&state);
+        //chaser_moves(&state);
         runner_walks(&state);
         if (resolve_tile_collision(&state.chaser)) {
             state.chaser.vel *= 0.25;
