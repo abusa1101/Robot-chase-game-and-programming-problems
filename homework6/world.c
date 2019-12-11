@@ -26,6 +26,12 @@ double seconds_now(void) {
     return now.tv_sec + now.tv_nsec / 1000000000.0;
 }
 
+double constrain_lf(double val, double LL, double UL) {
+    val = (val < LL) ? LL : val;
+    val = (val > UL) ? UL : val;
+    return val;
+}
+
 void publish_rate(state_t *state, double start_time) {
     int seconds = 0;
     long nanoseconds = state->delay_time * 1000 * 1000;
@@ -56,14 +62,14 @@ void print_interface(state_t *state) {
 
 void on_settings_t(const lcm_recv_buf_t *rbuf, const char *channel,
             const settings_t *msg, void *userdata) {
-    settings_t *message = userdata;
-    message->settings_message.delay_every = message->delay_every;
+    state_t *state = userdata;
+    state->settings_message.delay_every = msg->delay_every;
 }
 
 void on_reset_t(const lcm_recv_buf_t *rbuf, const char *channel,
             const reset_t *msg, void *userdata) {
-    reset_t *message = userdata;
-    message->reset_message.initial_runner_idx = message->initial_runner_idx;
+    state_t *state = userdata;
+    state->reset_message.initial_runner_idx = msg->initial_runner_idx;
 }
 
 // void on_agent_t(const lcm_recv_buf_t *rbuf, const char *channel,
@@ -74,15 +80,12 @@ void on_reset_t(const lcm_recv_buf_t *rbuf, const char *channel,
 
 void on_action_t(const lcm_recv_buf_t *rbuf, const char *channel,
             const action_t *msg, void *userdata) {
-    action_t *message = userdata;
+    state_t *state = userdata;
 
-    double vel = message->action_message.vel;
-    vel = message->fwd_vel;
-    vel = (vel > msg.fwd_vel + 2) ? msg.fwd_vel + 2 : vel;
+    state->chaser_message.vel = fmin(msg->vel, state->chaser_message.vel + 2.0);
+    state->chaser_message.vel = fmin(state->chaser_message.vel, 12);
 
-    double ang_vel = message->action_message.ang_vel;
-    ang_vel = message->ang_vel;
-    ang_vel = (ang_vel > M_PI / 16) ? M_PI / 16 : ang_vel;
+    state->chaser_message.ang_vel = constrain_lf(msg->ang_vel, -M_PI / 16, M_PI / 16);
 }
 
 int main(void) {
@@ -97,12 +100,13 @@ int main(void) {
     //world_t_subscription_t *world_sub = world_t_subscribe(state.lcm, "WORLD_abusa", on_world_t, &state.world_message);
     settings_t_subscription_t *settings_sub = settings_t_subscribe(state.lcm, "SETTINGS_abusa", on_settings_t, &state.settings_message);
     reset_t_subscription_t *reset_sub = reset_t_subscribe(state.lcm, "RESET_abusa", on_reset_t, &state.reset_message);
+    action_t_subscription_t *action_sub = action_t_subscribe(state.lcm, "ACTION_abusa", on_action_t, &state.action_message);
     //agent_t_subscription_t *agent_sub = agent_t_subscribe(state.lcm, "AGENT_abusa", on_agent_t, &state.agent_message);
 
     pthread_t chaser_thread;
     pthread_create(&chaser_thread, NULL, io_thread, &state);
     image_server_start("8000");
-    //gx_draw_game(&bmp, &state);
+
     state.timestep = 0;
     while (true) {
         lcm_handle_async(state.lcm);
@@ -122,23 +126,19 @@ int main(void) {
             continue;
         }
         print_interface(&state);
-
-        state.settings_message.initial_runner_idx = state.initial_runner_idx;
-        state.settings_message.delay_every = state.delay_every;
-        state.settings_message.to_goal_magnitude = state.to_goal_magnitude;
-        state.settings_message.to_goal_power = state.to_goal_power;
-        state.settings_message.avoid_obs_magnitude = state.avoid_obs_magnitude;
-        state.settings_message.avoid_obs_power = state.avoid_obs_power;
-        state.settings_message.max_vel = state.max_velocity;
-
         gx_draw_game(&bmp, &state); //update gx
         serving_img(bmp, &state); //delay 40ms and all
-        settings_t_publish(state.lcm, "SETTINGS_abusa", &state.settings_message);
+
+        world_t world_message;
+        world_message.chaser = state.chaser_message;
+        world_message.runner = state.runner_message;
+        world_t_publish(state.lcm, "WORLD_abusa", &world_message);
         publish_rate(&state, start_time);
         state.timestep++;
     }
     free(bmp.data);
     //agent_t_unsubscribe(state.lcm, agent_sub);
+    action_t_unsubscribe(state.lcm, action_sub);
     reset_t_unsubscribe(state.lcm, reset_sub);
     settings_t_unsubscribe(state.lcm, settings_sub);
     //world_t_unsubscribe(state.lcm, world_sub);
