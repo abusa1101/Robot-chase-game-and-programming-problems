@@ -60,26 +60,33 @@ void print_interface(state_t *state) {
     fflush(stdout);
 }
 
+void init_values(state_t *state) {
+    state->chaser_message.theta = 0;
+    state->chaser_message.x = (double)WIDTH / 2;
+    state->chaser_message.y = (double)HEIGHT / 2;
+    state->settings_message.initial_runner_idx = 17;
+    state->settings_message.delay_every = 1;
+    state->settings_message.to_goal_magnitude = 50.0;
+    state->settings_message.to_goal_power = 0;
+    state->settings_message.avoid_obs_magnitude = 1.0;
+    state->settings_message.avoid_obs_power = -2;
+    state->settings_message.max_vel = 12;
+}
+
 void on_settings_t(const lcm_recv_buf_t *rbuf, const char *channel,
-            const settings_t *msg, void *userdata) {
+                   const settings_t *msg, void *userdata) {
     state_t *state = userdata;
     state->settings_message.delay_every = msg->delay_every;
 }
 
 void on_reset_t(const lcm_recv_buf_t *rbuf, const char *channel,
-            const reset_t *msg, void *userdata) {
+                const reset_t *msg, void *userdata) {
     state_t *state = userdata;
     state->reset_message.initial_runner_idx = msg->initial_runner_idx;
 }
 
-// void on_agent_t(const lcm_recv_buf_t *rbuf, const char *channel,
-//             const agent_t *msg, void *userdata) {
-//     agent_t *msg = userdata;
-//     //printf("%.2f %.2f %.2f\n", lcm_message->l2g[0], lcm_message->l2g[1], lcm_message->l2g[2]);
-// }
-
 void on_action_t(const lcm_recv_buf_t *rbuf, const char *channel,
-            const action_t *msg, void *userdata) {
+                 const action_t *msg, void *userdata) {
     state_t *state = userdata;
 
     state->chaser_message.vel = fmin(msg->vel, state->chaser_message.vel + 2.0);
@@ -97,11 +104,13 @@ int main(void) {
     init_values(&state);
     state.delay_time = SLEEP_40 / state.delay_every;
 
-    //world_t_subscription_t *world_sub = world_t_subscribe(state.lcm, "WORLD_abusa", on_world_t, &state.world_message);
-    settings_t_subscription_t *settings_sub = settings_t_subscribe(state.lcm, "SETTINGS_abusa", on_settings_t, &state.settings_message);
-    reset_t_subscription_t *reset_sub = reset_t_subscribe(state.lcm, "RESET_abusa", on_reset_t, &state.reset_message);
-    action_t_subscription_t *action_sub = action_t_subscribe(state.lcm, "ACTION_abusa", on_action_t, &state.action_message);
-    //agent_t_subscription_t *agent_sub = agent_t_subscribe(state.lcm, "AGENT_abusa", on_agent_t, &state.agent_message);
+
+    settings_t_subscription_t *settings_sub = settings_t_subscribe(state.lcm,
+                                                                   "SETTINGS_abusa", on_settings_t, &state.settings_message);
+    reset_t_subscription_t *reset_sub = reset_t_subscribe(state.lcm,
+                                                          "RESET_abusa", on_reset_t, &state.reset_message);
+    action_t_subscription_t *action_sub = action_t_subscribe(state.lcm,
+                                                             "ACTION_abusa", on_action_t, &state.action_message);
 
     pthread_t chaser_thread;
     pthread_create(&chaser_thread, NULL, io_thread, &state);
@@ -137,11 +146,9 @@ int main(void) {
         state.timestep++;
     }
     free(bmp.data);
-    //agent_t_unsubscribe(state.lcm, agent_sub);
     action_t_unsubscribe(state.lcm, action_sub);
     reset_t_unsubscribe(state.lcm, reset_sub);
     settings_t_unsubscribe(state.lcm, settings_sub);
-    //world_t_unsubscribe(state.lcm, world_sub);
     lcm_destroy(state.lcm);
     return 0;
 }
