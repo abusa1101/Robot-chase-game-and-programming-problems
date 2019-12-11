@@ -88,7 +88,7 @@ int main(void) {
         //chaser_moves(&state);
         state.chaser.theta += state.chaser.ang_vel;
         state.chaser.ang_vel *= 0.8;
-        move(state, &state.chaser);
+        move(&state, &state.chaser);
         runner_walks(&state);
         if (resolve_tile_collision(&state.chaser)) {
             state.chaser.vel *= 0.25;
