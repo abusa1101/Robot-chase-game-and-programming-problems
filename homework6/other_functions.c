@@ -104,14 +104,14 @@ void init_values(state_t *state) {
     state->to_goal_power = 0;
     state->avoid_obs_magnitude = 1.0;
     state->avoid_obs_power = -2;
-    state->max_velocity = 12;
+    state->max_vel = 12;
     state->current_parameter = 1;
 }
 
 void runner_walks(state_t *state) {
     int num_chosen = rand() % 20;
     if (num_chosen == 1) {
-        state->runner.fwd_vel += 2;
+        state->runner.vel += 2;
     } else if (num_chosen == 2) {
         state->runner.ang_vel += (M_PI / 16);
     }
@@ -120,11 +120,11 @@ void runner_walks(state_t *state) {
     move(state, &state->runner);
 }
 
-void move(state_t *state, robot_t *robot) {
-    double fwd_vel = fmin(state->max_velocity, robot->fwd_vel);
-    //printf("fwd_vel: %lf\n", fwd_vel);
-    double xdist = fwd_vel * cos(robot->theta);
-    double ydist = fwd_vel * -sin(robot->theta);
+void move(state_t *state, agent_t *robot) {
+    double vel = fmin(state->max_vel, robot->vel);
+    //printf("vel: %lf\n", vel);
+    double xdist = vel * cos(robot->theta);
+    double ydist = vel * -sin(robot->theta);
     robot->x += xdist;
     robot->y += ydist;
 }
@@ -187,7 +187,7 @@ void potential_field_control(state_t *state) {
     ang_vel = (ang_vel > M_PI / 16) ? M_PI / 16 : ang_vel;
     state->chaser.ang_vel = ang_vel;
 
-    state->chaser.fwd_vel = fmin(state->max_velocity, state->chaser.fwd_vel + 2.0);
+    state->chaser.vel = fmin(state->max_vel, state->chaser.vel + 2.0);
 }
 
 void update_parameters(state_t *state, bool action_is_up) {
@@ -208,8 +208,8 @@ void update_parameters(state_t *state, bool action_is_up) {
             state->avoid_obs_power += 1;
             state->avoid_obs_power = constrain(state->avoid_obs_power, -3, 3);
         } else if (state->current_parameter == 7) {
-            state->max_velocity += 1;
-            state->max_velocity = constrain(state->max_velocity, 1, 12);
+            state->max_vel += 1;
+            state->max_vel = constrain(state->max_vel, 1, 12);
         } else {
             printf("UP Error: %d Check IO_thread\n", state->current_parameter);
         }
@@ -230,8 +230,8 @@ void update_parameters(state_t *state, bool action_is_up) {
             state->avoid_obs_power -= 1;
             state->avoid_obs_power = constrain(state->avoid_obs_power, -3, 3);
         } else if (state->current_parameter == 7) {
-            state->max_velocity -= 1;
-            state->max_velocity = constrain(state->max_velocity, 1, 12);
+            state->max_vel -= 1;
+            state->max_vel = constrain(state->max_vel, 1, 12);
         } else {
             printf("DOWN Error: %d Check IO_thread\n", state->current_parameter);
         }
@@ -247,10 +247,10 @@ void reset_simulation(state_t *state) {
     give_runner_pos(state, state->initial_runner_idx);
     // state->runner.x = (double)((state->initial_runner_idx % MAP_W) + 0.5) * BLOCK_SIZE;
     // state->runner.y = (double)((state->initial_runner_idx / MAP_W) + 0.5) * BLOCK_SIZE;
-    state->runner.fwd_vel = 0;
+    state->runner.vel = 0;
     state->runner.ang_vel = 0;
     state->runner.theta = 0;
-    state->chaser.fwd_vel = 0;
+    state->chaser.vel = 0;
     state->chaser.ang_vel = 0;
     state->chaser.theta = 0;
 }

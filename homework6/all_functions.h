@@ -51,33 +51,31 @@ typedef struct vector_xy {
     int size;
 } vector_xy_t;
 
-typedef struct robot {
+typedef struct agent {
     double x;
     double y;
     double theta;
-    double fwd_vel;
+    double vel;
     double ang_vel;
-} robot_t;
+} agent_t;
 
 typedef struct state {
     int user_action;
-    robot_t runner;
-    robot_t chaser;
-    int initial_runner_idx; //initially 17
-    int delay_every; //must be >= 1
-    double to_goal_magnitude;
-    int to_goal_power; //[-3,3]
-    double avoid_obs_magnitude;
-    int avoid_obs_power; //[-3,3]
-    int max_velocity; //[1,12]
+    agent_t runner;
+    agent_t chaser;
+    // int initial_runner_idx; //initially 17
+    // int delay_every; //must be >= 1
+    // double to_goal_magnitude;
+    // int to_goal_power; //[-3,3]
+    // double avoid_obs_magnitude;
+    // int avoid_obs_power; //[-3,3]
+    // int max_vel; //[1,12]
     int current_parameter;
     int timestep;
-    int delay_time;
 
     lcm_t *lcm;
-    //world_t world_message;
-    agent_t runner_message;
-    agent_t chaser_message;
+    // agent_t runner_message;
+    // agent_t chaser_message;
     action_t action_message;
     settings_t settings_message;
     reset_t reset_message;
@@ -109,7 +107,7 @@ void gx_draw_chaser(bitmap_t *bmp, state_t *state);
 void give_runner_pos(state_t *state, int run_index);
 void gx_draw_runner(bitmap_t *bmp, state_t *state, int run_index);
 void gx_draw_game(bitmap_t *bmp, state_t *state);
-vector_xy_t *robot2(robot_t *robot);
+vector_xy_t *robot2(agent_t *robot);
 
 //Collision & Polygons
 int pg_collision(vector_xy_t *pg1, vector_xy_t *pg2);
@@ -117,14 +115,14 @@ bool pg_intersection(vector_xy_t *pg1, vector_xy_t *pg2);
 bool line_intersection(double x0, double y0, double x1, double y1,
                        double x2, double y2, double x3, double y3);
 bool check4containment(vector_xy_t *pg, double x, double y);
-bool robots_collision(robot_t *chaser, robot_t *runner);
-bool tile_collision(robot_t *robot, double tile_x, double tile_y);
-bool resolve_tile_collision(robot_t *robot);
+bool robots_collision(agent_t *chaser, agent_t *runner);
+bool tile_collision(agent_t *robot, double tile_x, double tile_y);
+bool resolve_tile_collision(agent_t *robot);
 
 //Movement
 void init_values(state_t *state);
 void serving_img(bitmap_t bmp, state_t *state);
-void move(state_t *state, robot_t *robot);
+void move(state_t *state, agent_t *robot);
 void runner_walks(state_t *state);
 void chaser_moves(state_t *state);
 

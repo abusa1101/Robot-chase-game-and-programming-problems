@@ -66,7 +66,7 @@ bool check4containment(vector_xy_t *pg, double x, double y) {
     return counter1 == 0 || counter2 == 0;
 }
 
-bool tile_collision(robot_t *robot, double tile_x, double tile_y) {
+bool tile_collision(agent_t *robot, double tile_x, double tile_y) {
     vector_xy_t *robot_vec = robot2(robot);
     vector_xy_t *tile_vec = gx_rect(BLOCK_SIZE, BLOCK_SIZE);
     gx_trans(tile_x * BLOCK_SIZE, tile_y * BLOCK_SIZE, tile_vec);
@@ -76,7 +76,7 @@ bool tile_collision(robot_t *robot, double tile_x, double tile_y) {
     return collides;
 }
 
-bool resolve_tile_collision(robot_t *robot) {
+bool resolve_tile_collision(agent_t *robot) {
     int map_x = (int)(robot->x / BLOCK_SIZE);
     int map_y = (int)(robot->y / BLOCK_SIZE);
     bool in_collision = true;
@@ -104,7 +104,7 @@ bool resolve_tile_collision(robot_t *robot) {
     return had_collision;
 }
 
-bool robots_collision(robot_t *chaser, robot_t *runner) {
+bool robots_collision(agent_t *chaser, agent_t *runner) {
     vector_xy_t *chaser_vec = robot2(chaser);
     vector_xy_t *runner_vec = robot2(runner);
     bool collides = pg_collision(chaser_vec, runner_vec);

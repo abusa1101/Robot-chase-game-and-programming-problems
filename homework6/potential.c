@@ -27,10 +27,10 @@ int main(int argc, char **argv) {
         runner_walks(&state);
 
         if (resolve_tile_collision(&state.chaser)) {
-            state.chaser.fwd_vel *= 0.25;
+            state.chaser.vel *= 0.25;
         }
         if (resolve_tile_collision(&state.runner)) {
-            state.runner.fwd_vel *= 0.25;
+            state.runner.vel *= 0.25;
         }
         if (robots_collision(&state.chaser, &state.runner)) {
             printf("\e[2K\rRunner caught on step %d\n", state.timestep);
@@ -57,7 +57,7 @@ int main(int argc, char **argv) {
         printf("%s%8.2d%s ", (parameter == 6) ? HIGHLIGHT : "",
                state.avoid_obs_power, CLEAR_HIGHLIGHT);
         printf("%s%8.2d%s", (parameter == 7) ? HIGHLIGHT : "",
-               state.max_velocity, CLEAR_HIGHLIGHT);
+               state.max_vel, CLEAR_HIGHLIGHT);
         fflush(stdout);
 
         state.timestep++;

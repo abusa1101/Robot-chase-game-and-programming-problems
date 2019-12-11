@@ -47,7 +47,7 @@ void print_interface(state_t *state) {
     printf("%s%8.2d%s ", (parameter == 6) ? HIGHLIGHT : "",
            state->avoid_obs_power, CLEAR_HIGHLIGHT);
     printf("%s%8.2d%s", (parameter == 7) ? HIGHLIGHT : "",
-           state->max_velocity, CLEAR_HIGHLIGHT);
+           state->max_vel, CLEAR_HIGHLIGHT);
     fflush(stdout);
 }
 
@@ -70,10 +70,10 @@ int main(void) {
         chaser_moves(&state);
         runner_walks(&state);
         if (resolve_tile_collision(&state.chaser)) {
-            state.chaser.fwd_vel *= 0.25;
+            state.chaser.vel *= 0.25;
         }
         if (resolve_tile_collision(&state.runner)) {
-            state.runner.fwd_vel *= 0.25;
+            state.runner.vel *= 0.25;
         }
         if (robots_collision(&state.chaser, &state.runner)) {
             //printf("\e[2K\rRunner caught on step %d\n", state.timestep);
@@ -88,7 +88,7 @@ int main(void) {
         state.settings_message.to_goal_power = state.to_goal_power;
         state.settings_message.avoid_obs_magnitude = state.avoid_obs_magnitude;
         state.settings_message.avoid_obs_power = state.avoid_obs_power;
-        state.settings_message.max_vel = state.max_velocity;
+        state.settings_message.max_vel = state.max_vel;
 
         gx_draw_game(&bmp, &state); //update gx
         serving_img(bmp, &state); //delay 40ms and all

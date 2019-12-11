@@ -266,7 +266,7 @@ void gx_draw_game(bitmap_t *bmp, state_t *state) {
     gx_draw_runner(bmp, state, state->initial_runner_idx);
 }
 
-vector_xy_t *robot2(robot_t *robot) {
+vector_xy_t *robot2(agent_t *robot) {
     vector_xy_t *robot_vec = gx_robot(ROB_W, ROB_L);
     gx_rot(robot->theta, robot_vec);
     gx_trans(robot->x, robot->y, robot_vec);

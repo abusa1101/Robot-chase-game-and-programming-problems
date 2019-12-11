@@ -56,15 +56,16 @@ void print_interface(state_t *state) {
     printf("%s%8.2d%s ", (parameter == 6) ? HIGHLIGHT : "",
            state->avoid_obs_power, CLEAR_HIGHLIGHT);
     printf("%s%8.2d%s", (parameter == 7) ? HIGHLIGHT : "",
-           state->max_velocity, CLEAR_HIGHLIGHT);
+           state->max_vel, CLEAR_HIGHLIGHT);
     fflush(stdout);
 }
 
 void robot_init(state_t *state) {
-    state->chaser_message.theta = 0;
-    state->chaser_message.x = (double)WIDTH / 2;
-    state->chaser_message.y = (double)HEIGHT / 2;
+    state->chaser.theta = 0;
+    state->chaser.x = (double)WIDTH / 2;
+    state->chaser.y = (double)HEIGHT / 2;
     state->settings_message.initial_runner_idx = 17;
+    //give_runner_pos(state, state->initial_runner_idx);
     state->settings_message.delay_every = 1;
     state->settings_message.to_goal_magnitude = 50.0;
     state->settings_message.to_goal_power = 0;
@@ -89,10 +90,14 @@ void on_action_t(const lcm_recv_buf_t *rbuf, const char *channel,
                  const action_t *msg, void *userdata) {
     state_t *state = userdata;
 
-    state->chaser_message.vel = fmin(msg->vel, state->chaser_message.vel + 2.0);
-    state->chaser_message.vel = fmin(state->chaser_message.vel, 12);
+    state->chaser.vel = fmin(msg->vel, state->chaser.vel + 2.0);
+    state->chaser.vel = fmin(state->chaser.vel, 12);
 
-    state->chaser_message.ang_vel = constrain_lf(msg->ang_vel, -M_PI / 16, M_PI / 16);
+    double ang_vel = msg->ang_vel;
+    ang_vel = (ang_vel < -M_PI / 16) ? -M_PI / 16 : ang_vel;
+    ang_vel = (ang_vel > M_PI / 16) ? M_PI / 16 : ang_vel;
+    state->chaser.ang_vel = ang_vel;
+    //state->chaser_message.ang_vel = constrain_lf(msg->ang_vel, -M_PI / 16, M_PI / 16);
 }
 
 int main(void) {
@@ -121,10 +126,10 @@ int main(void) {
         chaser_moves(&state);
         runner_walks(&state);
         if (resolve_tile_collision(&state.chaser)) {
-            state.chaser.fwd_vel *= 0.25;
+            state.chaser.vel *= 0.25;
         }
         if (resolve_tile_collision(&state.runner)) {
-            state.runner.fwd_vel *= 0.25;
+            state.runner.vel *= 0.25;
         }
         if (robots_collision(&state.chaser, &state.runner)) {
             printf("\e[2K\rRunner caught on step %d\n", state.timestep);
