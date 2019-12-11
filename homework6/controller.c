@@ -60,7 +60,7 @@ int main(int argc, char **argv) {
 
     state_t state = {0};
     state.lcm = lcm_create(NULL);
-    //init_values(&state);
+    init_values(&state);
     robot_init(&state);
 
     settings_t_subscribe(state.lcm, "SETTINGS_abusa", on_settings_t, &state);
@@ -84,9 +84,6 @@ int main(int argc, char **argv) {
             reset_simulation(&state); //when chaser catches runner
             continue;
         }
-        gx_draw_game(&bmp, &state); //update gx
-        serving_img(bmp, &state); //delay 40ms and all
-
         action_t action_message;
         action_message.vel = state.chaser.vel;
         action_message.ang_vel = state.chaser.ang_vel;
