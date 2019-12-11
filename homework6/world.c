@@ -9,9 +9,6 @@
 #include "all_functions.h"
 #include "lcmtypes/settings_t.h"
 #include "lcmtypes/reset_t.h"
-#include "lcmtypes/action_t.h"
-#include "lcmtypes/world_t.h"
-#include "lcmtypes/agent_t.h"
 #include "lcm_handle_async.h"
 
 #define HIGHLIGHT "\e[7m"
@@ -26,15 +23,9 @@ double seconds_now(void) {
     return now.tv_sec + now.tv_nsec / 1000000000.0;
 }
 
-double constrain_lf(double val, double LL, double UL) {
-    val = (val < LL) ? LL : val;
-    val = (val > UL) ? UL : val;
-    return val;
-}
-
 void publish_rate(state_t *state, double start_time) {
     int seconds = 0;
-    long nanoseconds = state->delay_time * 1000 * 1000;
+    long nanoseconds = (SLEEP_40 / state->settings_message.delay_every) * 1000 * 1000;
     nanoseconds -= (long)((seconds_now() - start_time) * pow(10, 9));
     struct timespec interval = {seconds, nanoseconds};
     nanosleep(&interval, NULL);
@@ -44,19 +35,19 @@ void print_interface(state_t *state) {
     int parameter = state->current_parameter;
     printf("\r");
     printf("%s%8.2d%s ", (parameter == 1) ? HIGHLIGHT : "",
-           state->initial_runner_idx, CLEAR_HIGHLIGHT);
+           state->settings_message.initial_runner_idx, CLEAR_HIGHLIGHT);
     printf("%s%8.2d%s ", (parameter == 2) ? HIGHLIGHT : "",
-           state->delay_every, CLEAR_HIGHLIGHT);
+           state->settings_message.delay_every, CLEAR_HIGHLIGHT);
     printf("%s%8.2f%s ", (parameter == 3) ? HIGHLIGHT : "",
-           state->to_goal_magnitude, CLEAR_HIGHLIGHT);
+           state->settings_message.to_goal_magnitude, CLEAR_HIGHLIGHT);
     printf("%s%8.2d%s ", (parameter == 4) ? HIGHLIGHT : "",
-           state->to_goal_power, CLEAR_HIGHLIGHT);
+           state->settings_message.to_goal_power, CLEAR_HIGHLIGHT);
     printf("%s%8.2f%s ", (parameter == 5) ? HIGHLIGHT : "",
-           state->avoid_obs_magnitude, CLEAR_HIGHLIGHT);
+           state->settings_message.avoid_obs_magnitude, CLEAR_HIGHLIGHT);
     printf("%s%8.2d%s ", (parameter == 6) ? HIGHLIGHT : "",
-           state->avoid_obs_power, CLEAR_HIGHLIGHT);
-    printf("%s%8.2d%s", (parameter == 7) ? HIGHLIGHT : "",
-           state->max_vel, CLEAR_HIGHLIGHT);
+           state->settings_message.avoid_obs_power, CLEAR_HIGHLIGHT);
+    printf("%s%8.2f%s", (parameter == 7) ? HIGHLIGHT : "",
+           state->settings_message.max_vel, CLEAR_HIGHLIGHT);
     fflush(stdout);
 }
 
@@ -65,7 +56,6 @@ void robot_init(state_t *state) {
     state->chaser.x = (double)WIDTH / 2;
     state->chaser.y = (double)HEIGHT / 2;
     state->settings_message.initial_runner_idx = 17;
-    //give_runner_pos(state, state->initial_runner_idx);
     state->settings_message.delay_every = 1;
     state->settings_message.to_goal_magnitude = 50.0;
     state->settings_message.to_goal_power = 0;
@@ -106,17 +96,12 @@ int main(void) {
 
     state_t state = {0};
     state.lcm = lcm_create(NULL);
+    init_values(&state);
     robot_init(&state);
-    //init_values(&state);
-    state.delay_time = SLEEP_40 / state.settings_message.delay_every;
 
     settings_t_subscribe(state.lcm, "SETTINGS_abusa", on_settings_t, &state.settings_message);
     reset_t_subscribe(state.lcm, "RESET_abusa", on_reset_t, &state.reset_message);
     action_t_subscribe(state.lcm, "ACTION_abusa", on_action_t, &state.action_message);
-
-    // pthread_t chaser_thread;
-    // pthread_create(&chaser_thread, NULL, io_thread, &state);
-    // image_server_start("8000");
 
     state.timestep = 0;
     while (true) {
@@ -137,20 +122,25 @@ int main(void) {
             continue;
         }
         print_interface(&state);
+        state.settings_message.initial_runner_idx = state.initial_runner_idx;
+        state.settings_message.delay_every = state.delay_every;
+        state.settings_message.to_goal_magnitude = state.to_goal_magnitude;
+        state.settings_message.to_goal_power = state.to_goal_power;
+        state.settings_message.avoid_obs_magnitude = state.avoid_obs_magnitude;
+        state.settings_message.avoid_obs_power = state.avoid_obs_power;
+        state.settings_message.max_vel = state.max_vel;
         gx_draw_game(&bmp, &state); //update gx
         serving_img(bmp, &state); //delay 40ms and all
 
         world_t world_message;
-        world_message.chaser = state.chaser_message;
-        world_message.runner = state.runner_message;
+        world_message.chaser = state.chaser;
+        world_message.runner = state.runner;
         world_t_publish(state.lcm, "WORLD_abusa", &world_message);
         publish_rate(&state, start_time);
+
         state.timestep++;
     }
     free(bmp.data);
-    // action_t_unsubscribe(state.lcm, action_sub);
-    // reset_t_unsubscribe(state.lcm, reset_sub);
-    // settings_t_unsubscribe(state.lcm, settings_sub);
     lcm_destroy(state.lcm);
     return 0;
 }
