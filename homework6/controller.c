@@ -47,46 +47,31 @@ void on_settings_t(const lcm_recv_buf_t *rbuf, const char *channel,
     state->delay_every = msg->delay_every;
 }
 
-void on_reset_t(const lcm_recv_buf_t *rbuf, const char *channel,
-                const reset_t *msg, void *userdata) {
+void on_world_t(const lcm_recv_buf_t *rbuf, const char *channel,
+                const world_t *msg, void *userdata) {
     state_t *state = userdata;
-    state->initial_runner_idx = msg->initial_runner_idx;
-    reset_simulation(state);
+    state->chaser = msg->chaser;
+    state->runner = msg->runner;
 }
 
-void on_action_t(const lcm_recv_buf_t *rbuf, const char *channel,
-                 const action_t *msg, void *userdata) {
-    state_t *state = userdata;
-
-    state->chaser.vel = fmin(msg->vel, state->chaser.vel + 2.0);
-    state->chaser.vel = fmin(state->chaser.vel, 12);
-
-    double ang_vel = msg->ang_vel;
-    ang_vel = (ang_vel < -M_PI / 16) ? -M_PI / 16 : ang_vel;
-    ang_vel = (ang_vel > M_PI / 16) ? M_PI / 16 : ang_vel;
-    state->chaser.ang_vel = ang_vel;
-    //state->chaser_message.ang_vel = constrain_lf(msg->ang_vel, -M_PI / 16, M_PI / 16);
-}
-
-int main(void) {
+int main(int argc, char **argv) {
     bitmap_t bmp = {0};
     bmp_init(&bmp);
 
     state_t state = {0};
     state.lcm = lcm_create(NULL);
-    init_values(&state);
+    //init_values(&state);
     robot_init(&state);
 
     settings_t_subscribe(state.lcm, "SETTINGS_abusa", on_settings_t, &state);
-    reset_t_subscribe(state.lcm, "RESET_abusa", on_reset_t, &state);
-    action_t_subscribe(state.lcm, "ACTION_abusa", on_action_t, &state);
+    world_t_subscribe(state.lcm, "WORLD_abusa", on_world_t, &state);
 
     state.timestep = 0;
     while (true) {
-        lcm_handle_async(state.lcm);
+        lcm_handle(state.lcm);
         double start_time = seconds_now();
 
-        //chaser_moves(&state);
+        chaser_moves(&state);
         runner_walks(&state);
         if (resolve_tile_collision(&state.chaser)) {
             state.chaser.vel *= 0.25;
@@ -102,10 +87,10 @@ int main(void) {
         gx_draw_game(&bmp, &state); //update gx
         serving_img(bmp, &state); //delay 40ms and all
 
-        world_t world_message;
-        world_message.chaser = state.chaser;
-        world_message.runner = state.runner;
-        world_t_publish(state.lcm, "WORLD_abusa", &world_message);
+        action_t action_message;
+        action_message.vel = state.chaser.vel;
+        action_message.ang_vel = state.chaser.ang_vel;
+        action_t_publish(state.lcm, "ACTION_abusa", &action_message);
         publish_rate(&state, start_time);
 
         state.timestep++;

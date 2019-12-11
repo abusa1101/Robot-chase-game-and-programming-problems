@@ -51,14 +51,6 @@ typedef struct vector_xy {
     int size;
 } vector_xy_t;
 
-// typedef struct agent {
-//     double x;
-//     double y;
-//     double theta;
-//     double vel;
-//     double ang_vel;
-// } agent_t;
-
 typedef struct state {
     int user_action;
     agent_t runner;
@@ -70,15 +62,10 @@ typedef struct state {
     double avoid_obs_magnitude;
     int avoid_obs_power; //[-3,3]
     int max_vel; //[1,12]
+
     int current_parameter;
     int timestep;
-
     lcm_t *lcm;
-    // agent_t runner_message;
-    // agent_t chaser_message;
-    // action_t action_message;
-    // settings_t settings_message;
-    // reset_t reset_message;
 } state_t;
 
 //Vector/Init/Low-level Operations
