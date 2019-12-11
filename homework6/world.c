@@ -99,9 +99,9 @@ int main(void) {
     init_values(&state);
     robot_init(&state);
 
-    settings_t_subscribe(state.lcm, "SETTINGS_abusa", on_settings_t, &state.settings_message);
-    reset_t_subscribe(state.lcm, "RESET_abusa", on_reset_t, &state.reset_message);
-    action_t_subscribe(state.lcm, "ACTION_abusa", on_action_t, &state.action_message);
+    settings_t_subscribe(state.lcm, "SETTINGS_abusa", on_settings_t, &state);
+    reset_t_subscribe(state.lcm, "RESET_abusa", on_reset_t, &state);
+    action_t_subscribe(state.lcm, "ACTION_abusa", on_action_t, &state);
 
     state.timestep = 0;
     while (true) {
