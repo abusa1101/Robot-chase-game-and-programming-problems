@@ -51,13 +51,13 @@ typedef struct vector_xy {
     int size;
 } vector_xy_t;
 
-typedef struct agent {
-    double x;
-    double y;
-    double theta;
-    double vel;
-    double ang_vel;
-} agent_t;
+// typedef struct agent {
+//     double x;
+//     double y;
+//     double theta;
+//     double vel;
+//     double ang_vel;
+// } agent_t;
 
 typedef struct state {
     int user_action;
