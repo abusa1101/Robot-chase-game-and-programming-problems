@@ -55,9 +55,6 @@ void on_world_t(const lcm_recv_buf_t *rbuf, const char *channel,
 }
 
 int main(int argc, char **argv) {
-    bitmap_t bmp = {0};
-    bmp_init(&bmp);
-
     state_t state = {0};
     state.lcm = lcm_create(NULL);
     init_values(&state);
@@ -84,6 +81,7 @@ int main(int argc, char **argv) {
             reset_simulation(&state); //when chaser catches runner
             continue;
         }
+
         action_t action_message;
         action_message.vel = state.chaser.vel;
         action_message.ang_vel = state.chaser.ang_vel;
@@ -92,7 +90,6 @@ int main(int argc, char **argv) {
 
         state.timestep++;
     }
-    free(bmp.data);
     lcm_destroy(state.lcm);
     return 0;
 }
