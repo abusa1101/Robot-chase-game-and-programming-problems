@@ -102,20 +102,16 @@ int main(void) {
     state_t state = {0};
     state.lcm = lcm_create(NULL);
     robot_init(&state);
-    init_values(&state);
+    //init_values(&state);
     state.delay_time = SLEEP_40 / state.delay_every;
 
+    settings_t_subscribe(state.lcm, "SETTINGS_abusa", on_settings_t, &state.settings_message);
+    reset_t_subscribe(state.lcm, "RESET_abusa", on_reset_t, &state.reset_message);
+    action_t_subscribe(state.lcm, "ACTION_abusa", on_action_t, &state.action_message);
 
-    settings_t_subscription_t *settings_sub = settings_t_subscribe(state.lcm,
-                                                                   "SETTINGS_abusa", on_settings_t, &state.settings_message);
-    reset_t_subscription_t *reset_sub = reset_t_subscribe(state.lcm,
-                                                          "RESET_abusa", on_reset_t, &state.reset_message);
-    action_t_subscription_t *action_sub = action_t_subscribe(state.lcm,
-                                                             "ACTION_abusa", on_action_t, &state.action_message);
-
-    pthread_t chaser_thread;
-    pthread_create(&chaser_thread, NULL, io_thread, &state);
-    image_server_start("8000");
+    // pthread_t chaser_thread;
+    // pthread_create(&chaser_thread, NULL, io_thread, &state);
+    // image_server_start("8000");
 
     state.timestep = 0;
     while (true) {
@@ -147,9 +143,9 @@ int main(void) {
         state.timestep++;
     }
     free(bmp.data);
-    action_t_unsubscribe(state.lcm, action_sub);
-    reset_t_unsubscribe(state.lcm, reset_sub);
-    settings_t_unsubscribe(state.lcm, settings_sub);
+    // action_t_unsubscribe(state.lcm, action_sub);
+    // reset_t_unsubscribe(state.lcm, reset_sub);
+    // settings_t_unsubscribe(state.lcm, settings_sub);
     lcm_destroy(state.lcm);
     return 0;
 }
