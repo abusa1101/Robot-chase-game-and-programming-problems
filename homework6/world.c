@@ -134,7 +134,7 @@ int main(void) {
         gx_draw_game(&bmp, &state); //update gx
         serving_img(bmp, &state); //delay 40ms and all
 
-        world_t world_message;
+        world_t world_message = {0};
         world_message.chaser = state.chaser;
         world_message.runner = state.runner;
         world_t_publish(state.lcm, "WORLD_abusa", &world_message);
