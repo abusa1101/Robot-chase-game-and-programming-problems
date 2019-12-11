@@ -103,7 +103,7 @@ int main(void) {
     state.lcm = lcm_create(NULL);
     robot_init(&state);
     //init_values(&state);
-    state.delay_time = SLEEP_40 / state.delay_every;
+    state.delay_time = SLEEP_40 / state.settings_message.delay_every;
 
     settings_t_subscribe(state.lcm, "SETTINGS_abusa", on_settings_t, &state.settings_message);
     reset_t_subscribe(state.lcm, "RESET_abusa", on_reset_t, &state.reset_message);
