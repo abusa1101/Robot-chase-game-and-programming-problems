@@ -53,6 +53,8 @@ void print_interface(state_t *state) {
 
 void robot_init(state_t *state) {
     state->chaser.theta = 0;
+    state->chaser.is_runner = false;
+    state->runner.is_runner = true;
     state->chaser.x = (double)WIDTH / 2;
     state->chaser.y = (double)HEIGHT / 2;
     state->settings_message.initial_runner_idx = 17;
