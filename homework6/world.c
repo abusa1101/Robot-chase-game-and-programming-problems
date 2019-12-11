@@ -60,7 +60,7 @@ void print_interface(state_t *state) {
     fflush(stdout);
 }
 
-void init_values(state_t *state) {
+void robot_init(state_t *state) {
     state->chaser_message.theta = 0;
     state->chaser_message.x = (double)WIDTH / 2;
     state->chaser_message.y = (double)HEIGHT / 2;
@@ -101,6 +101,7 @@ int main(void) {
 
     state_t state = {0};
     state.lcm = lcm_create(NULL);
+    robot_init(&state);
     init_values(&state);
     state.delay_time = SLEEP_40 / state.delay_every;
 
