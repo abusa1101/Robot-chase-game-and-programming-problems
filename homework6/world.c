@@ -79,7 +79,7 @@ int main(void) {
 
     state_t state = {0};
     state.lcm = lcm_create(NULL);
-    init_values(&state);
+    //init_values(&state);
     robot_init(&state);
 
     settings_t_subscribe(state.lcm, "SETTINGS_abusa", on_settings_t, &state);
