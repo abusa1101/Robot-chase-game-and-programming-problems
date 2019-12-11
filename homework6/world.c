@@ -35,8 +35,8 @@ void robot_init(state_t *state) {
     state->chaser.theta = 0;
     state->chaser.is_runner = false;
     state->runner.is_runner = true;
-    state->chaser.x = (double)WIDTH / 2;
-    state->chaser.y = (double)HEIGHT / 2;
+    // state->chaser.x = (double)WIDTH / 2;
+    // state->chaser.y = (double)HEIGHT / 2;
     state->initial_runner_idx = 17;
     state->delay_every = 1;
     state->to_goal_magnitude = 50.0;
