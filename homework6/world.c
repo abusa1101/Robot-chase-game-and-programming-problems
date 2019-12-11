@@ -9,6 +9,9 @@
 #include "all_functions.h"
 #include "lcmtypes/settings_t.h"
 #include "lcmtypes/reset_t.h"
+#include "lcmtypes/action_t.h"
+#include "lcmtypes/world_t.h"
+#include "lcmtypes/agent_t.h"
 #include "lcm_handle_async.h"
 
 #define HIGHLIGHT "\e[7m"
@@ -25,7 +28,7 @@ double seconds_now(void) {
 
 void publish_rate(state_t *state, double start_time) {
     int seconds = 0;
-    long nanoseconds = state.delay_time * 1000 * 1000;
+    long nanoseconds = state->delay_time * 1000 * 1000;
     nanoseconds -= (long)((seconds_now() - start_time) * pow(10, 9));
     struct timespec interval = {seconds, nanoseconds};
     nanosleep(&interval, NULL);
@@ -51,28 +54,35 @@ void print_interface(state_t *state) {
     fflush(stdout);
 }
 
-//void on_world_t(const lcm_recv_buf_t *rbuf, const char *channel,
-            const world_t *msg, void *userdata) {
-    world_t *msg = userdata;
-    //printf("%.2f %.2f %.2f\n", lcm_message->l2g[0], lcm_message->l2g[1], lcm_message->l2g[2]);
-}
-
 void on_settings_t(const lcm_recv_buf_t *rbuf, const char *channel,
             const settings_t *msg, void *userdata) {
-    settings_t *msg = userdata;
-    //printf("%.2f %.2f %.2f\n", lcm_message->l2g[0], lcm_message->l2g[1], lcm_message->l2g[2]);
+    settings_t *message = userdata;
+    message->settings_message.delay_every = message->delay_every;
 }
 
 void on_reset_t(const lcm_recv_buf_t *rbuf, const char *channel,
             const reset_t *msg, void *userdata) {
-    reset_t *msg = userdata;
-    //printf("%.2f %.2f %.2f\n", lcm_message->l2g[0], lcm_message->l2g[1], lcm_message->l2g[2]);
+    reset_t *message = userdata;
+    message->reset_message.initial_runner_idx = message->initial_runner_idx;
 }
 
-void on_agent_t(const lcm_recv_buf_t *rbuf, const char *channel,
-            const agent_t *msg, void *userdata) {
-    agent_t *msg = userdata;
-    //printf("%.2f %.2f %.2f\n", lcm_message->l2g[0], lcm_message->l2g[1], lcm_message->l2g[2]);
+// void on_agent_t(const lcm_recv_buf_t *rbuf, const char *channel,
+//             const agent_t *msg, void *userdata) {
+//     agent_t *msg = userdata;
+//     //printf("%.2f %.2f %.2f\n", lcm_message->l2g[0], lcm_message->l2g[1], lcm_message->l2g[2]);
+// }
+
+void on_action_t(const lcm_recv_buf_t *rbuf, const char *channel,
+            const action_t *msg, void *userdata) {
+    action_t *message = userdata;
+
+    double vel = message->action_message.vel;
+    vel = message->fwd_vel;
+    vel = (vel > msg.fwd_vel + 2) ? msg.fwd_vel + 2 : vel;
+
+    double ang_vel = message->action_message.ang_vel;
+    ang_vel = message->ang_vel;
+    ang_vel = (ang_vel > M_PI / 16) ? M_PI / 16 : ang_vel;
 }
 
 int main(void) {
@@ -87,7 +97,7 @@ int main(void) {
     //world_t_subscription_t *world_sub = world_t_subscribe(state.lcm, "WORLD_abusa", on_world_t, &state.world_message);
     settings_t_subscription_t *settings_sub = settings_t_subscribe(state.lcm, "SETTINGS_abusa", on_settings_t, &state.settings_message);
     reset_t_subscription_t *reset_sub = reset_t_subscribe(state.lcm, "RESET_abusa", on_reset_t, &state.reset_message);
-    agent_t_subscription_t *agent_sub = agent_t_subscribe(state.lcm, "AGENT_abusa", on_agent_t, &state.agent_message);
+    //agent_t_subscription_t *agent_sub = agent_t_subscribe(state.lcm, "AGENT_abusa", on_agent_t, &state.agent_message);
 
     pthread_t chaser_thread;
     pthread_create(&chaser_thread, NULL, io_thread, &state);
@@ -113,22 +123,22 @@ int main(void) {
         }
         print_interface(&state);
 
-        state_message.initial_runner_idx = state.initial_runner_idx;
-        state_message.delay_every = state.delay_every;
-        state_message.to_goal_magnitude = state.to_goal_magnitude;
-        state_message.to_goal_power = state.to_goal_power;
-        state_message.avoid_obs_magnitude = state.avoid_obs_magnitude;
-        state_message.avoid_obs_power = state.avoid_obs_power;
-        state_message.max_velocity = state.max_velocity;
+        state.settings_message.initial_runner_idx = state.initial_runner_idx;
+        state.settings_message.delay_every = state.delay_every;
+        state.settings_message.to_goal_magnitude = state.to_goal_magnitude;
+        state.settings_message.to_goal_power = state.to_goal_power;
+        state.settings_message.avoid_obs_magnitude = state.avoid_obs_magnitude;
+        state.settings_message.avoid_obs_power = state.avoid_obs_power;
+        state.settings_message.max_vel = state.max_velocity;
 
         gx_draw_game(&bmp, &state); //update gx
         serving_img(bmp, &state); //delay 40ms and all
-        settings_t_publish(state.lcm, "SETTINGS_abusa", &state.state_message);
-        publish_rate(start_time);
+        settings_t_publish(state.lcm, "SETTINGS_abusa", &state.settings_message);
+        publish_rate(&state, start_time);
         state.timestep++;
     }
     free(bmp.data);
-    agent_t_unsubscribe(state.lcm, agent_sub);
+    //agent_t_unsubscribe(state.lcm, agent_sub);
     reset_t_unsubscribe(state.lcm, reset_sub);
     settings_t_unsubscribe(state.lcm, settings_sub);
     //world_t_unsubscribe(state.lcm, world_sub);

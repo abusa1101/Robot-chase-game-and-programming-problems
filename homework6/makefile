@@ -5,6 +5,9 @@ CFLAGS += -fsanitize=address -fsanitize=undefined
 gui: gui.c image_server.c gx.c bmp.c collisions.c other_functions.c lcm_handle_async.c
 	gcc -o $@ $^ $(CFLAGS) $(LCMTYPES_SOURCE) -lpthread -lm -llcm -O3 -I$(HOME)/local/include -L$(HOME)/local/lib
 
+world: world.c image_server.c gx.c bmp.c collisions.c other_functions.c lcm_handle_async.c
+	gcc -o $@ $^ $(CFLAGS) $(LCMTYPES_SOURCE) -lpthread -lm -llcm -O3 -I$(HOME)/local/include -L$(HOME)/local/lib
+
 lcm_jar := $(shell dirname $(shell which lcm-gen))/../share/java/lcm.jar
 lcmtypes.jar: lcmtypes/*.lcm
 	lcm-gen -j lcmtypes/*.lcm

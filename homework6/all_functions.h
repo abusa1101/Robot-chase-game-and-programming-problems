@@ -12,6 +12,9 @@
 #include "bmp.h"
 #include "lcmtypes/settings_t.h"
 #include "lcmtypes/reset_t.h"
+#include "lcmtypes/action_t.h"
+#include "lcmtypes/world_t.h"
+#include "lcmtypes/agent_t.h"
 #include "lcm_handle_async.h"
 
 #define M_PI 3.14159265358979323846
@@ -74,7 +77,8 @@ typedef struct state {
     lcm_t *lcm;
     // world_t world_message;
     // agent_t agent_message;
-    settings_t state_message;
+    action_t action_message;
+    settings_t settings_message;
     reset_t reset_message;
 } state_t;
 

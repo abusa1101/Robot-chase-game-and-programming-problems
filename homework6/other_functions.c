@@ -11,6 +11,9 @@
 #include "all_functions.h"
 #include "lcmtypes/settings_t.h"
 #include "lcmtypes/reset_t.h"
+#include "lcmtypes/action_t.h"
+#include "lcmtypes/world_t.h"
+#include "lcmtypes/agent_t.h"
 #include "lcm_handle_async.h"
 
 struct termios original_termios;
