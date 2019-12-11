@@ -54,11 +54,11 @@ void on_world_t(const lcm_recv_buf_t *rbuf, const char *channel,
     state->runner = msg->runner;
 
     potential_field_control(state);
-    
+
     action_t action_message;
-    action_message.vel = state.chaser.vel;
-    action_message.ang_vel = state.chaser.ang_vel;
-    action_t_publish(state.lcm, "ACTION_abusa", &action_message);
+    action_message.vel = state->chaser.vel;
+    action_message.ang_vel = state->chaser.ang_vel;
+    action_t_publish(state->lcm, "ACTION_abusa", &action_message);
 }
 
 int main(int argc, char **argv) {
