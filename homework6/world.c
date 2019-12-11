@@ -59,7 +59,7 @@ void robot_init(state_t *state) {
     state->chaser.x = (double)WIDTH / 2;
     state->chaser.y = (double)HEIGHT / 2;
     state->settings_message.initial_runner_idx = 17;
-    give_runner_pos(state, state->settings_message.initial_runner_idx);
+    //give_runner_pos(state, state->settings_message.initial_runner_idx);
     state->settings_message.delay_every = 1;
     state->settings_message.to_goal_magnitude = 50.0;
     state->settings_message.to_goal_power = 0;
