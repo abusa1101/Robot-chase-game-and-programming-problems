@@ -81,18 +81,18 @@ int main(void) {
             continue;
         }
         print_interface(&state);
-
-        state.initial_runner_idx = state.initial_runner_idx;
-        state.delay_every = state.delay_every;
-        state.to_goal_magnitude = state.to_goal_magnitude;
-        state.to_goal_power = state.to_goal_power;
-        state.avoid_obs_magnitude = state.avoid_obs_magnitude;
-        state.avoid_obs_power = state.avoid_obs_power;
-        state.max_vel = state.max_vel;
+        settings_t settings_message;
+        settings_message.initial_runner_idx = state.initial_runner_idx;
+        settings_message.delay_every = state.delay_every;
+        settings_message.to_goal_magnitude = state.to_goal_magnitude;
+        settings_message.to_goal_power = state.to_goal_power;
+        settings_message.avoid_obs_magnitude = state.avoid_obs_magnitude;
+        settings_message.avoid_obs_power = state.avoid_obs_power;
+        settings_message.max_vel = state.max_vel;
 
         gx_draw_game(&bmp, &state); //update gx
         serving_img(bmp, &state); //delay 40ms and all
-        settings_t settings_message;
+
         settings_t_publish(state.lcm, "SETTINGS_abusa", &settings_message);
         publish_rate(start_time);
     }
