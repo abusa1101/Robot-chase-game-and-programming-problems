@@ -2,7 +2,7 @@
 import sys
 
 hashtable = {};
-print("Hashtable started with", sys.getsizeof(hashtable), "bytes at length", len(hashtable))
+print(f"Hashtable started with", sys.getsizeof(hashtable), "bytes at length", len(hashtable))
 with open("book.txt", "r") as file:
     last_word = ""
     bigram = ""
