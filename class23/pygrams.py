@@ -1,10 +1,10 @@
 #!/usr/bin/python3
 import sys
 
-
+hashtable = {};
+print("Hashtable started with " + str(sys.getsizeof(hashtable)) + " bytes at length 0")
+print("Hashtable started with", sys.getsizeof(hashtable), "bytes at length", len(hashtable))
 with open("book.txt", "r") as file:
-    hashtable = {};
-    print("Hashtable started with " + str(sys.getsizeof(hashtable)) + " bytes at length 0")
     last_word = ""
     bigram = ""
     for line in file:
@@ -15,29 +15,27 @@ with open("book.txt", "r") as file:
             else:
                 new_line += " "
         words = new_line.split()
-
         for word in words:
             if last_word:
                 bigram = last_word + " " + word
-
-            if bigram in hashtable:
-                hashtable[bigram] += 1
-            else:
-                old_ht_size = sys.getsizeof(hashtable)
-                hashtable[bigram] = 1
-                new_ht_size = sys.getsizeof(hashtable)
-                if new_ht_size > old_ht_size:
-                    print("Hashtable grew to " + str(old_ht_size) + " bytes at length " + str(len(hashtable)))
+                if bigram in hashtable:
+                    hashtable[bigram] += 1
+                else:
+                    old_ht_size = sys.getsizeof(hashtable)
+                    hashtable[bigram] = 1
+                    new_ht_size = sys.getsizeof(hashtable)
+                    if new_ht_size > old_ht_size:
+                        print("Hashtable grew to", new_ht_size, "bytes at length", len(hashtable))
             last_word = word
 
 key_found = False
 for key in hashtable:
     if hashtable[key] >= 200:
         key_found = True
-        print("Bigram " + key + " has count of " + str(hashtable[key]))
+        print(f"Bigram '{key}' has count of {hashtable[key]}")
 
 if not key_found:
     for key in hashtable:
-        print("Bigram " + key + " has count of " + str(hashtable[key]))
+        print(f"Bigram '{key}' has count of {hashtable[key]}")
 
-print("Total of " + str(len(hashtable)) + " different bigrams recorded")
+print(f"Total of {len(hashtable)} different bigrams recorded")
