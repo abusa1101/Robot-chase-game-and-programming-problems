@@ -2,7 +2,6 @@
 import sys
 
 hashtable = {};
-print("Hashtable started with " + str(sys.getsizeof(hashtable)) + " bytes at length 0")
 print("Hashtable started with", sys.getsizeof(hashtable), "bytes at length", len(hashtable))
 with open("book.txt", "r") as file:
     last_word = ""
